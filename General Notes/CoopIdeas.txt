@@ -1,0 +1,42 @@
+
+
+Make shared library of graph utilities for coopnet and ai_master.
+
+
+
+Where are we going?
+
+A bunch of Entities operate on a network.
+Each Entity has a local space of nodes it cares about and can influence.
+An Entity wants to optimize a Function over its Jurisdiction.
+The Function has optimal solutions when cooperatively solved.
+The Entities have some avenue for communication.
+Communication desire is not programmed in.
+
+
+
+PROBLEM: Boolean Satisfiability
+
+Entities own nodes (booleans).
+Can see connections to hyperedges (clauses, bipartite graph).
+Knows own node values, does not know other entities' node values.
+Take turns updating nodes.
+Can tell partial information (clause failed => know what all nodes are)
+We can look at solveable and unsolveable satisfiability problems.
+We can animate red/blue nodes in gephi.
+We can retry problems many times and look at quick solutions.
+See "Network Problem Layout.png".
+Research terms: "cooperative boolean satisfiability", "cooperative belief propagation",
+ "sudoku algorithms", "SAT/3-SAT algorithms", "magic square (?) algorithms",
+ "rubix cube pattern (how changes affect multiple parts)"
+If don't take turns, could be an interesting two-general problem, especially with many entities
+ and small jurisdictions.
+
+Questions:
+Can we see strategies based around amount of uncertainty?
+Can we see empathy/cooperation? Can we see strategies to not confuse others?
+Belief propagation?
+Do strategies scale with network size? Number of entities?
+Should we look at giving internal optimization functions as well as shared (internal clauses)?
+How do we store decisions, knowledge of other Entities?
+How do we reinforce decisions? Do we reinforce dynamically?
