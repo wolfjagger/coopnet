@@ -6,3 +6,6 @@ x32
 *.db
 *.opendb
 *.suo
+*.sln
+*.vcxproj
+*.vcxproj.filters
