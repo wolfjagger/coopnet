@@ -5,7 +5,7 @@
 
 
 
-namespace Gephi {
+namespace JJGephi {
 
 	void printGraph(const Graph& graph, const dynamic_properties& dp) {
 

@@ -7,8 +7,6 @@
 
 
 using boost::adjacency_list;
-using boost::vecS;
-using boost::directedS;
 using boost::property;
 using boost::vertex_color_t;
 using boost::edge_weight_t;
@@ -19,7 +17,8 @@ using boost::graph_traits;
 using Edge = std::pair<int, int>;
 using Edge3 = std::tuple<int, int, int>;
 
+// vecS means std::vector, giving fast access and slow amendment
 using Graph = adjacency_list<
-	vecS, vecS, directedS,
+	boost::vecS, boost::vecS, boost::undirectedS,
 	property<vertex_color_t, std::string>,
 	property<edge_weight_t, int>>;
