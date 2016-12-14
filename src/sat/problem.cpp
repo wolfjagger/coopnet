@@ -1,33 +1,65 @@
 #include "problem.h"
-#include <list>
 
 using namespace sat;
 
 
 
-template<typename iterator>
-problem::problem(int num_nodes, iterator clause_init_beg, iterator clause_init_end) {
+void problem::add_clause(clause_data init) {
+	clauses.emplace(std::move(init));
+}
 
-	auto list_nodes = std::list<int>(num_nodes);
-	nodes = nodelist(list_nodes.begin(), list_nodes.end());
-	for (auto i = 0; i < num_nodes; ++i) nodes.emplace_back(i);
-	
-	for (auto it = clause_init_beg; it < clause_init_end; ++it) {
-		add_clause(*it);
+Graph problem::build_graph() {
+
+	map_nodes = node_map();
+	map_clauses = clause_map();
+
+	auto num_verts = nodes.size() + clauses.size();
+
+	auto num_edges = 0;
+	std::for_each(clauses.cbegin(), clauses.cend(),
+		[&num_edges](const clause& cl)
+			{ num_edges += static_cast<unsigned int>(cl.size()); }
+	);
+
+	auto g = Graph();
+	for(auto& node_to_add : nodes) {
+
+		auto node_vert = g.add_vertex();
+		map_nodes.emplace(node_to_add, node_vert);
+		
+		std::string name = "Node ";
+		name += std::to_string(node_to_add.id);
+		put(vertex_color_t::vertex_color, g, node_vert, name);
+
 	}
 
-}
+	for(auto& clause_to_add : clauses) {
 
+		auto clause_vert = g.add_vertex();
+		map_clauses.emplace(clause_to_add, clause_vert);
+		
+		std::string name = "Clause ";
+		for (auto node : clause_to_add.nodes()) {
+			name += std::to_string(node.id);
+		}
+		put(vertex_color_t::vertex_color, g, clause_vert, name);
 
+		//for (auto node : clause_to_add.nodes()) {
+		for(auto i=0; i<clause_to_add.size(); ++i) {
 
-void problem::add_clause(clause::init clause_init) {
-	clauses.emplace(std::move(clause_init));
-}
+			//TODO: Add error handling for if node not in map.
+			auto node = clause_to_add.nodes()[i];
+			auto sgn = clause_to_add.sgns()[i];
+			
+			auto node_vert = map_nodes.at(node);
+			auto edge = g.add_edge(node_vert, clause_vert);
+			auto edge_desc = edge.first;
+			put(edge_weight_t::edge_weight, g, edge_desc, sgn);
 
-Graph problem::print_graph() const {
+		}
+
+	}
 	
-	// Build graph
-
-	return Graph();
+	return g;
 
 }

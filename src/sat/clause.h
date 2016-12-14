@@ -2,59 +2,77 @@
 
 #include <deque>
 #include <vector>
+#include "node.h"
 
 
 
 namespace sat {
 
-	namespace clause_types {
-		using index = int;
-	}
+	struct clause_data {
 
+		// Should make clause a template on number of nodes, N.
+		//  That way, we can use std::array<node_id, N> and save
+		//  a little space.
+		using node_storage = std::vector<node>;
+		node_storage nodes;
+
+		// Similarly, could switch to std::bitset<N>?
+		using sgn_storage = std::vector<bool>;
+		sgn_storage sgns;
+
+		//TODO: In addition, probably should store them together as a "literal".
+		//  But for now this is fine.
+
+		clause_data(node_storage node_init, sgn_storage sgn_init);
+
+	};
 
 
 	// Clause main class
-	class clause {
-
-	public:
-
-		// Initialization data; alias for now
-		using init = const std::vector<int>;
+	struct clause {
 
 	private:
 
-		// List of ids for nodes
-		std::vector<int> node_ids;
+		clause_data data;
 
 	public:
 
 		// Constructor
-		explicit clause(init init_node_ids);
-
-		// Destructor
-		~clause();
+		explicit clause(clause_data init);
 
 
+
+		const clause_data::node_storage& nodes() const {
+			return data.nodes;
+		}
+
+		const clause_data::sgn_storage& sgns() const {
+			return data.sgns;
+		}
 
 		// Number of nodes
 		size_t size() const {
-			return node_ids.size();
+			return data.nodes.size();
 		}
 
-		// Comparison operator for clauses; needed for storage in ordered containers, e.g. set, map
 		friend bool operator<(const clause& clause_1, const clause& clause_2);
+		friend bool operator==(const clause& clause_1, const clause& clause_2);
 
 	};
 
+	// Comparison operator for clauses; needed for storage in ordered containers, e.g. set, map
 	bool operator<(const clause& clause_1, const clause& clause_2);
+	// Equality operator
+	bool operator==(const clause& clause_1, const clause& clause_2);
+
 
 
 	// Storage for clauses
-	class clauselist {
+	class clause_list {
 
-	public:
-
+	private:
 		using storage = std::deque<clause>;
+	public:
 		using iterator = storage::iterator;
 		using const_iterator = storage::const_iterator;
 
@@ -65,11 +83,12 @@ namespace sat {
 	public:
 		
 		// Constructor
-		clauselist();
+		clause_list();
 
 		// Init clause and add to list
-		void emplace(clause::init&& clause_init);
+		void emplace(clause_data&& init);
 		void sort();
+		size_t size() const;
 
 	private:
 

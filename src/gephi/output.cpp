@@ -10,11 +10,12 @@ namespace JJGephi {
 	void printGraph(const Graph& graph, const dynamic_properties& dp) {
 
 		// If file exists, choose other file
+		std::string dirname = "out/";
 		std::string filename = "gephi_try.graphml";
-		if (std::ifstream(filename)) {
+		if (std::ifstream(dirname + filename)) {
 
 			auto i = 1;
-			while(i < 10 && std::ifstream(filename)) {
+			while(i < 10 && std::ifstream(dirname + filename)) {
 
 				filename = "gephi_try_";
 				filename += std::to_string(i);
@@ -28,7 +29,7 @@ namespace JJGephi {
 
 		// Open file
 		std::ofstream file;
-		file.open(filename);
+		file.open(dirname + filename);
 		boost::write_graphml(file, graph, dp, true);
 		file.close();
 

@@ -1,26 +1,26 @@
 #pragma once
 
 #include <deque>
+#include "satdefs.h"
 
 
 
 namespace sat {
 
-	using node_id = int;
-
 	struct node {
 
 		int id;
 
-		explicit node(node_id i);
+		node(int init);
 
 	};
 
 	bool operator<(const node& node_1, const node& node_2);
+	bool operator==(const node& node_1, const node& node_2);
 
 
 
-	class nodelist {
+	class node_list {
 
 	public:
 
@@ -34,15 +34,21 @@ namespace sat {
 
 	public:
 		
-		nodelist();
+		node_list();
 
 		template<typename iter>
-		explicit nodelist(iter begin, iter end);
+		explicit node_list(iter begin, iter end)
+			: node_list() {
+			for (auto it = begin; it != end; ++it) {
+				emplace(*it);
+			}
+		}
 
 
 		// Init node and add to list
-		void emplace(node_id&& init);
+		void emplace(int init);
 		void sort();
+		size_t size() const;
 
 	private:
 

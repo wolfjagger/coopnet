@@ -5,8 +5,8 @@ using namespace sat;
 
 
 
-node::node(node_id i) {
-	id = i;
+node::node(int init) {
+	id = init;
 }
 
 
@@ -14,30 +14,30 @@ node::node(node_id i) {
 bool sat::operator<(const node& node_1, const node& node_2) {
 	return node_1.id < node_2.id;
 }
-
-
-
-nodelist::nodelist() {}
-
-template<typename iter>
-nodelist::nodelist(iter begin, iter end)
-	: nodelist() {
-	for (auto it = begin; it < end; ++it) {
-		emplace(*it);
-	}
+bool sat::operator==(const node& node_1, const node& node_2) {
+	return node_1.id == node_2.id;
 }
 
 
-void nodelist::emplace(node_id&& node_init) {
-	push(node(node_init));
+
+node_list::node_list() {}
+
+
+
+void node_list::emplace(int init) {
+	push(node(init));
 }
 
-void nodelist::sort() {
+void node_list::sort() {
 	std::sort(nodes.begin(), nodes.end());
 }
 
+size_t node_list::size() const {
+	return nodes.size();
+}
 
-void nodelist::push(node&& node) {
+
+void node_list::push(node&& node) {
 	
 	nodes.push_back(std::move(node));
 
