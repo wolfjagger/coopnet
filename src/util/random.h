@@ -8,8 +8,13 @@ namespace jj_random {
 	
 	// Boolean
 
+	// Does event with probability prob happen?
+	bool take_chance(double prob);
+
 	// 50/50 coin flip
-	bool coin_flip();
+	inline bool coin_flip() {
+		return take_chance(0.5);
+	}
 
 
 	// Integer

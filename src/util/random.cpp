@@ -8,11 +8,11 @@ namespace jj_random {
 	
 	std::random_device rd;
 	auto engine = std::mt19937_64(rd());
-	auto bern = std::bernoulli_distribution();
 	auto uniform = std::uniform_real_distribution<double>();
 
-	bool coin_flip() {
-		return bern(engine);
+	bool take_chance(double prob) {
+		auto bern_prob = std::bernoulli_distribution(prob);
+		return bern_prob(engine);
 	}
 	
 	unsigned rand_inclusive(unsigned min, unsigned max) {
