@@ -4,10 +4,10 @@
 
 
 
-namespace JJGraph {
+namespace jj_graph {
 
-	Graph TestGraph();
+	graph test_graph();
 
-	dynamic_properties TestProps(Graph& graph);
+	dynamic_properties test_props(graph& g);
 
 }

@@ -4,8 +4,8 @@
 #include <map>
 #include <numeric>
 #include "graph/graphdefs.h"
-#include "node.h"
-#include "clause.h"
+#include "component/node.h"
+#include "component/clause.h"
 
 
 
@@ -56,7 +56,12 @@ namespace sat {
 
 		void add_clause(clause_data init);
 
-		Graph build_graph();
+		graph build_graph();
+
+
+
+		const node_list& list_nodes() const;
+		const clause_list& list_clauses() const;
 
 	};
 

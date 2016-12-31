@@ -8,20 +8,12 @@ void problem::add_clause(clause_data init) {
 	clauses.emplace(std::move(init));
 }
 
-Graph problem::build_graph() {
+graph problem::build_graph() {
 
 	map_nodes = node_map();
 	map_clauses = clause_map();
 
-	auto num_verts = nodes.size() + clauses.size();
-
-	auto num_edges = 0;
-	std::for_each(clauses.cbegin(), clauses.cend(),
-		[&num_edges](const clause& cl)
-			{ num_edges += static_cast<unsigned int>(cl.size()); }
-	);
-
-	auto g = Graph();
+	auto g = graph();
 	for(auto& node_to_add : nodes) {
 
 		auto node_vert = g.add_vertex();
@@ -62,4 +54,14 @@ Graph problem::build_graph() {
 	
 	return g;
 
+}
+
+
+
+const node_list& problem::list_nodes() const {
+	return nodes;
+}
+
+const clause_list& problem::list_clauses() const {
+	return clauses;
 }

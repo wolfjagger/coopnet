@@ -20,15 +20,15 @@ using boost::vertex_color_t;
 using boost::edge_weight_t;
 
 
-using Edge = std::pair<int, int>;
-using Edge3 = std::tuple<int, int, int>;
+using edge = std::pair<int, int>;
+using edge3 = std::tuple<int, int, int>;
 
 // vecS means std::vector, giving fast access and slow amendment
 /*using Graph = adjacency_list<
 	boost::vecS, boost::vecS, boost::undirectedS,
 	property<vertex_color_t, std::string>,
 	property<edge_weight_t, bool>>;*/
-using Graph = undirected_graph<
+using graph = undirected_graph<
 	property<vertex_color_t, std::string>,
 	property<edge_weight_t, bool>>;
-using vertex_descriptor = Graph::vertex_descriptor;
+using vertex_descriptor = graph::vertex_descriptor;

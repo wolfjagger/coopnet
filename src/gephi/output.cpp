@@ -5,9 +5,9 @@
 
 
 
-namespace JJGephi {
+namespace jj_gephi {
 
-	void printGraph(const Graph& graph, const dynamic_properties& dp) {
+	void print_graph(const graph& g, const dynamic_properties& dp) {
 
 		// If file exists, choose other file
 		std::string dirname = "out/";
@@ -30,7 +30,7 @@ namespace JJGephi {
 		// Open file
 		std::ofstream file;
 		file.open(dirname + filename);
-		boost::write_graphml(file, graph, dp, true);
+		boost::write_graphml(file, g, dp);
 		file.close();
 
 	}

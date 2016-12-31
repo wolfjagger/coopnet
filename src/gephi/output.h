@@ -4,8 +4,8 @@
 
 
 
-namespace JJGephi {
+namespace jj_gephi {
 
-	void printGraph(const Graph& graph, const dynamic_properties& dp);
+	void print_graph(const graph& g, const dynamic_properties& dp);
 
 }

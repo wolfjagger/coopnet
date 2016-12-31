@@ -1,37 +1,26 @@
 #include "test_graph.h"
 #include "sat/problem.h"
+#include "sat/problem_factory.h"
 
 
 
-namespace JJGraph {
+namespace jj_graph {
 
-	Graph TestGraph() {
+	graph test_graph() {
 
-		using sat::clause_list;
-		using sat::clause_data;
-		using sat::problem;
+		auto prob = sat::generate_random_3sat_problem(10, 100);
 
-		auto clause_init = std::vector<clause_data>();
+		auto g = prob.build_graph();
 
-		auto nodes = clause_data::node_storage{ 0, 1, 2 };
-		auto sgns = clause_data::sgn_storage{ true, true, true };
-		clause_init.emplace_back(nodes, sgns);
-		nodes = clause_data::node_storage{ 2, 3, 4 };
-		sgns = clause_data::sgn_storage{ false, true, true };
-		clause_init.emplace_back(nodes, sgns);
-
-		auto prob = problem(5, clause_init.begin(), clause_init.end());
-		auto graph = prob.build_graph();
-
-		return graph;
+		return g;
 
 	}
 
-	dynamic_properties TestProps(Graph& graph) {
+	dynamic_properties test_props(graph& g) {
 		
 		dynamic_properties dp;
-		dp.property("name", get(vertex_color_t::vertex_color, graph));
-		dp.property("sign", get(edge_weight_t::edge_weight, graph));
+		dp.property("name", get(vertex_color_t::vertex_color, g));
+		dp.property("sign", get(edge_weight_t::edge_weight, g));
 
 		return dp;
 

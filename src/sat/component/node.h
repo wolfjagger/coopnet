@@ -1,7 +1,6 @@
 #pragma once
 
 #include <deque>
-#include "satdefs.h"
 
 
 
@@ -9,9 +8,9 @@ namespace sat {
 
 	struct node {
 
-		int id;
+		unsigned id;
 
-		node(int init);
+		node(unsigned init);
 
 	};
 
