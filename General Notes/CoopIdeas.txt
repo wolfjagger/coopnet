@@ -1,5 +1,7 @@
 
 
+More info on wiki.
+
 Make shared library of graph utilities for coopnet and ai_master.
 
 
