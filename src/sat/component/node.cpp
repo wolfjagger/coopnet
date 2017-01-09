@@ -5,7 +5,7 @@ using namespace sat;
 
 
 
-node::node(unsigned init) {
+node::node(unsigned int init) {
 	id = init;
 }
 

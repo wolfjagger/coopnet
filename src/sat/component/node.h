@@ -8,9 +8,9 @@ namespace sat {
 
 	struct node {
 
-		unsigned id;
+		unsigned int id;
 
-		node(unsigned init);
+		node(unsigned int init);
 
 	};
 
