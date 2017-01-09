@@ -1,5 +1,5 @@
 #include "problem_factory.h"
-#include "problem.h"
+#include "sat/problem.h"
 #include "util/random.h"
 
 

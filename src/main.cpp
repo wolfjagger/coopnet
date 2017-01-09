@@ -7,10 +7,11 @@
 
 int main(int, char*[]) {
 
-	auto g = jj_graph::test_graph();
-	auto dp = jj_graph::test_props(g);
+	auto prob = jj_graph::test_problem();
+	auto g = prob.get_graph();
+	auto p = prob.get_props();
 
-	jj_gephi::print_graph(g, dp);
+	jj_gephi::print_graph(g, p);
 
 	std::cout << "Enter to exit.";
 	std::cin.get();

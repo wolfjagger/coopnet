@@ -1,11 +1,11 @@
 #pragma once
 
-#include "graph/graphdefs.h"
+#include "sat/graph.h"
 
 
 
 namespace jj_gephi {
 
-	void print_graph(const graph& g, const dynamic_properties& dp);
+	void print_graph(const sat::graph& g, const dynamic_properties& dp);
 
 }

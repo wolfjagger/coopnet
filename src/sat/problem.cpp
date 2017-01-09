@@ -4,37 +4,40 @@ using namespace sat;
 
 
 
-void problem::add_clause(clause_data init) {
-	clauses.emplace(std::move(init));
+const graph& problem::get_graph() const {
+	return prob_graph;
 }
 
-graph problem::build_graph() {
+const dynamic_properties& problem::get_props() const {
+	return dyn_props;
+}
 
-	map_nodes = node_map();
-	map_clauses = clause_map();
 
-	auto g = graph();
-	for(auto& node_to_add : nodes) {
 
-		auto node_vert = g.add_vertex();
+void problem::build_graph(node_list&& nodes, clause_list&& clauses) {
+
+	prob_graph = graph();
+
+	using node_map = std::map<node, vertex_descriptor>;
+	auto map_nodes = node_map();
+
+
+	// Add all nodes in sequence to graph
+	for(auto node_to_add : nodes) {
+
+		// Add node as vertex to graph
+		auto node_vert = add_vertex(prob_graph, node_to_add);
+
 		map_nodes.emplace(node_to_add, node_vert);
-		
-		std::string name = "Node ";
-		name += std::to_string(node_to_add.id);
-		put(vertex_color_t::vertex_color, g, node_vert, name);
 
 	}
 
+
+	// Add all clauses in sequence to graph, then add all edges
 	for(auto& clause_to_add : clauses) {
 
-		auto clause_vert = g.add_vertex();
-		map_clauses.emplace(clause_to_add, clause_vert);
-		
-		std::string name = "Clause ";
-		for (auto node : clause_to_add.nodes()) {
-			name += std::to_string(node.id);
-		}
-		put(vertex_color_t::vertex_color, g, clause_vert, name);
+		// Add clause as vertex to graph
+		auto clause_vert = add_vertex(prob_graph, clause_to_add);
 
 		//for (auto node : clause_to_add.nodes()) {
 		for(auto i=0; i<clause_to_add.size(); ++i) {
@@ -43,25 +46,20 @@ graph problem::build_graph() {
 			auto node = clause_to_add.nodes()[i];
 			auto sgn = clause_to_add.sgns()[i];
 			
+			// Add node in clause as edge to graph
 			auto node_vert = map_nodes.at(node);
-			auto edge = g.add_edge(node_vert, clause_vert);
-			auto edge_desc = edge.first;
-			put(edge_weight_t::edge_weight, g, edge_desc, sgn);
+			add_edge(prob_graph, node_vert, clause_vert, sgn);
 
 		}
 
 	}
+
+	// Generate dynamic_properties
+	auto name_map = get(&vert_prop::name, prob_graph);
+	dyn_props.property("name", name_map);
+	auto kind_map = get(&vert_prop::kind, prob_graph);
+	dyn_props.property("kind", kind_map);
+	auto sgn_map = get(&edge_prop::sgn, prob_graph);
+	dyn_props.property("sign", sgn_map);
 	
-	return g;
-
-}
-
-
-
-const node_list& problem::list_nodes() const {
-	return nodes;
-}
-
-const clause_list& problem::list_clauses() const {
-	return clauses;
 }

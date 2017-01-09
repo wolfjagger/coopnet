@@ -35,6 +35,8 @@ namespace sat {
 		
 		node_list();
 
+		node_list(int num_nodes);
+
 		template<typename iter>
 		explicit node_list(iter begin, iter end)
 			: node_list() {

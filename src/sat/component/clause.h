@@ -85,6 +85,16 @@ namespace sat {
 		// Constructor
 		clause_list();
 
+		template<typename iter>
+		explicit clause_list(iter begin, iter end)
+			: clause_list() {
+
+			for (auto it = begin; it != end; ++it) {
+				emplace(std::forward<clause_data>(*it));
+			}
+
+		}
+
 		// Init clause and add to list
 		void emplace(clause_data&& init);
 		void sort();
