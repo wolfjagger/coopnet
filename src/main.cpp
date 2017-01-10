@@ -1,13 +1,13 @@
 #include <istream>
 #include <iostream>
-#include "graph/test_graph.h"
+#include "graph/testing.h"
 #include "gephi/output.h"
 
 
 
 int main(int, char*[]) {
 
-	auto prob = jj_graph::test_problem();
+	auto prob = testing::test_problem();
 	auto g = prob.get_graph();
 	auto p = prob.get_props();
 
