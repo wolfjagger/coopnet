@@ -6,7 +6,13 @@
 
 namespace testing {
 
-	sat::problem test_problem() {
+	sat::problem all_true_problem() {
+
+		return sat::generate_solvable_3sat_problem(10, 100);
+
+	}
+
+	sat::problem random_problem() {
 
 		return sat::generate_random_3sat_problem(10, 100);
 

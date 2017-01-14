@@ -6,6 +6,8 @@
 
 namespace testing {
 
-	sat::problem test_problem();
+	sat::problem all_true_problem();
+
+	sat::problem random_problem();
 
 }

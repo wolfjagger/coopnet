@@ -1,15 +1,29 @@
 #include "problem.h"
+#include "component/assignment.h"
+#include "solving/satisfiability_visitor.h"
+#include "boost/graph/breadth_first_search.hpp"
+#include "boost/graph/connected_components.hpp"
 
 using namespace sat;
 
 
 
-const graph& problem::get_graph() const {
-	return prob_graph;
-}
+std::set<vertex_descriptor> problem::clauses_satisfied_by(
+	std::shared_ptr<const assignment> assign) const {
 
-const dynamic_properties& problem::get_props() const {
-	return dyn_props;
+	auto satisfiability_collector = collect_satisfiability_visitor(assign);
+	auto bfs_visitor = boost::make_bfs_visitor(satisfiability_collector);
+	
+	for (auto source_vert : connected_component_vertices) {
+
+		boost::breadth_first_search(
+			prob_graph, boost::vertex(source_vert, prob_graph),
+			boost::visitor(bfs_visitor));
+
+	}
+
+	return *satisfiability_collector.clauses_satisfied;
+	
 }
 
 
@@ -18,9 +32,8 @@ void problem::build_graph(node_list&& nodes, clause_list&& clauses) {
 
 	prob_graph = graph();
 
-	using node_map = std::map<node, vertex_descriptor>;
-	auto map_nodes = node_map();
-
+	// Temp map to connect node-clause edges
+	map_node_to_vert = std::map<node, vertex_descriptor>();
 
 	// Add all nodes in sequence to graph
 	for(auto node_to_add : nodes) {
@@ -28,7 +41,7 @@ void problem::build_graph(node_list&& nodes, clause_list&& clauses) {
 		// Add node as vertex to graph
 		auto node_vert = add_vertex(prob_graph, node_to_add);
 
-		map_nodes.emplace(node_to_add, node_vert);
+		map_node_to_vert.emplace(node_to_add, node_vert);
 
 	}
 
@@ -47,7 +60,7 @@ void problem::build_graph(node_list&& nodes, clause_list&& clauses) {
 			auto sgn = clause_to_add.sgns()[i];
 			
 			// Add node in clause as edge to graph
-			auto node_vert = map_nodes.at(node);
+			auto node_vert = map_node_to_vert.at(node);
 			add_edge(prob_graph, node_vert, clause_vert, sgn);
 
 		}
@@ -61,5 +74,25 @@ void problem::build_graph(node_list&& nodes, clause_list&& clauses) {
 	dyn_props.property("kind", kind_map);
 	auto sgn_map = get(&edge_prop::sgn, prob_graph);
 	dyn_props.property("sign", sgn_map);
+
+
+	// Calculate connected components map and number
+	using conn_map_type = std::map<vertex_descriptor, size_t>; 
+	auto connected_map = conn_map_type();
+	auto boost_conn_map =
+		boost::associative_property_map<conn_map_type>(connected_map);
+	num_connected_components =
+		boost::connected_components(prob_graph, boost_conn_map);
+	auto set_done_components = std::set<size_t>();
+	for (auto vert_pair = boost::vertices(prob_graph);
+		vert_pair.first != vert_pair.second; ++vert_pair.first) {
+
+		auto component_idx = connected_map[*vert_pair.first];
+		if(set_done_components.count(component_idx) == 0) {
+			set_done_components.insert(component_idx);
+			connected_component_vertices.emplace_back(*vert_pair.first);
+		}
+		
+	}
 	
 }

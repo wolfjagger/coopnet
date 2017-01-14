@@ -8,29 +8,27 @@ using namespace sat;
 
 vertex_descriptor sat::add_vertex(graph& g, node n) {
 	
-	auto desc = add_vertex(g);
+	auto prop = graph::vertex_property_type();
 
 	auto name = std::string("n");
 	name += std::to_string(n.id);
-	g[desc].name = name;
+	prop.name = name;
 	
-	g[desc].kind = vert_prop::Node;
+	prop.kind = vert_prop::Node;
 
-	return desc;
+	return boost::add_vertex(prop, g);
 
 }
 
 vertex_descriptor sat::add_vertex(graph& g, const clause& c) {
-	
-	auto desc = add_vertex(g);
 
+	auto prop = graph::vertex_property_type();
 	auto name = std::string("c");
 	for (auto n : c.nodes()) name += std::to_string(n.id);
-	g[desc].name = name;
-	
-	g[desc].kind = vert_prop::Clause;
+	prop.name = name;
+	prop.kind = vert_prop::Clause;
 
-	return desc;
+	return boost::add_vertex(prop, g);
 
 }
 
@@ -38,15 +36,13 @@ edge_descriptor sat::add_edge(graph& g,
 	vertex_descriptor node_desc,
 	vertex_descriptor clause_desc,
 	bool sgn) {
-	
-	auto desc_pair = add_edge(node_desc, clause_desc, g);
 
+	auto prop = graph::edge_property_type();
+	prop.sgn = sgn;
+	
+	auto desc_pair = add_edge(node_desc, clause_desc, prop, g);
 	if (!desc_pair.second) std::exception("Failed to add edge to graph!");
 	
-	auto desc = desc_pair.first;
-
-	g[desc].sgn = sgn;
-
-	return desc;
+	return desc_pair.first;
 
 }

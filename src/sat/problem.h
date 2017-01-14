@@ -8,6 +8,8 @@
 
 namespace sat {
 
+	struct assignment;
+
 	class problem {
 
 	private:
@@ -17,17 +19,32 @@ namespace sat {
 		//  e.g. we want the nodes in a clause stored relatively close to
 		//  the clause. Perhaps along a semi-metric?
 
+		// Cache number of nodes and clauses
+		size_t num_nodes;
+		size_t num_clauses;
+
+		// Graph and properties
 		graph prob_graph;
-		dynamic_properties dyn_props;
+		boost::dynamic_properties dyn_props;
+
+		// Map node with id to vertex_descriptor
+		std::map<node, vertex_descriptor> map_node_to_vert;
+
+		// Connected components members
+		size_t num_connected_components;
+		std::vector<vertex_descriptor> connected_component_vertices;
 
 	public:
 
 		template<typename iterator>
-		problem(int num_nodes,
+		problem(size_t init_num_nodes,
 			iterator clause_init_beg, iterator clause_init_end) {
 
-			auto nodes = node_list(num_nodes);
+			auto nodes = node_list(init_num_nodes);
 			auto clauses = clause_list(clause_init_beg, clause_init_end);
+
+			num_nodes = init_num_nodes;
+			num_clauses = clauses.size();
 
 			build_graph(std::move(nodes), std::move(clauses));
 			
@@ -35,8 +52,35 @@ namespace sat {
 
 
 
-		const graph& get_graph() const;
-		const dynamic_properties& get_props() const;
+		// Should test if shared_ptr costs us.
+		//  Would it be better to copy it in, or maybe just reference?
+		std::set<vertex_descriptor> clauses_satisfied_by(
+			std::shared_ptr<const assignment> assign) const;
+
+		size_t num_satisfied_by(std::shared_ptr<const assignment> assign) const {
+			return clauses_satisfied_by(assign).size();
+		}
+
+		bool is_satisfied_by(std::shared_ptr<const assignment> assign) const {
+			return num_satisfied_by(assign) == num_clauses;
+		}
+
+
+
+		const graph& get_graph() const { return prob_graph; }
+		const boost::dynamic_properties& get_properties() const { return dyn_props; }
+
+		const std::map<node, vertex_descriptor>& get_map_node_to_vert() const {
+			return map_node_to_vert;
+		}
+
+		size_t get_num_connected_components() const {
+			return num_connected_components;
+		}
+		const std::vector<vertex_descriptor>&
+			connected_component_vertex_entry_pts() const {
+			return connected_component_vertices;
+		}
 
 
 

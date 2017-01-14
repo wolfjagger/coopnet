@@ -25,7 +25,7 @@ namespace sat {
 
 	
 	// E.g. vecS means std::vector, giving fast access and slow amendment
-	using graph = adjacency_list <
+	using graph = boost::adjacency_list <
 		boost::setS, boost::vecS, boost::undirectedS,
 		vert_prop, edge_prop>;
 	using vertex_descriptor = graph::vertex_descriptor;
