@@ -1,20 +1,34 @@
 If you want to build boost from source, there are several helpful descriptions online
  and in the html in the source. The gist is this:
 
+NOTE: For some reason, building from source doesn't work (symlinks?). For now, don't build from source.
+
+
+FROM SOURCE
+
+
 Clone boost repo.
+
 Use an appropriate terminal (terminal/cygwin for gcc, VS2015 command prompt for msvc).
+
 Go to boost directory.
 (See http://stackoverflow.com/questions/2629421/how-to-use-boost-in-visual-studio-2010 for detail)
+
 Run bootstrap (.sh if linux, .bat if windows).
+
 Run b2 (can apply extra options, maybe --toolset=msvc-10.0 --build-type=complete architecture=x86 address-model=64 stage).
+
 Add "/path/to/root/boost/directory" to include directories.
+
 Add "/path/to/root/boost/directory/stage/lib" to linker library directories.
 
-NOTE: For some reason, the above doesn't work. For now, don't build from source.
 
+FROM BINARIES
 
 
 To build otherwise, grab boost executables from jjdev:/big_data/shared/ and install them.
- Alternatively, grab 14.0 from 
- boost should be installed as "boost" in the same directory as coopnet.
- Right now, boost project file isn't there, but could make one soon.
+
+Alternatively, grab 14.0 from https://sourceforge.net/projects/boost/files/boost-binaries/
+boost should be installed as "boost" in the same directory as coopnet.
+
+Copy boost.vcxproj from coopnet/util to boost/boost.
