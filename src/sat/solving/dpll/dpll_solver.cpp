@@ -15,16 +15,16 @@ using namespace sat;
 	 *   if F has no clauses left then
 	 *    Output p
 	 *    return SAT
-	 *   l <- a literal not assigned by p // the branching step
-	 *   if DPLL-recursive(F|-l, p || {-l}) = SAT then return SAT
-	 *   return DPLL-recursive(F|-l, p || {-l})
+	 *   x <- a literal not assigned by p // the branching step
+	 *   if DPLL-recursive(F|-x, p || {-x}) = SAT then return SAT
+	 *   return DPLL-recursive(F|-x, p || {-x})
 	 *  end
 	 *  
 	 * sub UnitPropagate(F,p)
 	 *  begin
-	 *   while F contains no empty clause but has a unit clause x do
-	 *    F <- F|x
-	 *    p <- p || {x}
+	 *   while F contains no empty clause but has a unit clause u do
+	 *    F <- F|u
+	 *    p <- p || {u}
 	 *   return (F,p)
 	 *  end
 	 */
@@ -50,6 +50,8 @@ auto dpll_solver::partial_solve() -> solve_return {
 	//  more likely composition to explore the interesting ones.
 	// Obviously, we will be using visitors to perform the interesting actions.
 	// Make a visitor for each detachable subtask, e.g. unit clauses and pure literals.
+	// Could try to modify the traversal color map so that it doesn't go into
+	//  nodes/clauses that are already set in the partial assignment/reduced problem!
 
 	remove_unit_clauses();
 	remove_pure_literals();

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "solver.h"
+#include "sat/solving/solver.h"
 #include "sat/component/assignment.h"
 #include "sat/graph.h"
 
