@@ -43,4 +43,11 @@ namespace sat {
 		vertex_descriptor clause_desc,
 		bool sgn);
 
+
+
+	struct clause_satisfiability {
+		std::set<vertex_descriptor> clauses_satisfied;
+		std::set<vertex_descriptor> clauses_unsatisfied;
+	};
+
 }

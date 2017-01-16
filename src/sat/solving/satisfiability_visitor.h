@@ -17,13 +17,12 @@ namespace sat {
 		std::shared_ptr<const assignment> assigned;
 		// Shared so that when this visitor is converted to e.g.
         //  a breadth-first visitor, the state can be retrieved.
-		std::shared_ptr<std::set<vertex_descriptor>> clauses_satisfied;
-
+		std::shared_ptr<clause_satisfiability> satisfiability;
 
 		explicit collect_satisfiability_visitor(
 			std::shared_ptr<const assignment> init_assigned) :
 			assigned(init_assigned),
-			clauses_satisfied(std::make_shared<std::set<vertex_descriptor>>()) {
+			satisfiability(std::make_shared<clause_satisfiability>()) {
 			
 		}
 
@@ -42,7 +41,9 @@ namespace sat {
 			auto sgn_of_literal = g[e].sgn;
 			auto assigned_val = assigned->data.at(vert_node);
 			if(sgn_of_literal == assigned_val) {
-				clauses_satisfied->insert(vert_clause);
+				satisfiability->clauses_satisfied.insert(vert_clause);
+			} else {
+				satisfiability->clauses_unsatisfied.insert(vert_clause);
 			}
 		
 		}
@@ -50,7 +51,11 @@ namespace sat {
 
 
 		size_t count_satisfied() const {
-			return clauses_satisfied->size();
+			return satisfiability->clauses_satisfied.size();
+		}
+
+		size_t count_unsatisfied() const {
+			return satisfiability->clauses_unsatisfied.size();
 		}
 
 	};

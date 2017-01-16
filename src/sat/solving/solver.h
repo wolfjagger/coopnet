@@ -3,11 +3,12 @@
 #include <memory>
 #include <utility>
 
-struct assignment;
-class problem;
 
 
 namespace sat {
+
+	struct assignment;
+	class problem;
 
 	enum class solution_status {
 		Satisfied, Unsatisfiable, Undetermined
@@ -20,39 +21,38 @@ namespace sat {
 	public:
 
 		using solve_return = std::pair<solution_status, std::shared_ptr<assignment>>;
-	
+
 	public:
 
-		virtual solve_return solve(const problem& prob) const = 0;
+		virtual solve_return solve(const problem& prob) = 0;
 
 	};
 
 
-	class complete_solver : solver {
-		
-	};
 
-
-	class incomplete_solver : solver {
+	class complete_solver : public solver {
 
 	public:
 
-		solve_return solve(const problem& prob) const override {
-			
-			for(unsigned int i=0; i<retry_count(); ++i) {
-				auto possible_solution = try_solve(prob);
-				if (possible_solution.first != solution_status::Undetermined) {
-					return possible_solution;
-				}
-			}
+		solve_return solve(const problem& prob) override;
 
-			return std::make_pair(solution_status::Undetermined, nullptr);
+	protected:
 
-		}
+		virtual solve_return do_solve(const problem& prob) = 0;
+
+	};
+
+
+
+	class incomplete_solver : public solver {
+
+	public:
+
+		solve_return solve(const problem& prob) override;
 
 	protected:
 		
-		virtual solve_return try_solve(const problem& prob) const = 0;
+		virtual solve_return try_single_solve(const problem& prob) = 0;
 
 		virtual unsigned int retry_count() const = 0;
 

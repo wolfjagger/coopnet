@@ -8,7 +8,7 @@ using namespace sat;
 
 
 
-std::set<vertex_descriptor> problem::clauses_satisfied_by(
+clause_satisfiability problem::clause_satisfiability_for(
 	std::shared_ptr<const assignment> assign) const {
 
 	auto satisfiability_collector = collect_satisfiability_visitor(assign);
@@ -22,7 +22,7 @@ std::set<vertex_descriptor> problem::clauses_satisfied_by(
 
 	}
 
-	return *satisfiability_collector.clauses_satisfied;
+	return *satisfiability_collector.satisfiability;
 	
 }
 

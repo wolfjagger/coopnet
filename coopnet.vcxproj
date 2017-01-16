@@ -142,6 +142,7 @@
     <ClCompile Include="src\sat\graph.cpp" />
     <ClCompile Include="src\sat\problem.cpp" />
     <ClCompile Include="src\sat\generation\problem_factory.cpp" />
+    <ClCompile Include="src\sat\solving\dpll_solver.cpp" />
     <ClCompile Include="src\sat\solving\solver.cpp" />
     <ClCompile Include="src\util\random.cpp" />
   </ItemGroup>
@@ -157,6 +158,7 @@
     <ClInclude Include="src\sat\problem.h" />
     <ClInclude Include="src\sat\generation\problem_factory.h" />
     <ClInclude Include="src\sat\sat_defs.h" />
+    <ClInclude Include="src\sat\solving\dpll_solver.h" />
     <ClInclude Include="src\sat\solving\satisfiability_visitor.h" />
     <ClInclude Include="src\sat\solving\solver.h" />
     <ClInclude Include="src\util\random.h" />

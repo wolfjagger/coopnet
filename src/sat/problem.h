@@ -54,15 +54,18 @@ namespace sat {
 
 		// Should test if shared_ptr costs us.
 		//  Would it be better to copy it in, or maybe just reference?
-		std::set<vertex_descriptor> clauses_satisfied_by(
+		clause_satisfiability clause_satisfiability_for(
 			std::shared_ptr<const assignment> assign) const;
 
 		size_t num_satisfied_by(std::shared_ptr<const assignment> assign) const {
-			return clauses_satisfied_by(assign).size();
+			return clause_satisfiability_for(assign).clauses_satisfied.size();
+		}
+		size_t num_unsatisfied_by(std::shared_ptr<const assignment> assign) const {
+			return clause_satisfiability_for(assign).clauses_unsatisfied.size();
 		}
 
 		bool is_satisfied_by(std::shared_ptr<const assignment> assign) const {
-			return num_satisfied_by(assign) == num_clauses;
+			return num_unsatisfied_by(assign) == 0;
 		}
 
 
