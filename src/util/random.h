@@ -20,20 +20,28 @@ namespace jj_random {
 	// Integer
 
 	// Random integer btwn min and max, inclusive
-	unsigned rand_inclusive(unsigned min, unsigned max);
+	int rand_inclusive(int min, int max);
 	
 	// Random integer in [0, num)
-	inline unsigned rand_less_than(unsigned int num) {
+	inline int rand_less_than(unsigned int num) {
 		return rand_inclusive(0, int(num - 1));
 	}
 
 
 	// Int arrays
 
+	// A vector of size vec_size with random numbers in [min, max],
+	//  with or without possible duplicates
+	std::vector<int> rand_vec_inclusive(
+		int min, int max,
+		unsigned vec_size, bool with_duplicates = false);
+
 	// A vector of size vec_size with random numbers in [0, num),
 	//  with or without possible duplicates
-	std::vector<unsigned> rand_vec_less_than(
-		unsigned num, unsigned vec_size, bool with_duplicates = false);
+	inline std::vector<int> rand_vec_less_than(
+		unsigned num, unsigned vec_size, bool with_duplicates = false) {
+		return rand_vec_inclusive(0, int(num - 1), vec_size, with_duplicates);
+	}
 
 
 	// Double

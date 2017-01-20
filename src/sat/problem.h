@@ -61,7 +61,7 @@ namespace sat {
 			return clause_satisfiability_for(assign).clauses_satisfied.size();
 		}
 		size_t num_unsatisfied_by(std::shared_ptr<const assignment> assign) const {
-			return clause_satisfiability_for(assign).clauses_unsatisfied.size();
+			return num_clauses - num_satisfied_by(assign);
 		}
 
 		bool is_satisfied_by(std::shared_ptr<const assignment> assign) const {

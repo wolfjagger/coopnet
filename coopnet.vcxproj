@@ -144,6 +144,7 @@
     <ClCompile Include="src\sat\generation\problem_factory.cpp" />
     <ClCompile Include="src\sat\solving\dpll\dpll_solver.cpp" />
     <ClCompile Include="src\sat\solving\solver.cpp" />
+    <ClCompile Include="src\sat\solving\tracer\tracer_solver.cpp" />
     <ClCompile Include="src\util\random.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -163,6 +164,7 @@
     <ClInclude Include="src\sat\solving\dpll\dpll_visitor.h" />
     <ClInclude Include="src\sat\solving\satisfiability_visitor.h" />
     <ClInclude Include="src\sat\solving\solver.h" />
+    <ClInclude Include="src\sat\solving\tracer\tracer_solver.h" />
     <ClInclude Include="src\util\random.h" />
   </ItemGroup>
   <ItemGroup>
@@ -171,6 +173,7 @@
   <ItemGroup>
     <Text Include="doc\build\boost.txt" />
     <Text Include="doc\General Notes\Architecture.txt" />
+    <Text Include="src\sat\solving\ideas.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

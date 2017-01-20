@@ -47,7 +47,6 @@ namespace sat {
 
 	struct clause_satisfiability {
 		std::set<vertex_descriptor> clauses_satisfied;
-		std::set<vertex_descriptor> clauses_unsatisfied;
 	};
 
 }

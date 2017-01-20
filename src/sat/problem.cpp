@@ -1,4 +1,5 @@
 #include "problem.h"
+#include <queue>
 #include "component/assignment.h"
 #include "solving/satisfiability_visitor.h"
 #include "boost/graph/breadth_first_search.hpp"
@@ -13,14 +14,29 @@ clause_satisfiability problem::clause_satisfiability_for(
 
 	auto satisfiability_collector = collect_satisfiability_visitor(assign);
 	auto bfs_visitor = boost::make_bfs_visitor(satisfiability_collector);
+
+	auto sources = std::vector<size_t>();
+	for (auto source_vert : connected_component_vertices)
+		sources.push_back(boost::vertex(source_vert, prob_graph));
+
+	auto buffer = boost::queue<vertex_descriptor>();
+
+	using vec_color_type = std::vector<vertex_descriptor>;
+	auto vec_colors = vec_color_type(boost::num_vertices(prob_graph));
+	auto color_map = boost::make_iterator_property_map(
+			vec_colors.begin(), get(boost::vertex_index, prob_graph));
+
+	boost::breadth_first_search(
+		prob_graph, sources.cbegin(), sources.cend(), buffer,
+		bfs_visitor, color_map);
 	
-	for (auto source_vert : connected_component_vertices) {
+/*	for (auto source_vert : connected_component_vertices) {
 
 		boost::breadth_first_search(
 			prob_graph, boost::vertex(source_vert, prob_graph),
 			boost::visitor(bfs_visitor));
 
-	}
+	}*/
 
 	return *satisfiability_collector.satisfiability;
 	

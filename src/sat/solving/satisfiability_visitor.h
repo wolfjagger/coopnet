@@ -35,8 +35,6 @@ namespace sat {
 			auto assigned_val = assigned->data.at(vert_node);
 			if(sgn_of_literal == assigned_val) {
 				satisfiability->clauses_satisfied.insert(vert_clause);
-			} else {
-				satisfiability->clauses_unsatisfied.insert(vert_clause);
 			}
 		
 		}
@@ -45,10 +43,6 @@ namespace sat {
 
 		size_t count_satisfied() const {
 			return satisfiability->clauses_satisfied.size();
-		}
-
-		size_t count_unsatisfied() const {
-			return satisfiability->clauses_unsatisfied.size();
 		}
 
 	};
