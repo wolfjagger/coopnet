@@ -1,7 +1,7 @@
 #pragma once
 
 #include "sat/sat_visitor.h"
-#include "sat/component/assignment.h"
+#include "sat/assignment/assignment.h"
 
 
 

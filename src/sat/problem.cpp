@@ -1,6 +1,6 @@
 #include "problem.h"
 #include <queue>
-#include "component/assignment.h"
+#include "assignment/assignment.h"
 #include "solving/satisfiability_visitor.h"
 #include "boost/graph/breadth_first_search.hpp"
 #include "boost/graph/connected_components.hpp"

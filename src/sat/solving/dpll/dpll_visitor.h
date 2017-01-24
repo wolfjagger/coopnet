@@ -1,50 +1,47 @@
 #pragma once
 
 #include "sat/sat_visitor.h"
-#include "sat/component/assignment.h"
+#include "sat/graph.h"
 
 
 
 namespace sat {
 
-	// Vert visitor? Edge visitor? Visitor list?
-	struct dpll_visitor :
-		public sat_edge_visitor<dpll_visitor> {
+	struct dpll_vert_visitor :
+		public sat_vert_visitor<dpll_vert_visitor> {
 	
-		using event_filter = boost::on_examine_edge;
+		// If we know to remove, use on_finish_vertex so that it's
+		//  after edges (which should also use on_finish_edge to remove)
+		using event_filter = boost::on_examine_vertex;
 
-		explicit dpll_visitor() {
+		explicit dpll_vert_visitor() {
 			
 		}
 
-		// Triggered when edge is encountered
-		void edge_event(sat::edge_prop& edge_property,
-			vertex_descriptor vert_node, vertex_descriptor vert_clause) {
+		void node_event(vertex_descriptor node) {
+
+		}
+
+		void clause_event(vertex_descriptor clause) {
 
 		}
 
 	};
 
-
-
-	struct remove_unit_visitor :
-		public sat_vert_visitor<remove_unit_visitor> {
+	struct dpll_edge_visitor :
+		public sat_edge_visitor<dpll_edge_visitor> {
 	
 		using event_filter = boost::on_examine_edge;
 
-		explicit remove_unit_visitor() {
+		explicit dpll_edge_visitor() {
 			
 		}
 
-		// Triggered when edge is encountered
-		void node_event(sat::vert_prop& vert_property) {
-			
-		}
+		void edge_event(edge_prop& edge_property,
+			vertex_descriptor node, vertex_descriptor clause) {
 
-		void clause_event(sat::vert_prop& vert_property) {
-			
 		}
 
 	};
-
+	
 }

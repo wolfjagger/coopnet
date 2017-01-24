@@ -85,6 +85,9 @@ namespace sat {
 			return connected_component_vertices;
 		}
 
+		auto get_num_nodes() const { return num_nodes; }
+		auto get_num_clauses() const { return num_clauses; }
+
 
 
 	private:

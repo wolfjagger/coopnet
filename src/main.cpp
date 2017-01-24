@@ -2,7 +2,7 @@
 #include <iostream>
 #include "graph/testing.h"
 #include "gephi/output.h"
-#include "sat/component/assignment.h"
+#include "sat/assignment/assignment.h"
 
 
 

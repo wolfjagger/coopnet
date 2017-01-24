@@ -1,8 +1,8 @@
 #pragma once
 
 #include "sat/solving/solver.h"
-#include "sat/component/assignment.h"
 #include "sat/graph.h"
+#include "dpll_formula.h"
 
 
 
@@ -12,8 +12,7 @@ namespace sat {
 
 	private:
 
-		graph partial_graph;
-		assignment partial_assign;
+		dpll_formula formula;
 	
 	protected:
 		
@@ -23,9 +22,6 @@ namespace sat {
 
 		solve_return partial_solve();
 
-		void remove_unit_clauses();
-		void remove_pure_literals();
-		
 	};
 
 }

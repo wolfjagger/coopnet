@@ -137,11 +137,13 @@
     <ClCompile Include="src\gephi\output.cpp" />
     <ClCompile Include="src\graph\testing.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\sat\assignment\assignment.cpp" />
     <ClCompile Include="src\sat\component\clause.cpp" />
     <ClCompile Include="src\sat\component\node.cpp" />
     <ClCompile Include="src\sat\graph.cpp" />
     <ClCompile Include="src\sat\problem.cpp" />
     <ClCompile Include="src\sat\generation\problem_factory.cpp" />
+    <ClCompile Include="src\sat\solving\dpll\dpll_formula.cpp" />
     <ClCompile Include="src\sat\solving\dpll\dpll_solver.cpp" />
     <ClCompile Include="src\sat\solving\solver.cpp" />
     <ClCompile Include="src\sat\solving\tracer\tracer_solver.cpp" />
@@ -151,7 +153,7 @@
     <ClInclude Include="src\gephi\output.h" />
     <ClInclude Include="src\graph\bgl_inc.h" />
     <ClInclude Include="src\graph\testing.h" />
-    <ClInclude Include="src\sat\component\assignment.h" />
+    <ClInclude Include="src\sat\assignment\assignment.h" />
     <ClInclude Include="src\sat\component\clause.h" />
     <ClInclude Include="src\sat\component\component_fwd.h" />
     <ClInclude Include="src\sat\component\node.h" />
@@ -160,8 +162,10 @@
     <ClInclude Include="src\sat\generation\problem_factory.h" />
     <ClInclude Include="src\sat\sat_defs.h" />
     <ClInclude Include="src\sat\sat_visitor.h" />
+    <ClInclude Include="src\sat\solving\dpll\dpll_formula.h" />
     <ClInclude Include="src\sat\solving\dpll\dpll_solver.h" />
     <ClInclude Include="src\sat\solving\dpll\dpll_visitor.h" />
+    <ClInclude Include="src\sat\solving\dpll\prune_stack.h" />
     <ClInclude Include="src\sat\solving\satisfiability_visitor.h" />
     <ClInclude Include="src\sat\solving\solver.h" />
     <ClInclude Include="src\sat\solving\tracer\tracer_solver.h" />
