@@ -30,14 +30,6 @@ clause_satisfiability problem::clause_satisfiability_for(
 		prob_graph, sources.cbegin(), sources.cend(), buffer,
 		bfs_visitor, color_map);
 	
-/*	for (auto source_vert : connected_component_vertices) {
-
-		boost::breadth_first_search(
-			prob_graph, boost::vertex(source_vert, prob_graph),
-			boost::visitor(bfs_visitor));
-
-	}*/
-
 	return *satisfiability_collector.satisfiability;
 	
 }
@@ -69,7 +61,7 @@ void problem::build_graph(node_list&& nodes, clause_list&& clauses) {
 		auto clause_vert = add_vertex(prob_graph, clause_to_add);
 
 		//for (auto node : clause_to_add.nodes()) {
-		for(auto i=0; i<clause_to_add.size(); ++i) {
+		for(size_t i=0; i<clause_to_add.size(); ++i) {
 
 			//TODO: Add error handling for if node not in map.
 			auto node = clause_to_add.nodes()[i];

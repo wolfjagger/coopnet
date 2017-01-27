@@ -18,12 +18,13 @@ namespace sat {
 
 			// Split depending on whether vert is node or clause
 			//TODO: See if node/clause_event need more context; could supply g, v, etc.
-			switch(g[v].kind) {
+			auto& prop = g[v];
+			switch(prop.kind) {
 			case vert_prop::Node:
-				static_cast<impl_visitor*>(this)->node_event(g[v]);
+				static_cast<impl_visitor*>(this)->node_event(g, v, prop);
 				break;
 			case vert_prop::Clause:
-				static_cast<impl_visitor*>(this)->clause_event(g[v]);
+				static_cast<impl_visitor*>(this)->clause_event(g, v, prop);
 				break;
 			}
 
@@ -50,7 +51,7 @@ namespace sat {
 				std::swap(vert_node, vert_clause);
 
 			static_cast<impl_visitor*>(this)->edge_event(
-				g[e], vert_node, vert_clause);
+				g, e, g[e], vert_node, vert_clause);
 		
 		}
 

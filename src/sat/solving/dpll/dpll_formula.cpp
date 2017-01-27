@@ -6,9 +6,63 @@ using namespace sat;
 
 
 dpll_formula::dpll_formula(const problem& prob) :
-	partial_graph(prob.get_graph()),
+	prob_graph(std::cref(prob.get_graph())),
 	partial_assign(prob),
-	prune_action_stack() {
+	prune_action_stack(),
+	vert_status_map(),
+	edge_status_map(),
+	color_map() {
+
+	auto vert_iter_pair = boost::vertices(prob_graph.get());
+	auto edge_iter_pair = boost::edges(prob_graph.get());
+
+	for (auto vert_iter = vert_iter_pair.first;
+		vert_iter != vert_iter_pair.second; ++vert_iter) {
+
+		// Initialize all verts to Active
+		vert_status_map.emplace(*vert_iter, dpll_vert_status::Active);
+
+		// Initialize all colors to black, since visitors will expand
+		//  where they need to and breadth_first_visit will set sources
+		//  to gray
+		color_map.emplace(*vert_iter, default_color_type::black_color);
+
+	}
+
+	for (auto edge_iter = edge_iter_pair.first;
+		edge_iter != edge_iter_pair.second; ++edge_iter) {
+
+		// Initialize all edges to Active
+		edge_status_map.emplace(*edge_iter, dpll_edge_status::Active);
+
+	}
+
+	visitor = std::make_unique<dpll_visitor>(
+		partial_assign, prune_action_stack,
+		dpll_prop_maps(vert_status_map, edge_status_map, color_map));
+
+}
+
+
+
+dpll_formula::dpll_formula(const dpll_formula& other) :
+	prob_graph(other.prob_graph) {
+	*this = other;
+}
+
+dpll_formula& dpll_formula::operator=(const dpll_formula& other) {
+
+	prob_graph = other.prob_graph;
+	partial_assign = other.partial_assign;
+	prune_action_stack = other.prune_action_stack;
+	vert_status_map = other.vert_status_map;
+	edge_status_map = other.edge_status_map;
+	color_map = other.color_map;
+	visitor = std::make_unique<dpll_visitor>(
+		partial_assign, prune_action_stack,
+		dpll_prop_maps(vert_status_map, edge_status_map, color_map));
+
+	return *this;
 
 }
 

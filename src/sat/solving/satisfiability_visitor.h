@@ -27,7 +27,8 @@ namespace sat {
 
 
 
-		void edge_event(const sat::edge_prop& edge_property,
+		void edge_event(const graph& g, edge_descriptor e,
+			const sat::edge_prop& edge_property,
 			vertex_descriptor vert_node, vertex_descriptor vert_clause) {
 
 			// If sign of literal in clause matches assignment, clause is satisfied

@@ -24,6 +24,7 @@ namespace sat {
 		map data;
 
 		explicit incomplete_assignment(const problem& prob);
+		incomplete_assignment() = default;
 
 	};
 

@@ -30,6 +30,7 @@ namespace sat {
 		vert_prop, edge_prop>;
 	using vertex_descriptor = graph::vertex_descriptor;
 	using edge_descriptor = graph::edge_descriptor;
+	using boost::default_color_type;
 
 
 

@@ -145,6 +145,7 @@
     <ClCompile Include="src\sat\generation\problem_factory.cpp" />
     <ClCompile Include="src\sat\solving\dpll\dpll_formula.cpp" />
     <ClCompile Include="src\sat\solving\dpll\dpll_solver.cpp" />
+    <ClCompile Include="src\sat\solving\dpll\dpll_visitor.cpp" />
     <ClCompile Include="src\sat\solving\solver.cpp" />
     <ClCompile Include="src\sat\solving\tracer\tracer_solver.cpp" />
     <ClCompile Include="src\util\random.cpp" />
