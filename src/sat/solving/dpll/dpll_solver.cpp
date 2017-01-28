@@ -1,4 +1,5 @@
 #include "dpll_solver.h"
+#include "alphali/Containers/random_iterator.h"
 #include "boost/logic/tribool.hpp"
 #include "sat/problem.h"
 
@@ -48,6 +49,10 @@ auto dpll_solver::partial_solve() -> solve_return {
 
 
 
+namespace {
+	auto rand_engine = std::mt19937_64(std::random_device()());
+}
+
 vertex_descriptor dpll_solver::choose_next_node(node_choice_mode mode) const {
 
 	auto& assign_map = formula.get_incomplete_assignment().data;
@@ -66,8 +71,8 @@ vertex_descriptor dpll_solver::choose_next_node(node_choice_mode mode) const {
 		next_node = std::find_if(
 			assign_map.crbegin(), assign_map.crend(), node_choice_pred).base();
 	case node_choice_mode::Random:
-		// return alphali::random_find_if(map.cbegin(), map.cend(), node_choice_pred);
-		throw std::exception("TODO: Implement random choice!");
+		next_node = alphali::random_find_if(
+			assign_map.cbegin(), assign_map.cend(), node_choice_pred, rand_engine);
 	}
 
 	return next_node->first;
