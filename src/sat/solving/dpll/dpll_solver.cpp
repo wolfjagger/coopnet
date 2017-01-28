@@ -1,4 +1,5 @@
 #include "dpll_solver.h"
+#include "boost/logic/tribool.hpp"
 #include "sat/problem.h"
 
 using namespace sat;
@@ -43,4 +44,32 @@ auto dpll_solver::partial_solve() -> solve_return {
 
 	return solve_return(solution_status::Undetermined, std::shared_ptr<assignment>());
 
+}
+
+
+
+vertex_descriptor dpll_solver::choose_next_node(node_choice_mode mode) const {
+
+	auto& assign_map = formula.get_incomplete_assignment().data;
+
+	const auto node_choice_pred = [](const auto& pair) {
+		return pair.second == boost::indeterminate;
+	};
+
+	using iterator = incomplete_assignment::map::const_iterator;
+	iterator next_node;
+	switch (mode) {
+	case node_choice_mode::Next:
+		next_node = std::find_if(
+			assign_map.cbegin(), assign_map.cend(), node_choice_pred);
+	case node_choice_mode::Last:
+		next_node = std::find_if(
+			assign_map.crbegin(), assign_map.crend(), node_choice_pred).base();
+	case node_choice_mode::Random:
+		// return alphali::random_find_if(map.cbegin(), map.cend(), node_choice_pred);
+		throw std::exception("TODO: Implement random choice!");
+	}
+
+	return next_node->first;
+	
 }

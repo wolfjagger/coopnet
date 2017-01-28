@@ -2,6 +2,8 @@
 
 using namespace sat;
 
+
+
 	// This visitor will decide if the vert should be removed:
 	//  either if it only has one edge (clause)
 	//  or if it has all edges with same sign (node).
@@ -10,36 +12,152 @@ using namespace sat;
 void dpll_begin_vert_visitor::node_event(
 	const graph& g, vertex_descriptor node, const vert_prop& prop) {
 
-	if (maps.vert_status_map[node] == dpll_vert_status::SetToTrue) {
+	switch(maps.vert_status_map[node]) {
+	case dpll_vert_status::SetToTrue:
+
+		select_node(g, node, true);
+		break;
+
+	case dpll_vert_status::SetToFalse:
+
+		select_node(g, node, false);
+		break;
+
+	case dpll_vert_status::Active:
+
+		auto edges_pair = boost::out_edges(node, g);
+
+		// If there are no edges, select node freely
+		auto inactive_edges_fcn = [this](edge_descriptor e) {
+			return maps.edge_status_map[e] == dpll_edge_status::Inactive;
+		};
+		if (std::all_of(
+			edges_pair.first, edges_pair.second, inactive_edges_fcn)) {
+
+			//TODO: Select at random?
+			select_node(g, node, true);
+
+		}
+		// Otherwise, if all edges have same sgn, select node = sgn
+		else {
+
+			auto sgn_first = g[*edges_pair.first].sgn;
+			auto all_same_fcn = [sgn_first, &g](edge_descriptor e) {
+				return sgn_first == g[e].sgn;
+			};
+
+			if (std::all_of(
+				edges_pair.first, edges_pair.second, all_same_fcn)) {
+
+				select_node(g, node, sgn_first);
+				
+			}
+
+		}
+
+		break;
 
 	}
 
-	// If SetToTrue(False), set node to true (false) and spread
-	// If num(edges !Inactive) == 0, set node at random
-	// If all edges have same sgn, set node to sgn and spread
-	
 }
 
 void dpll_begin_vert_visitor::clause_event(
 	const graph& g, vertex_descriptor clause, const vert_prop& prop) {
 
-	// If num(edges !Inactive) == 0, fail visit and return to prune
-	// If num(edges !Inactive) == 1, remove clause and set edge to PushClauseToNode
+	if(maps.vert_status_map[clause] == dpll_vert_status::Remove) {
+
+		auto edges_pair = boost::out_edges(clause, g);
+		for (auto edge = edges_pair.first;
+			edge != edges_pair.second; ++edge) {
+
+			auto& status = maps.edge_status_map[*edge];
+			switch (status) {
+			case dpll_edge_status::PushClauseToNode:
+
+				throw std::exception("This case shouldn't happen");
+				break;
+
+			case dpll_edge_status::PushNodeToClause:
+
+				// If pushing node info to clause, info is now unnecessary
+				status = dpll_edge_status::Inactive;
+
+			}
+
+		}
+
+	} else {
+
+		auto edges_pair = boost::out_edges(clause, g);
+
+		auto active_edges_fcn = [this](edge_descriptor e) {
+			return maps.edge_status_map[e] != dpll_edge_status::Inactive;
+		};
+		auto num_active_edges = std::count_if(
+			edges_pair.first, edges_pair.second, active_edges_fcn);
+		
+		if (num_active_edges == 0) {
+			//TODO: Shouldn't handle backtracking with exceptions
+			throw std::exception("Conflict, need to backtrack!");
+		} else if (num_active_edges == 1) {
+			
+			auto edge = std::find_if(
+				edges_pair.first, edges_pair.second, active_edges_fcn);
+			
+			auto& status = maps.edge_status_map[*edge];
+			switch (status) {
+			case dpll_edge_status::Active:
+				status = dpll_edge_status::PushClauseToNode;
+				remove_clause(g, clause);
+				break;
+			case dpll_edge_status::PushNodeToClause:
+				if (g[*edge].sgn == maps.partial_assignment_map[boost::target(*edge, g)]) {
+					status = dpll_edge_status::Inactive;
+					remove_clause(g, clause);
+				} else {
+					throw std::exception("Conflict, need to backtrack!");
+				}
+				break;
+			}
+			
+		}
+	}
 
 }
 
-void dpll_begin_vert_visitor::remove_vert(
-	const graph& g, vertex_descriptor descriptor) {
+void dpll_begin_vert_visitor::remove_clause(
+	const graph& g, vertex_descriptor clause) {
 
-	maps.vert_status_map[descriptor] = dpll_vert_status::Inactive;
+	maps.vert_status_map[clause] = dpll_vert_status::Inactive;
 
-	auto edge_iter_pair = boost::out_edges(descriptor, g);
-	for (auto edge_iter = edge_iter_pair.first;
-		edge_iter != edge_iter_pair.second; ++edge_iter) {
+}
 
-		
+void dpll_begin_vert_visitor::select_node(
+	const graph& g, vertex_descriptor node, bool sgn) {
+
+	maps.partial_assignment_map[node] = sgn;
+
+	auto edge_pair = boost::out_edges(node, g);
+	for (auto edge = edge_pair.first;
+		edge != edge_pair.second; ++edge) {
+
+		auto& status = maps.edge_status_map[*edge];
+		switch (status) {
+		case dpll_edge_status::Active:
+			status = dpll_edge_status::PushNodeToClause;
+			break;
+		case dpll_edge_status::PushClauseToNode:
+			if (g[*edge].sgn == sgn) {
+				status = dpll_edge_status::Inactive;
+			} else {
+				throw std::exception("Conflict, need to backtrack!");
+			}
+			break;
+		}
 
 	}
+
+	maps.vert_status_map[node] = dpll_vert_status::Inactive;
 
 }
 
@@ -54,13 +172,65 @@ void dpll_begin_vert_visitor::remove_vert(
 	// (3) remove edge
 void dpll_edge_visitor::edge_event(
 	const graph& g, edge_descriptor edge,
-	edge_prop& prop,
+	const edge_prop& prop,
 	vertex_descriptor node, vertex_descriptor clause) {
 
-	// If PushNodeToClause, try to remove clause (?)
-	// If PushClauseToNode, try to set node to sgn (check if not already set)
-	// If !Inactive, color target for visit
+	auto& status = maps.edge_status_map[edge];
+
+	// If edge is active, propagate white color to target if black
+	if (status != dpll_edge_status::Inactive) {
+		auto& color = maps.color_map[boost::target(edge, g)];
+		if (color == default_color_type::black_color)
+			color = default_color_type::white_color;
+	}
+
+	switch (maps.edge_status_map[edge]) {
+	case dpll_edge_status::PushNodeToClause: {
+
+		// If pushing node to clause, remove clause iff sgn = sgn(node)
+		auto& clause_status = maps.vert_status_map[clause];
+		if (clause_status != dpll_vert_status::Inactive
+			&& prop.sgn == maps.partial_assignment_map[node]) {
+
+			clause_status = dpll_vert_status::Remove;
+
+		}
+		break;
+
+	}
+	case dpll_edge_status::PushClauseToNode: {
+
+		// If pushing clause to node, set node to sgn
+		auto& node_status = maps.vert_status_map[node];
+		switch (node_status) {
+		case dpll_vert_status::Active:
+
+			node_status = prop.sgn ?
+				dpll_vert_status::SetToTrue : dpll_vert_status::SetToFalse;
+			break;
+
+		case dpll_vert_status::SetToTrue:
+
+			if (!prop.sgn)
+				throw std::exception("Conflict detected; backtrack!");
+			break;
+
+		case dpll_vert_status::SetToFalse:
+
+			if (prop.sgn)
+				throw std::exception("Conflict detected; backtrack!");
+			break;
+
+		}
+
+		break;
+
+	}
+	}
 	
+	status = dpll_edge_status::Inactive;
+	
+
 }
 
 
@@ -68,14 +238,13 @@ void dpll_edge_visitor::edge_event(
 namespace {
 
 	dpll_visitor_tuple make_visitor_tuple(
-		incomplete_assignment& assignment,
 		prune_stack& prune_action_stack,
 		dpll_prop_maps maps) {
 
 		dpll_begin_vert_visitor begin_vert_vis(
-			assignment, prune_action_stack, maps);
+			prune_action_stack, maps);
 		dpll_edge_visitor edge_vis(
-			assignment, prune_action_stack, maps);
+			prune_action_stack, maps);
 		return std::make_pair(begin_vert_vis, edge_vis);
 
 	}
@@ -83,10 +252,9 @@ namespace {
 }
 
 dpll_visitor::dpll_visitor(
-	incomplete_assignment& assignment,
 	prune_stack& prune_action_stack,
 	dpll_prop_maps maps) :
 	boost::bfs_visitor<dpll_visitor_tuple>(
-		make_visitor_tuple(assignment, prune_action_stack, maps)) {
+		make_visitor_tuple(prune_action_stack, maps)) {
 
 }

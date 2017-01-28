@@ -37,9 +37,10 @@ dpll_formula::dpll_formula(const problem& prob) :
 
 	}
 
-	visitor = std::make_unique<dpll_visitor>(
-		partial_assign, prune_action_stack,
-		dpll_prop_maps(vert_status_map, edge_status_map, color_map));
+	prop_maps = dpll_prop_maps(
+		partial_assign.data, vert_status_map, edge_status_map, color_map);
+	prune_visitor = std::make_unique<dpll_visitor>(
+		prune_action_stack, prop_maps);
 
 }
 
@@ -53,15 +54,19 @@ dpll_formula::dpll_formula(const dpll_formula& other) :
 dpll_formula& dpll_formula::operator=(const dpll_formula& other) {
 
 	prob_graph = other.prob_graph;
-	partial_assign = other.partial_assign;
 	prune_action_stack = other.prune_action_stack;
+
+ 	partial_assign = other.partial_assign;
 	vert_status_map = other.vert_status_map;
 	edge_status_map = other.edge_status_map;
 	color_map = other.color_map;
-	visitor = std::make_unique<dpll_visitor>(
-		partial_assign, prune_action_stack,
-		dpll_prop_maps(vert_status_map, edge_status_map, color_map));
 
+	prop_maps = dpll_prop_maps(
+		partial_assign.data, vert_status_map, edge_status_map, color_map);
+
+	prune_visitor = std::make_unique<dpll_visitor>(
+		prune_action_stack, prop_maps);
+	
 	return *this;
 
 }
@@ -73,6 +78,16 @@ void dpll_formula::set_node(vertex_descriptor node, bool value) {
 	// partial_assign set @ node_to_set=value
 	// partial_graph remove node_to_set and reduce (unit clauses
 	//  & pure literals), supplying the stack to append
+	prop_maps.vert_status_map[node] = value ?
+		dpll_vert_status::SetToTrue : dpll_vert_status::SetToFalse;
+
+	auto buffer = boost::queue<vertex_descriptor>();
+
+	boost::breadth_first_visit(
+		prob_graph.get(), node, buffer,
+		*prune_visitor, prop_maps.color_map);
+
+
 
 }
 

@@ -9,12 +9,11 @@
 
 namespace sat {
 
-	// I shouldn't do this as a add/remove verts and edges.
-	//  Unfortunately, that will mess up vertex/edge_descriptors.
-	//  Instead, I should have another property map that contains
-	//  the removal state of verts & edges.
+	using incomplete_assignment_prop_map
+		= boost::associative_property_map<incomplete_assignment::map>;
+
 	enum class dpll_vert_status {
-		Active, Inactive, SetToTrue, SetToFalse
+		Active, Inactive, SetToTrue, SetToFalse, Remove
 	};
 	using dpll_vert_status_map
 		= std::map<vertex_descriptor, dpll_vert_status>;
@@ -36,14 +35,19 @@ namespace sat {
 
 	struct dpll_prop_maps {
 
+		incomplete_assignment_prop_map partial_assignment_map;
 		dpll_vert_status_prop_map vert_status_map;
 		dpll_edge_status_prop_map edge_status_map;
 		dpll_color_prop_map color_map;
 
+		dpll_prop_maps() = default;
+
 		dpll_prop_maps(
+			incomplete_assignment_prop_map init_partial_assignment_map,
 			dpll_vert_status_prop_map init_vert_status_map,
 			dpll_edge_status_prop_map init_edge_status_map,
 			dpll_color_prop_map init_color_map) :
+			partial_assignment_map(init_partial_assignment_map),
 			vert_status_map(init_vert_status_map),
 			edge_status_map(init_edge_status_map),
 			color_map(init_color_map) {}
@@ -64,17 +68,14 @@ namespace sat {
 		using event_filter = boost::on_examine_vertex;
 
 	private:
-		incomplete_assignment& assignment;
 		prune_stack& prune_action_stack;
 		dpll_prop_maps maps;
 
 	public:
 
 		explicit dpll_begin_vert_visitor(
-			incomplete_assignment& assignment,
 			prune_stack& prune_action_stack,
 			dpll_prop_maps maps) :
-			assignment(assignment),
 			prune_action_stack(prune_action_stack),
 			maps(maps) {}
 
@@ -88,7 +89,8 @@ namespace sat {
 
 	private:
 
-		void remove_vert(const graph& g, vertex_descriptor vert);
+		void remove_clause(const graph& g, vertex_descriptor clause);
+		void select_node(const graph& g, vertex_descriptor node, bool sgn);
 
 	};
 
@@ -105,26 +107,23 @@ namespace sat {
 		public sat_edge_visitor<dpll_edge_visitor> {
 	
 	public:
-		using event_filter = boost::on_examine_vertex;
+		using event_filter = boost::on_examine_edge;
 
 	private:
-		const incomplete_assignment& assignment;
 		prune_stack& prune_action_stack;
 		dpll_prop_maps maps;
 
 	public:
 
 		explicit dpll_edge_visitor(
-			const incomplete_assignment& assignment,
 			prune_stack& prune_action_stack,
-			dpll_prop_maps init_maps) :
-			assignment(assignment),
+			dpll_prop_maps maps) :
 			prune_action_stack(prune_action_stack),
 			maps(maps) {}
 
 		void edge_event(
 			const graph& g, edge_descriptor edge,
-			edge_prop& prop,
+			const edge_prop& prop,
 			vertex_descriptor node, vertex_descriptor clause);
 
 	};
@@ -142,7 +141,6 @@ namespace sat {
 	public:
 
 		dpll_visitor(
-			incomplete_assignment& assignment,
 			prune_stack& prune_action_stack,
 			dpll_prop_maps init_maps);
 
