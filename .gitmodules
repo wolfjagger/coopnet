@@ -1,3 +1,3 @@
 [submodule "alphali"]
 	path = alphali
-	url = https://bitbucket.org/Wolfjagger/alphali.git
+	url = git@bitbucket.org:Wolfjagger/alphali.git
