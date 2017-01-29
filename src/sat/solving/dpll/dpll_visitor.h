@@ -1,8 +1,10 @@
 #pragma once
 
+#include <queue>
 #include "boost/graph/breadth_first_search.hpp"
 #include "sat/sat_visitor.h"
 #include "sat/assignment/assignment.h"
+#include "dpll_status.h"
 #include "prune_stack.h"
 
 
@@ -12,17 +14,11 @@ namespace sat {
 	using incomplete_assignment_prop_map
 		= boost::associative_property_map<incomplete_assignment::map>;
 
-	enum class dpll_vert_status {
-		Active, Inactive, SetToTrue, SetToFalse, Remove
-	};
 	using dpll_vert_status_map
 		= std::map<vertex_descriptor, dpll_vert_status>;
 	using dpll_vert_status_prop_map
 		= boost::associative_property_map<dpll_vert_status_map>;
 
-	enum class dpll_edge_status {
-		Active, Inactive, PushNodeToClause, PushClauseToNode
-	};
 	using dpll_edge_status_map
 		= std::map<edge_descriptor, dpll_edge_status>;
 	using dpll_edge_status_prop_map
@@ -69,14 +65,17 @@ namespace sat {
 
 	private:
 		prune_stack& prune_action_stack;
+		bool& is_contradicting;
 		dpll_prop_maps maps;
 
 	public:
 
 		explicit dpll_begin_vert_visitor(
 			prune_stack& prune_action_stack,
+			bool& is_contradicting,
 			dpll_prop_maps maps) :
 			prune_action_stack(prune_action_stack),
+			is_contradicting(is_contradicting),
 			maps(maps) {}
 
 		void node_event(
@@ -89,8 +88,14 @@ namespace sat {
 
 	private:
 
-		void remove_clause(const graph& g, vertex_descriptor clause);
 		void select_node(const graph& g, vertex_descriptor node, bool sgn);
+
+		void change_assignment(
+			vertex_descriptor node, boost::logic::tribool value);
+		void change_vert_status(
+			vertex_descriptor vert, dpll_vert_status new_status);
+		void change_edge_status(
+			edge_descriptor edge, dpll_edge_status new_status);
 
 	};
 
@@ -111,14 +116,17 @@ namespace sat {
 
 	private:
 		prune_stack& prune_action_stack;
+		bool& is_contradicting;
 		dpll_prop_maps maps;
 
 	public:
 
 		explicit dpll_edge_visitor(
 			prune_stack& prune_action_stack,
+			bool& is_contradicting,
 			dpll_prop_maps maps) :
 			prune_action_stack(prune_action_stack),
+			is_contradicting(is_contradicting),
 			maps(maps) {}
 
 		void edge_event(
@@ -126,12 +134,59 @@ namespace sat {
 			const edge_prop& prop,
 			vertex_descriptor node, vertex_descriptor clause);
 
+	private:
+
+		void change_vert_status(
+			vertex_descriptor vert, dpll_vert_status new_status);
+		void change_edge_status(
+			edge_descriptor edge, dpll_edge_status new_status);
+
+	};
+
+
+	// This visitor colors remaining verts grey and in the
+	//  queue to black and pops the queue.
+	class dpll_finish_vert_visitor :
+		public boost::base_visitor<dpll_finish_vert_visitor> {
+	
+	public:
+		using event_filter = boost::on_finish_vertex;
+
+	private:
+		boost::queue<vertex_descriptor>& grey_buffer;
+		bool& is_contradicting;
+		dpll_prop_maps maps;
+
+	public:
+
+		explicit dpll_finish_vert_visitor(
+			boost::queue<vertex_descriptor>& grey_buffer,
+			bool& is_contradicting,
+			dpll_prop_maps maps) :
+			grey_buffer(grey_buffer),
+			is_contradicting(is_contradicting),
+			maps(maps) {}
+
+		template<class Vertex, class Graph>
+		void operator()(Vertex v, Graph& g) {
+
+			if (is_contradicting) {
+				while (!grey_buffer.empty()) {
+					auto vert = grey_buffer.front();
+					maps.color_map[vert] = default_color_type::black_color;
+					grey_buffer.pop();
+				}
+			}
+
+		}
+
 	};
 
 
 
 	using dpll_visitor_tuple = 
-		std::pair<dpll_begin_vert_visitor, dpll_edge_visitor>;
+		std::pair<dpll_begin_vert_visitor,
+		std::pair<dpll_edge_visitor, dpll_finish_vert_visitor>>;
 
 
 
@@ -139,9 +194,13 @@ namespace sat {
 		public boost::bfs_visitor<dpll_visitor_tuple> {
 
 	public:
+		bool is_contradicting;
+
+	public:
 
 		dpll_visitor(
 			prune_stack& prune_action_stack,
+			boost::queue<vertex_descriptor>& grey_queue,
 			dpll_prop_maps init_maps);
 
 	};

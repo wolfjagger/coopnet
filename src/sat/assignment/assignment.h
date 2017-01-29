@@ -9,14 +9,6 @@ namespace sat {
 
 	class problem;
 
-	struct assignment {
-
-		using map = std::map<vertex_descriptor, bool>;
-		
-		map data;
-
-	};
-
 	struct incomplete_assignment {
 
 		using map = std::map<vertex_descriptor, boost::tribool>;
@@ -25,6 +17,17 @@ namespace sat {
 
 		explicit incomplete_assignment(const problem& prob);
 		incomplete_assignment() = default;
+
+	};
+
+	struct assignment {
+
+		using map = std::map<vertex_descriptor, bool>;
+		
+		map data;
+
+		explicit assignment(const incomplete_assignment& incomplete_assign);
+		assignment() = default;
 
 	};
 

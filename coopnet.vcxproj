@@ -165,6 +165,7 @@
     <ClInclude Include="src\sat\sat_visitor.h" />
     <ClInclude Include="src\sat\solving\dpll\dpll_formula.h" />
     <ClInclude Include="src\sat\solving\dpll\dpll_solver.h" />
+    <ClInclude Include="src\sat\solving\dpll\dpll_status.h" />
     <ClInclude Include="src\sat\solving\dpll\dpll_visitor.h" />
     <ClInclude Include="src\sat\solving\dpll\prune_stack.h" />
     <ClInclude Include="src\sat\solving\satisfiability_visitor.h" />

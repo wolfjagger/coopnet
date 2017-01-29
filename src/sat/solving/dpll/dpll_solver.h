@@ -1,5 +1,6 @@
 #pragma once
 
+#include "boost/optional.hpp"
 #include "sat/solving/solver.h"
 #include "sat/graph.h"
 #include "dpll_formula.h"
@@ -28,9 +29,11 @@ namespace sat {
 
 	private:
 
-		solve_return partial_solve();
+		void reduce_formula();
+		bool recursive_reduce(vertex_descriptor node, bool choice);
 
-		vertex_descriptor choose_next_node(node_choice_mode mode) const;
+		boost::optional<vertex_descriptor>
+			choose_next_node(node_choice_mode mode) const;
 
 	};
 

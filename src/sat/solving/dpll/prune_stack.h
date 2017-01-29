@@ -3,33 +3,36 @@
 #include <stack>
 #include "sat/graph.h"
 #include "boost/variant.hpp"
+#include "dpll_status.h"
 
 
 
 namespace sat {
 
-	struct prune_vertex_data {
-		vertex_descriptor descriptor;
-	};
-
-	struct prune_edge_data {
-		edge_descriptor descriptor;
-		bool sgn;
-	};
+	using incomplete_assignment_prune_data
+		= std::pair<vertex_descriptor, boost::tribool>;
+	using vertex_prune_data = std::pair<vertex_descriptor, dpll_vert_status>;
+	using edge_prune_data = std::pair<edge_descriptor, dpll_edge_status>;
 
 	struct prune_action {
 
-		enum class prune_object { Vertex, Edge };
+		enum class prune_object { Assignment, Vertex, Edge };
 
 		prune_object type;
-		boost::variant<prune_vertex_data, prune_edge_data> supp_data;
+		boost::variant<incomplete_assignment_prune_data,
+			vertex_prune_data, edge_prune_data> supp_data;
 
-		explicit prune_action(prune_vertex_data prune_data) {
+		explicit prune_action(incomplete_assignment_prune_data prune_data) {
+			type = prune_object::Assignment;
+			supp_data = prune_data;
+		}
+
+		explicit prune_action(vertex_prune_data prune_data) {
 			type = prune_object::Vertex;
 			supp_data = prune_data;
 		}
 
-		explicit prune_action(prune_edge_data prune_data) {
+		explicit prune_action(edge_prune_data prune_data) {
 			type = prune_object::Edge;
 			supp_data = prune_data;
 		}

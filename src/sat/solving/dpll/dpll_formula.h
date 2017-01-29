@@ -16,8 +16,11 @@ namespace sat {
 
 		std::reference_wrapper<const graph> prob_graph;
 
+		bool contradicting;
 		// Could also put this in dpll_solver or in local function scope
 		prune_stack prune_action_stack;
+		// Queue for remaining grey nodes to color black
+		boost::queue<vertex_descriptor> grey_buffer;
 
 		// Assignment information, including "unassigned"
 		incomplete_assignment partial_assign;
@@ -45,15 +48,21 @@ namespace sat {
 
 
 
-		void set_node(vertex_descriptor node, bool value);
+		void set_node(vertex_descriptor node, bool first_choice);
 
-		void reverse_prune_to_node(vertex_descriptor node);
+		void reverse_prune_to_assignment(vertex_descriptor node);
 
 		const incomplete_assignment& get_incomplete_assignment() const {
 			return partial_assign;
 		}
 		incomplete_assignment& get_incomplete_assignment() {
 			return partial_assign;
+		}
+
+		bool is_SAT() const;
+
+		bool is_contradicting() const {
+			return prune_visitor->is_contradicting;
 		}
 
 	};
