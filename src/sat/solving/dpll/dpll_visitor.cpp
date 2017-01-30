@@ -64,7 +64,9 @@ void dpll_begin_vert_visitor::node_event(
 void dpll_begin_vert_visitor::clause_event(
 	const graph& g, vertex_descriptor clause, const vert_prop& prop) {
 
-	if(maps.vert_status_map[clause] == dpll_vert_status::Remove) {
+	auto& clause_status = maps.vert_status_map[clause];
+
+	if(clause_status == dpll_vert_status::Remove) {
 
 		auto edges_pair = boost::out_edges(clause, g);
 		for (auto edge = edges_pair.first;
@@ -86,7 +88,7 @@ void dpll_begin_vert_visitor::clause_event(
 
 		}
 
-	} else {
+	} else if(clause_status != dpll_vert_status::Inactive) {
 
 		auto edges_pair = boost::out_edges(clause, g);
 
@@ -97,7 +99,6 @@ void dpll_begin_vert_visitor::clause_event(
 			edges_pair.first, edges_pair.second, active_edges_fcn);
 		
 		if (num_active_edges == 0) {
-			//TODO: Shouldn't handle backtracking with exceptions
 			is_contradicting = true;
 		} else if (num_active_edges == 1) {
 			
@@ -161,6 +162,7 @@ void dpll_begin_vert_visitor::change_assignment(
 	
 	auto& value = maps.partial_assignment_map[node];
 	auto prune_data = std::make_pair(node, value);
+	prune_action_stack.data.push(prune_action(prune_data));
 	value = new_assign;
 
 }
@@ -170,6 +172,7 @@ void dpll_begin_vert_visitor::change_vert_status(
 
 	auto& status = maps.vert_status_map[vert];
 	auto prune_data = std::make_pair(vert, status);
+	prune_action_stack.data.push(prune_action(prune_data));
 	status = new_status;
 
 }
@@ -179,6 +182,7 @@ void dpll_begin_vert_visitor::change_edge_status(
 
 	auto& status = maps.edge_status_map[edge];
 	auto prune_data = std::make_pair(edge, status);
+	prune_action_stack.data.push(prune_action(prune_data));
 	status = new_status;
 
 }
@@ -199,12 +203,15 @@ void dpll_edge_visitor::edge_event(
 
 	auto status = maps.edge_status_map[edge];
 
-	// If edge is active, propagate white color to target if black
-	if (status != dpll_edge_status::Inactive) {
-		auto& color = maps.color_map[boost::target(edge, g)];
-		if (color == default_color_type::black_color)
-			color = default_color_type::white_color;
-	}
+	// If edge is active or inactive, there is no action required;
+	//  the edge is not meant to be traversed
+	if (status == dpll_edge_status::Active
+		|| status == dpll_edge_status::Inactive) return;
+
+	// If edge should be traversed, propagate white color to target if black
+	auto& color = maps.color_map[boost::target(edge, g)];
+	if (color == default_color_type::black_color)
+		color = default_color_type::white_color;
 
 	switch (status) {
 	case dpll_edge_status::PushNodeToClause: {
@@ -233,12 +240,16 @@ void dpll_edge_visitor::edge_event(
 
 		case dpll_vert_status::SetToTrue:
 
-			if (!prop.sgn) is_contradicting = true;
+			if (!prop.sgn) {
+				is_contradicting = true;
+			}
 			break;
 
 		case dpll_vert_status::SetToFalse:
 
-			if (prop.sgn) is_contradicting = true;
+			if (prop.sgn) {
+				is_contradicting = true;
+			}
 			break;
 
 		}
@@ -258,6 +269,7 @@ void dpll_edge_visitor::change_vert_status(
 
 	auto& status = maps.vert_status_map[vert];
 	auto prune_data = std::make_pair(vert, status);
+	prune_action_stack.data.push(prune_action(prune_data));
 	status = new_status;
 
 }
@@ -267,6 +279,7 @@ void dpll_edge_visitor::change_edge_status(
 
 	auto& status = maps.edge_status_map[edge];
 	auto prune_data = std::make_pair(edge, status);
+	prune_action_stack.data.push(prune_action(prune_data));
 	status = new_status;
 
 }

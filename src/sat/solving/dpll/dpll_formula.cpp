@@ -1,7 +1,14 @@
 #include "dpll_formula.h"
+#include <iostream>
 #include "sat/problem.h"
 
 using namespace sat;
+
+
+
+namespace {
+	constexpr bool DEBUG_print_prune = false;
+}
 
 
 
@@ -98,6 +105,8 @@ void dpll_formula::set_node(vertex_descriptor node, bool value) {
 
 void dpll_formula::reverse_prune_to_assignment(vertex_descriptor node) {
 
+	if(DEBUG_print_prune) std::cout << "Pruning\n";
+
 	auto done = false;
 	while (!done && !prune_action_stack.data.empty()) {
 
@@ -111,6 +120,7 @@ void dpll_formula::reverse_prune_to_assignment(vertex_descriptor node) {
 				boost::get<incomplete_assignment_prune_data>(
 					action.supp_data);
 			auto vert = incomplete_assignment_data.first;
+			if(DEBUG_print_prune) std::cout << "Assign " << vert << "\n";
 			prop_maps.partial_assignment_map[vert]
 				= incomplete_assignment_data.second;
 			if (vert == node) done = true;
@@ -120,6 +130,7 @@ void dpll_formula::reverse_prune_to_assignment(vertex_descriptor node) {
 			auto& vertex_data =
 				boost::get<vertex_prune_data>(action.supp_data);
 			auto vert = vertex_data.first;
+			if(DEBUG_print_prune) std::cout << "Vert status " << vert << "\n";
 			prop_maps.vert_status_map[vert] = vertex_data.second;
 			break;
 		}
@@ -127,6 +138,7 @@ void dpll_formula::reverse_prune_to_assignment(vertex_descriptor node) {
 			auto& edge_data =
 				boost::get<edge_prune_data>(action.supp_data);
 			auto edge = edge_data.first;
+			if(DEBUG_print_prune) std::cout << "Edge status " << edge << "\n";
 			prop_maps.edge_status_map[edge] = edge_data.second;
 			break;
 		}
@@ -137,12 +149,11 @@ void dpll_formula::reverse_prune_to_assignment(vertex_descriptor node) {
 }
 
 
-
 bool dpll_formula::is_SAT() const {
 
 	auto is_SAT_pred =
 		[](std::pair<vertex_descriptor, boost::logic::tribool> pair) {
-		return pair.second == boost::logic::indeterminate;
+		return boost::logic::indeterminate(pair.second);
 	};
 
 	return std::none_of(

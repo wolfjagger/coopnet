@@ -64,6 +64,9 @@ namespace sat {
 		bool is_contradicting() const {
 			return prune_visitor->is_contradicting;
 		}
+		void set_contradicting(bool value) {
+			prune_visitor->is_contradicting = value;
+		}
 
 	};
 

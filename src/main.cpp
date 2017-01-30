@@ -105,6 +105,39 @@ void check_solvable_disconnected_problem() {
 
 
 
+void check_solver_gives_correct_assignments(
+	int num_random_probs) {
+
+	std::cout << "\n";
+
+	auto solver = sat::dpll_solver();
+
+	for(auto i=0; i<num_random_probs; ++i) {
+
+		auto prob = testing::random_problem();
+		
+		auto pair = solver.solve(prob);
+		switch(pair.first) {
+		case sat::solution_status::Satisfied:
+			std::cout << "Problem satisfiable.\n";
+			if(prob.is_satisfied_by(pair.second)) {
+				std::cout << "Solution works.\n";
+			} else {
+				std::cout << "Solution fails!!!\n";
+			}
+			break;
+		case sat::solution_status::Unsatisfiable:
+			std::cout << "Problem unsatisfiable.\n";
+			break;
+		case sat::solution_status::Undetermined:
+			std::cout << "Satisfiability undetermined!!!";
+			break;
+		}
+
+	}
+
+}
+
 void print_random_problem() {
 
 	// Now print a random problem to file
@@ -124,6 +157,8 @@ int main(int, char*[]) {
 	check_solvable_problem();
 
 	check_solvable_disconnected_problem();
+
+	check_solver_gives_correct_assignments(10);
 
 	print_random_problem();
 

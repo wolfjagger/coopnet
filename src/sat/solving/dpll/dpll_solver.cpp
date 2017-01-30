@@ -1,9 +1,38 @@
 #include "dpll_solver.h"
-#include "alphali/Containers/random_iterator.h"
+#include <iostream>
+#include "alphali/containers/random_iterator.h"
 #include "boost/logic/tribool.hpp"
 #include "sat/problem.h"
 
 using namespace sat;
+
+
+
+namespace {
+
+	const bool DEBUG_should_print_assignment = false;
+
+	void DEBUG_print_assignment(const dpll_formula& formula) {
+		if(DEBUG_should_print_assignment) {
+			auto tmp_pred =
+				[](std::pair<vertex_descriptor, boost::logic::tribool> pair) {
+				if (pair.second) {
+					std::cout << "T";
+				} else if (!pair.second) {
+					std::cout << "F";
+				} else if (boost::logic::indeterminate(pair.second)) {
+					std::cout << "I";
+				} else {
+					std::cout << "O";
+				}
+			};
+			auto& assign = formula.get_incomplete_assignment();
+			std::for_each(assign.data.cbegin(), assign.data.cend(), tmp_pred);
+			std::cout << "\n";
+		}
+	}
+
+}
 
 
 
@@ -60,11 +89,15 @@ void dpll_solver::reduce_formula() {
 
 	// Try true assignment
 	auto success_true = recursive_reduce(*new_node, true);
+	DEBUG_print_assignment(*formula);
 	if (success_true) return;
 
 	// Try false assignment
 	auto success_false = recursive_reduce(*new_node, false);
+	DEBUG_print_assignment(*formula);
 	if (success_false) return;
+
+	formula->set_contradicting(true);
 
 }
 
@@ -73,11 +106,16 @@ bool dpll_solver::recursive_reduce(vertex_descriptor node, bool choice) {
 
 	formula->set_node(node, choice);
 	if (!formula->is_contradicting()) {
+		DEBUG_print_assignment(*formula);
 		reduce_formula();
 		if (!formula->is_contradicting()) return true;
 	}
 
+	if(DEBUG_should_print_assignment) std::cout << "Contradictory\n";
+	DEBUG_print_assignment(*formula);
+
 	formula->reverse_prune_to_assignment(node);
+	formula->set_contradicting(false);
 
 	return false;
 
@@ -99,7 +137,7 @@ dpll_solver::choose_next_node(node_choice_mode mode) const {
 
 	// Find unset node
 	const auto node_choice_pred = [](const auto& pair) {
-		return pair.second == boost::indeterminate;
+		return boost::indeterminate(pair.second);
 	};
 
 	// If none, return no node
