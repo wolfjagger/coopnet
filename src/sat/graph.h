@@ -30,6 +30,7 @@ namespace sat {
 		vert_prop, edge_prop>;
 	using vertex_descriptor = graph::vertex_descriptor;
 	using edge_descriptor = graph::edge_descriptor;
+	using boost::default_color_type;
 
 
 
@@ -42,5 +43,11 @@ namespace sat {
 		vertex_descriptor node_desc,
 		vertex_descriptor clause_desc,
 		bool sgn);
+
+
+
+	struct clause_satisfiability {
+		std::set<vertex_descriptor> clauses_satisfied;
+	};
 
 }

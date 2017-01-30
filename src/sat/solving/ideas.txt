@@ -1,0 +1,74 @@
+Several ways we can do this.
+
+First, we can do traditional complete algorithms, like DPLL, without
+ bothering too much with visitors and such. Need a way to store
+ custom structures like partial assignments, need to store history,
+ still have a lot of choice like how to pick new literals.
+
+We can also use incomplete algorithms. Not sure about these yet.
+
+We can do visitor searches. breadth_first, depth_first searches
+ could do some interesting things. But we might need to make our
+ own search algorithm as well as visitors to really get good results.
+
+===DPLL===
+
+Recursive DPLL(F,p)
+Input : A CNF formula F and an initially empty partial assignment p
+Output : UNSAT, or an assignment satisfying F
+ begin
+  (F,p) <- UnitPropagate(F,p)
+  if F contains the empty clause then return UNSAT
+  if F has no clauses left then
+   Output p
+   return SAT
+  x <- a literal not assigned by p // the branching step
+  if DPLL-recursive(F|-x, p || {-x}) = SAT then return SAT
+  return DPLL-recursive(F|-x, p || {-x})
+ end
+  
+sub UnitPropagate(F,p)
+ begin
+  while F contains no empty clause but has a unit clause u do
+   F <- F|u
+   p <- p || {u}
+  return (F,p)
+ end
+
+Consider adding unit propagation (above), pure literal elimination,
+ watched literals, clause learning, conflict-driven backjumping,
+ randomized restarts, etc.
+
+
+===Tracer(custom)===
+
+tracer_visitor:
+
+ Forward: Visitor goes through edges and verts until no more verts (=>SAT)
+  examine_edge:
+   if(!is_set(node))
+    pick_literal(node)
+   else if(sgn(edge) == sgn(node))
+    set_done(clause)
+  finish_vertex<clause>:
+   if(!is_done(clause))
+    backtrack();
+  finish_vertex<node>:
+   if(!is_set(node))
+    pick_literal(node)
+	set_done(node)
+
+ Backward: Go back through queue of completed verts, unsetting edges/verts
+           until beginning (=>UNSAT)
+  uncolor(item)
+  if(item == clause)
+   set_undone(clause)
+  if(item == node)
+   if(!is_done(node))
+    flip_literal(node)
+	set_done(node)
+	forward()
+
+tracer_search: Model the search mostly after breadth_first,
+               with a few key changes for speed.
+ 

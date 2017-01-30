@@ -15,34 +15,35 @@ namespace jj_random {
 		return bern_prob(engine);
 	}
 	
-	unsigned rand_inclusive(unsigned min, unsigned max) {
+	int rand_inclusive(int min, int max) {
 		auto dist = std::uniform_int_distribution<unsigned>(min, max);
 		return dist(engine);
 	}
 
-	std::vector<unsigned> rand_vec_less_than(
-		unsigned num, unsigned vec_size, bool with_duplicates) {
-		
-		if(vec_size == 1) {
+	std::vector<int> rand_vec_inclusive(
+		int min, int max,
+		unsigned vec_size, bool with_duplicates) {
 
-			auto vec = std::vector<unsigned>();
-			vec.push_back(rand_less_than(num));
+		if (vec_size == 1) {
+
+			auto vec = std::vector<int>();
+			vec.push_back(rand_inclusive(min, max));
 			return vec;
 
 		} else {
 			
-			if (!with_duplicates && num < vec_size)
+			if (!with_duplicates && (max - min + 1) < int(vec_size))
 				throw std::exception("Random range too small for array.");
 
-			auto prev_array = rand_vec_less_than(num, vec_size - 1, with_duplicates);
-			auto new_num = rand_less_than(num);
+			auto prev_array = rand_vec_inclusive(min, max, vec_size - 1, with_duplicates);
+			auto new_num = rand_inclusive(min, max);
 
 			if(!with_duplicates) {
 				constexpr auto escape_max = 20;
 				auto escape = 0;
 				while (std::any_of(prev_array.begin(), prev_array.end(),
 					[new_num](int n) { return n == new_num; })) {
-					new_num = rand_less_than(num);
+					new_num = rand_inclusive(min, max);
 					++escape;
 					if (escape >= escape_max) throw std::exception("Couldn't find distinct nodes.");
 				}

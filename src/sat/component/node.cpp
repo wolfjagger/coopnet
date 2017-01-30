@@ -23,7 +23,7 @@ bool sat::operator==(const node& node_1, const node& node_2) {
 node_list::node_list() {}
 
 node_list::node_list(size_t num_nodes) {
-	for (auto i = 0; i < num_nodes; ++i) nodes.emplace_back(i);
+	for (unsigned int i = 0; i < num_nodes; ++i) nodes.emplace_back(i);
 }
 
 
