@@ -33,12 +33,12 @@ using namespace sat;
 
 auto dpll_solver::do_solve(const problem& prob) -> solve_return {
 	
-	formula = dpll_formula(prob);
+	formula = std::make_unique<dpll_formula>(prob);
 
 	reduce_formula();
 
-	if (formula.is_SAT()) {
-		auto assign = assignment(formula.get_incomplete_assignment());
+	if (formula->is_SAT()) {
+		auto assign = assignment(formula->get_incomplete_assignment());
 		return std::make_pair(
 			solution_status::Satisfied,
 			std::make_shared<sat::assignment>(std::move(assign)));
@@ -51,16 +51,18 @@ auto dpll_solver::do_solve(const problem& prob) -> solve_return {
 
 
 
-namespace {
-}
-
 void dpll_solver::reduce_formula() {
 
 	auto new_node = choose_next_node(node_choice_mode::Next);
 
+	// If no valid new node, formula is reduced
+	if (!new_node.is_initialized()) return;
+
+	// Try true assignment
 	auto success_true = recursive_reduce(*new_node, true);
 	if (success_true) return;
 
+	// Try false assignment
 	auto success_false = recursive_reduce(*new_node, false);
 	if (success_false) return;
 
@@ -69,13 +71,13 @@ void dpll_solver::reduce_formula() {
 // Formula should be the same if unsuccessful; reverses itself
 bool dpll_solver::recursive_reduce(vertex_descriptor node, bool choice) {
 
-	formula.set_node(node, choice);
-	if (!formula.is_contradicting()) {
+	formula->set_node(node, choice);
+	if (!formula->is_contradicting()) {
 		reduce_formula();
-		if (!formula.is_contradicting()) return true;
+		if (!formula->is_contradicting()) return true;
 	}
 
-	formula.reverse_prune_to_assignment(node);
+	formula->reverse_prune_to_assignment(node);
 
 	return false;
 
@@ -93,7 +95,7 @@ namespace {
 boost::optional<vertex_descriptor>
 dpll_solver::choose_next_node(node_choice_mode mode) const {
 
-	auto& assign_map = formula.get_incomplete_assignment().data;
+	auto& assign_map = formula->get_incomplete_assignment().data;
 
 	// Find unset node
 	const auto node_choice_pred = [](const auto& pair) {

@@ -21,7 +21,11 @@ namespace sat {
 
 	private:
 
-		dpll_formula formula;
+		std::unique_ptr<dpll_formula> formula;
+
+	public:
+
+		dpll_solver() = default;
 	
 	protected:
 		

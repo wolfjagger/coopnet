@@ -85,18 +85,24 @@ namespace sat {
 
 	}
 
-	problem generate_solvable_3sat_problem(unsigned num_nodes, unsigned num_clauses) {
+	problem generate_solvable_3sat_problem(
+		unsigned num_nodes, unsigned num_clauses,
+		bool assignment_sgn) {
 
-		return generate_3sat_problem(num_nodes, num_clauses, 1, 0.5, 0.5);
+		auto prob1 = assignment_sgn ? 1.f : 0.f;
+		return generate_3sat_problem(
+			num_nodes, num_clauses, prob1, 0.5, 0.5);
 
 	}
 
 	problem generate_disconnected_solvable_3sat_problem(
 		unsigned num_nodes1, unsigned num_nodes2,
-		unsigned num_clauses1, unsigned num_clauses2) {
+		unsigned num_clauses1, unsigned num_clauses2,
+		bool assignment_sgn) {
 
+		auto prob1 = assignment_sgn ? 1.f : 0.f;
 		return generate_disconnected_3sat_problem(
-			num_nodes1, num_nodes2, num_clauses1, num_clauses2, 1, 0.5, 0.5);
+			num_nodes1, num_nodes2, num_clauses1, num_clauses2, prob1, 0.5, 0.5);
 
 	}
 

@@ -6,15 +6,17 @@
 
 namespace testing {
 
-	sat::problem all_true_problem() {
+	sat::problem solvable_problem(bool assignment_sgn) {
 
-		return sat::generate_solvable_3sat_problem(10, 100);
+		return sat::generate_solvable_3sat_problem(
+			10, 100, assignment_sgn);
 
 	}
 
-	sat::problem all_true_two_problems() {
+	sat::problem two_solvable_problems(bool assignment_sgn) {
 
-		return sat::generate_disconnected_solvable_3sat_problem(5, 5, 50, 50);
+		return sat::generate_disconnected_solvable_3sat_problem(
+			5, 5, 50, 50, assignment_sgn);
 
 	}
 
