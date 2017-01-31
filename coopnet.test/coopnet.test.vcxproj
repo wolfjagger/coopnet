@@ -101,12 +101,15 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\rapidcheck\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\src;..\alphali;..\..\boost;..\rapidcheck\include</AdditionalIncludeDirectories>
+      <AdditionalUsingDirectories>
+      </AdditionalUsingDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\rapidcheck\build\Debug</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\boost\lib64-msvc-14.0;..\rapidcheck\build\Debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>..\x64\Debug\node.obj;..\x64\Debug\clause.obj;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -149,6 +152,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="catch.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\coopnet.vcxproj">
+      <Project>{cf1e62ac-27e6-434c-970e-8135ae54c3b5}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

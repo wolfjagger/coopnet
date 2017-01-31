@@ -2,7 +2,7 @@
 
 #include <deque>
 #include <vector>
-#include "component_fwd.h"
+#include "alphali/util/operators.h"
 #include "node.h"
 
 
@@ -65,5 +65,6 @@ namespace sat {
 	bool operator<(const clause& clause_1, const clause& clause_2);
 	// Equality operator
 	bool operator==(const clause& clause_1, const clause& clause_2);
+	DEFINE_EXTRA_OPS(clause);
 
 }

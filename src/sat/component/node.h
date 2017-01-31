@@ -1,5 +1,6 @@
 #pragma once
 
+#include "alphali/util/operators.h"
 #include "component_fwd.h"
 
 
@@ -16,6 +17,7 @@ namespace sat {
 
 	bool operator<(const node& node_1, const node& node_2);
 	bool operator==(const node& node_1, const node& node_2);
+	DEFINE_EXTRA_OPS(node);
 
 
 

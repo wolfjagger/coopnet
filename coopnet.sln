@@ -4,9 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "coopnet", "coopnet.vcxproj", "{CF1E62AC-27E6-434C-970E-8135AE54C3B5}"
-	ProjectSection(ProjectDependencies) = postProject
-		{9DA8B4A7-BCDF-3CA9-9E7C-1C15C4D6D88A} = {9DA8B4A7-BCDF-3CA9-9E7C-1C15C4D6D88A}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "boost-msvc", "..\boost\boost\boost-msvc.vcxproj", "{5DB9B8CC-C208-46CE-8F91-0D3586644B73}"
 EndProject
@@ -17,6 +14,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rapidcheck", "rapidcheck\build\rapidcheck.vcxproj", "{9DA8B4A7-BCDF-3CA9-9E7C-1C15C4D6D88A}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "coopnet.test", "coopnet.test\coopnet.test.vcxproj", "{3AB17D78-1EF5-499D-86B7-BD068E8EEB18}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9DA8B4A7-BCDF-3CA9-9E7C-1C15C4D6D88A} = {9DA8B4A7-BCDF-3CA9-9E7C-1C15C4D6D88A}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
