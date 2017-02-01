@@ -1,6 +1,5 @@
 #include "catch.hpp"
-#include "rapidcheck.h"
-#include "sat/component/node.h"
+#include "sat.arb.h"
 #include "sat/component/clause.h"
 
 using namespace sat;
@@ -38,34 +37,80 @@ TEST_CASE("Node", "[sat]") {
 
 }
 
+
+
 TEST_CASE("Clause", "[sat]") {
 
 	SECTION("Comparisons.") {
 
-		auto node0 = node(0);
-		auto node1 = node(1);
-		auto node2 = node(2);
-		auto node3 = node(3);
+		auto lam = [](
+			std::vector<std::pair<node, bool>>& nb1,
+			std::vector<std::pair<node, bool>>& nb2) {
 
-		auto vec_node = std::vector<node>({ node0, node1, node2 });
-		auto vec_sgn = std::vector<bool>({ true, true, false });
-		auto clause1 = clause(clause_data(vec_node, vec_sgn));
-		auto clause2 = clause(clause_data(vec_node, vec_sgn));
+			auto nodes1 = std::vector<node>();
+			auto sgns1 = std::vector<bool>();
+			auto nodes2 = std::vector<node>();
+			auto sgns2 = std::vector<bool>();
 
-		vec_sgn = std::vector<bool>({ true, false, false });
-		auto clause3 = clause(clause_data(vec_node, vec_sgn));
+			for (auto& p : nb1) {
+				nodes1.push_back(p.first);
+				sgns1.push_back(p.second);
+			}
 
-		vec_node = std::vector<node>({ node0, node1, node3 });
-		vec_sgn = std::vector<bool>({ true, false, false });
-		auto clause4 = clause(clause_data(vec_node, vec_sgn));
+			for (auto& p : nb2) {
+				nodes2.push_back(p.first);
+				sgns2.push_back(p.second);
+			}
 
-		REQUIRE(clause1 == clause2);
-		REQUIRE(clause1 != clause3);
-		REQUIRE(clause1 != clause4);
-		REQUIRE(clause3 != clause4);
-		REQUIRE(clause1 > clause3);
-		REQUIRE(clause1 < clause4);
-		REQUIRE(clause3 < clause4);
+			auto clause1 = clause(clause_data(nodes1, sgns1));
+			auto clause2 = clause(clause_data(nodes2, sgns2));
+
+			if (nodes1 < nodes2) RC_ASSERT(clause1 < clause2);
+			else if (nodes1 > nodes2) RC_ASSERT(clause1 > clause2);
+			else {
+				if (sgns1 < sgns2) RC_ASSERT(clause1 < clause2);
+				else if(sgns1 > sgns2) RC_ASSERT(clause1 > clause2);
+				else RC_ASSERT(clause1 == clause2);
+			}
+			
+		};
+
+		REQUIRE(rc::check(lam));
+
+	}
+
+}
+
+
+
+TEST_CASE("Assignment", "[sat]") {
+
+	SECTION("Assignment throws if initialized from incomplete_assignment with indeterminate value.") {
+
+		auto lam = [](sat::incomplete_assignment& partial_assign) {
+
+			auto ind_pred = [](sat::incomplete_assignment::pair p) {
+				return boost::indeterminate(p.second);
+			};
+
+			// If partial_assign doesn't have an indeterminate value,
+			//  manufacture one
+			if (std::none_of(
+				partial_assign.data.cbegin(),
+				partial_assign.data.cend(),
+				ind_pred)) {
+
+				partial_assign.data.insert_or_assign(
+					*rc::gen::arbitrary<sat::vertex_descriptor>(),
+					boost::indeterminate);
+
+			}
+
+			RC_ASSERT_THROWS(auto assign = sat::assignment(partial_assign));
+			
+		};
+
+		REQUIRE(rc::check(lam));
 
 	}
 

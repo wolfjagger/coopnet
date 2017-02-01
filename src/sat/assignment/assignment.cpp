@@ -15,12 +15,10 @@ incomplete_assignment::incomplete_assignment(const problem& prob) {
 }
 
 
-
 assignment::assignment(const incomplete_assignment& incomplete_assign) {
 
-	auto is_indeterminate_pred
-		= [](std::pair<vertex_descriptor, boost::tribool> pair) {
-		return pair.second == boost::indeterminate;
+	auto is_indeterminate_pred = [](incomplete_assignment::pair pair) {
+		return boost::indeterminate(pair.second);
 	};
 
 	if (std::any_of(

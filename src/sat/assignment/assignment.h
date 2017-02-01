@@ -12,6 +12,7 @@ namespace sat {
 	struct incomplete_assignment {
 
 		using map = std::map<vertex_descriptor, boost::tribool>;
+		using pair = std::pair<vertex_descriptor, boost::tribool>;
 
 		map data;
 
@@ -26,8 +27,9 @@ namespace sat {
 		
 		map data;
 
-		explicit assignment(const incomplete_assignment& incomplete_assign);
 		assignment() = default;
+
+		assignment(const incomplete_assignment& incomplete_assign);
 
 	};
 
