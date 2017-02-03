@@ -1,7 +1,7 @@
 #pragma once
 
-#include "sat/sat_visitor.h"
-#include "sat/graph.h"
+#include "coopnet/sat/sat_visitor.h"
+#include "coopnet/sat/graph.h"
 
 
 
