@@ -19,7 +19,14 @@ namespace sat {
 		explicit incomplete_assignment(const problem& prob);
 		incomplete_assignment() = default;
 
+		bool is_indeterminate() const;
+
 	};
+
+	inline bool is_indeterminate(const incomplete_assignment& assign) {
+		return assign.is_indeterminate();
+	}
+
 
 	struct assignment {
 
@@ -28,7 +35,6 @@ namespace sat {
 		map data;
 
 		assignment() = default;
-
 		assignment(const incomplete_assignment& incomplete_assign);
 
 	};

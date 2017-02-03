@@ -104,12 +104,14 @@
       <AdditionalIncludeDirectories>.;..\src;..\alphali;..\..\boost;..\rapidcheck\include</AdditionalIncludeDirectories>
       <AdditionalUsingDirectories>
       </AdditionalUsingDirectories>
+      <AdditionalOptions>
+      </AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\x64\Debug;..\..\boost\lib64-msvc-14.0</AdditionalLibraryDirectories>
-      <AdditionalDependencies>..\x64\Debug\node.obj;..\x64\Debug\clause.obj;..\x64\Debug\assignment.obj;rapidcheck.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\x64\Debug\node.obj;..\x64\Debug\clause.obj;..\x64\Debug\assignment.obj;..\x64\Debug\problem.obj;..\x64\Debug\graph.obj;rapidcheck.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -148,10 +150,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="sat\problem.test.cpp" />
     <ClCompile Include="sat\sat.test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="catch.hpp" />
+    <ClInclude Include="sat\mock_sat_visitor.h" />
+    <ClInclude Include="sat\prob.arb.h" />
+    <ClInclude Include="sat\rc_printing.h" />
     <ClInclude Include="sat\sat.arb.h" />
   </ItemGroup>
   <ItemGroup>

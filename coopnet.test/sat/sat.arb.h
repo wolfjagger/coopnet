@@ -3,7 +3,9 @@
 #include <ostream>
 #include "rapidcheck.h"
 #include "sat/component/node.h"
+#include "sat/component/clause.h"
 #include "sat/assignment/assignment.h"
+#include "rc_printing.h"
 
 
 
@@ -16,6 +18,39 @@ namespace rc {
 				gen::arbitrary<unsigned int>());
 		}
 	};
+
+	inline Gen<sat::node> node_gen_within(
+		unsigned int min_id, unsigned int max_id) {
+		return gen::construct<sat::node>(gen::inRange(min_id, max_id));
+	}
+
+	template<>
+	struct Arbitrary<sat::clause> {
+		static Gen<sat::clause> arbitrary() {
+
+			return gen::exec([]() {
+				auto node_list = *gen::unique<std::vector<sat::node>>(
+					gen::arbitrary<sat::node>());
+				auto sgn_list = *gen::container<std::vector<bool>>(
+					node_list.size(), gen::arbitrary<bool>());
+				return sat::clause(sat::clause_data(node_list, sgn_list));
+			});
+
+		}
+	};
+
+	inline Gen<sat::clause> clause_gen_from_nodes(
+		unsigned int min_id, unsigned int max_id) {
+
+		return gen::exec([min_id, max_id]() {
+			auto node_list = *gen::unique<std::vector<sat::node>>(
+				node_gen_within(min_id, max_id));
+			auto sgn_list = *gen::container<std::vector<bool>>(
+				node_list.size(), gen::arbitrary<bool>());
+			return sat::clause(sat::clause_data(node_list, sgn_list));
+		});
+
+	}
 
 	template<>
 	struct Arbitrary<boost::logic::tribool> {
@@ -38,15 +73,6 @@ namespace rc {
 	struct Arbitrary<sat::assignment> {
 		static Gen<sat::assignment> arbitrary() {
 
-			// This shows how to restrict things if necessary
-			/*auto num_pred = [](sat::assignment::map& data) {
-				return data.size() < 100;
-			};
-
-			return gen::build<sat::assignment>(
-				gen::set(&sat::assignment::data,
-					gen::suchThat<sat::assignment::map>(num_pred)));*/
-
 			return gen::build<sat::assignment>(
 				gen::set(&sat::assignment::data));
 
@@ -65,42 +91,5 @@ namespace rc {
 
 		}
 	};
-
-	namespace detail {
-		
-		std::ostream& operator<<(std::ostream& os, const sat::node& n) {
-			return os << n.id;
-		}
-
-		std::ostream& operator<<(std::ostream& os, const boost::logic::tribool& b) {
-			if (b) {
-				os << "T";
-			} else if (!b) {
-				os << "F";
-			} else {
-				os << "I";
-			}
-			return os;
-		}
-
-		std::ostream& operator<<(std::ostream& os, const sat::assignment& assign) {
-			os << "assignment:" << std::endl;
-			for (auto iter = assign.data.cbegin();
-				iter != assign.data.cend(); ++iter) {
-				os << " k" << iter->first << " v" << iter->second;
-			}
-			return os << std::endl;
-		}
-		
-		std::ostream& operator<<(std::ostream& os,
-			const sat::incomplete_assignment& assign) {
-			os << "incomplete_assignment:" << std::endl;
-			for (auto iter = assign.data.cbegin();
-				iter != assign.data.cend(); ++iter) {
-				os << " k" << iter->first << " v" << iter->second;
-			}
-			return os << std::endl;
-		}
-	}
 
 }

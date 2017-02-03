@@ -1,6 +1,5 @@
 #include "catch.hpp"
 #include "sat.arb.h"
-#include "sat/component/clause.h"
 
 using namespace sat;
 
@@ -87,24 +86,12 @@ TEST_CASE("Assignment", "[sat]") {
 
 	SECTION("Assignment throws if initialized from incomplete_assignment with indeterminate value.") {
 
-		auto lam = [](sat::incomplete_assignment& partial_assign) {
+		rc::Gen<double> gen = rc::gen::just(0.0);
 
-			auto ind_pred = [](sat::incomplete_assignment::pair p) {
-				return boost::indeterminate(p.second);
-			};
+		auto lam = []() {
 
-			// If partial_assign doesn't have an indeterminate value,
-			//  manufacture one
-			if (std::none_of(
-				partial_assign.data.cbegin(),
-				partial_assign.data.cend(),
-				ind_pred)) {
-
-				partial_assign.data.insert_or_assign(
-					*rc::gen::arbitrary<sat::vertex_descriptor>(),
-					boost::indeterminate);
-
-			}
+			auto partial_assign
+				= *rc::gen::suchThat<sat::incomplete_assignment>(is_indeterminate);
 
 			RC_ASSERT_THROWS(auto assign = sat::assignment(partial_assign));
 			
