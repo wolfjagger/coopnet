@@ -1,12 +1,12 @@
 #include "problem_factory.h"
+#include "alphali/util/random.h"
 #include "sat/problem.h"
-#include "util/random.h"
 
 
 namespace sat {
 
 	using sat::clause_data;
-	using jj_random::take_chance;
+	using alphali::take_chance;
 
 	constexpr auto escape_num = 20;
 
@@ -25,7 +25,7 @@ namespace sat {
 			for (unsigned int clause_idx = 0; clause_idx < num_clauses; ++clause_idx) {
 
 				// Generate a clause by first getting three distinct nodes randomly...
-				auto nums = jj_random::rand_vec_less_than(num_nodes, 3);
+				auto nums = alphali::rand_vec_leq(num_nodes-1, 3);
 				auto nodes = clause_data::node_storage{
 					unsigned(nums[0]), unsigned(nums[1]), unsigned(nums[2])
 				};
@@ -53,7 +53,7 @@ namespace sat {
 
 			for (unsigned int clause_idx = 0; clause_idx < num_clauses1; ++clause_idx) {
 
-				auto nums = jj_random::rand_vec_less_than(num_nodes1, 3);
+				auto nums = alphali::rand_vec_leq(num_nodes1-1, 3);
 				auto nodes = clause_data::node_storage{
 					unsigned(nums[0]), unsigned(nums[1]), unsigned(nums[2])
 				};
@@ -66,7 +66,7 @@ namespace sat {
 
 			for (unsigned int clause_idx = 0; clause_idx < num_clauses2; ++clause_idx) {
 
-				auto nums = jj_random::rand_vec_inclusive(
+				auto nums = alphali::rand_vec_inclusive(
 					num_nodes1, num_nodes1 + num_nodes2 - 1, 3);
 				auto nodes = clause_data::node_storage{
 					unsigned(nums[0]), unsigned(nums[1]), unsigned(nums[2])

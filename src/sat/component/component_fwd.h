@@ -1,14 +1,16 @@
 #pragma once
 
+#include <deque>
+
 
 
 namespace sat {
 	
 	struct node;
-	class node_list;
+	using node_list = std::deque<node>;
 
 	struct clause;
 	struct clause_data;
-	class clause_list;
+	using clause_list = std::deque<clause>;
 
 }

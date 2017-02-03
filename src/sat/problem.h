@@ -40,11 +40,24 @@ namespace sat {
 		problem(size_t init_num_nodes,
 			iterator clause_init_beg, iterator clause_init_end) {
 
-			auto nodes = node_list(init_num_nodes);
+			auto nodes = create_nodes(init_num_nodes);
 			auto clauses = clause_list(clause_init_beg, clause_init_end);
 
-			num_nodes = init_num_nodes;
-			num_clauses = clauses.size();
+			build_graph(std::move(nodes), std::move(clauses));
+			
+		}
+
+		template<typename iterator>
+		problem(iterator clause_init_beg, iterator clause_init_end) {
+
+			auto init_num_nodes
+				= std::max_element(clause_init_beg, clause_init_end,
+				[](const clause& c) {
+				return std::max_element(c.nodes().cbegin, c.nodes().cend());
+			});
+
+			auto nodes = create_nodes(init_num_nodes);
+			auto clauses = clause_list(clause_init_beg, clause_init_end);
 
 			build_graph(std::move(nodes), std::move(clauses));
 			

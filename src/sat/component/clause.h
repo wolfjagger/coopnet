@@ -2,6 +2,7 @@
 
 #include <deque>
 #include <vector>
+#include "alphali/util/operators.h"
 #include "node.h"
 
 
@@ -64,57 +65,6 @@ namespace sat {
 	bool operator<(const clause& clause_1, const clause& clause_2);
 	// Equality operator
 	bool operator==(const clause& clause_1, const clause& clause_2);
-
-
-
-	// Storage for clauses
-	class clause_list {
-
-	private:
-		using storage = std::deque<clause>;
-	public:
-		using iterator = storage::iterator;
-		using const_iterator = storage::const_iterator;
-
-	private:
-
-		storage clauses;
-
-	public:
-		
-		// Constructor
-		clause_list();
-
-		template<typename iter>
-		explicit clause_list(iter begin, iter end)
-			: clause_list() {
-
-			for (auto it = begin; it != end; ++it) {
-				emplace(std::forward<clause_data>(*it));
-			}
-
-		}
-
-		// Init clause and add to list
-		void emplace(clause_data&& init);
-		void sort();
-		size_t size() const;
-
-	private:
-
-		// Push clause to list
-		void push(clause clause);
-
-	public:
-
-		// Give access to clause iteration
-		iterator begin() { return clauses.begin(); }
-		const_iterator begin() const { return clauses.begin(); }
-		const_iterator cbegin() const { return clauses.cbegin(); }
-		iterator end() { return clauses.end(); }
-		const_iterator end() const { return clauses.end(); }
-		const_iterator cend() const { return clauses.cend(); }
-
-	};
+	DEFINE_EXTRA_OPS(clause);
 
 }

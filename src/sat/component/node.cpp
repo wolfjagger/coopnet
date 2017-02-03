@@ -20,29 +20,8 @@ bool sat::operator==(const node& node_1, const node& node_2) {
 
 
 
-node_list::node_list() {}
-
-node_list::node_list(size_t num_nodes) {
-	for (unsigned int i = 0; i < num_nodes; ++i) nodes.emplace_back(i);
-}
-
-
-
-void node_list::emplace(int init) {
-	push(node(init));
-}
-
-void node_list::sort() {
-	std::sort(nodes.begin(), nodes.end());
-}
-
-size_t node_list::size() const {
-	return nodes.size();
-}
-
-
-void node_list::push(node&& node) {
-	
-	nodes.push_back(std::move(node));
-
+node_list sat::create_nodes(size_t num_nodes) {
+	auto list = node_list();
+	for (auto i = 0; i < num_nodes; ++i) list.emplace_back(i);
+	return list;
 }

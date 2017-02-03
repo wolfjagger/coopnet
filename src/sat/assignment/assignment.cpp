@@ -14,21 +14,20 @@ incomplete_assignment::incomplete_assignment(const problem& prob) {
 
 }
 
+bool incomplete_assignment::is_indeterminate() const {
+
+	return std::any_of(data.cbegin(), data.cend(), [](const pair& p) {
+		return boost::indeterminate(p.second);
+	});
+
+}
+
 
 
 assignment::assignment(const incomplete_assignment& incomplete_assign) {
 
-	auto is_indeterminate_pred
-		= [](std::pair<vertex_descriptor, boost::tribool> pair) {
-		return pair.second == boost::indeterminate;
-	};
-
-	if (std::any_of(
-		incomplete_assign.data.cbegin(), incomplete_assign.data.cend(),
-		is_indeterminate_pred)) {
-		
+	if (incomplete_assign.is_indeterminate()) {
 		throw std::exception("Incomplete assignment cannot be transformed.");
-
 	}
 
 	auto copy_pred = [this](std::pair<vertex_descriptor, boost::tribool> pair) {

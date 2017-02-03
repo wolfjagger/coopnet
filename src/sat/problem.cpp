@@ -38,6 +38,9 @@ clause_satisfiability problem::clause_satisfiability_for(
 
 void problem::build_graph(node_list&& nodes, clause_list&& clauses) {
 
+	num_nodes = nodes.size();
+	num_clauses = clauses.size();
+
 	prob_graph = graph();
 
 	// Temp map to connect node-clause edges

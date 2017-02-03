@@ -17,7 +17,6 @@ namespace sat {
 		void operator()(Vertex v, Graph& g) {
 
 			// Split depending on whether vert is node or clause
-			//TODO: See if node/clause_event need more context; could supply g, v, etc.
 			auto& prop = g[v];
 			switch(prop.kind) {
 			case vert_prop::Node:
