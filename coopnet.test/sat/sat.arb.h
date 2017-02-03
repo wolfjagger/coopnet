@@ -2,9 +2,9 @@
 
 #include <ostream>
 #include "rapidcheck.h"
-#include "sat/component/node.h"
-#include "sat/component/clause.h"
-#include "sat/assignment/assignment.h"
+#include "coopnet/sat/component/node.h"
+#include "coopnet/sat/component/clause.h"
+#include "coopnet/sat/assignment/assignment.h"
 #include "rc_printing.h"
 
 

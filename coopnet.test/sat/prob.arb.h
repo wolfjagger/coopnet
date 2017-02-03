@@ -2,7 +2,7 @@
 
 #include <ostream>
 #include "rapidcheck.h"
-#include "sat/problem.h"
+#include "coopnet/sat/problem.h"
 #include "sat.arb.h"
 
 

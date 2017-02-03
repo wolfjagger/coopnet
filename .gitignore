@@ -2,6 +2,7 @@
 out
 resource.h
 *.vcxproj.filters
+*.idb
 
 # User-specific files
 *.suo
