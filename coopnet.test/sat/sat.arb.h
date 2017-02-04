@@ -11,6 +11,12 @@
 
 namespace rc {
 
+	// Nodes
+	inline Gen<sat::node> node_gen_with_int_gen(
+		Gen<unsigned int>& int_gen) {
+		return gen::construct<sat::node>(int_gen);
+	}
+
 	template<>
 	struct Arbitrary<sat::node> {
 		static Gen<sat::node> arbitrary() {
@@ -19,39 +25,43 @@ namespace rc {
 		}
 	};
 
-	inline Gen<sat::node> node_gen_within(
-		unsigned int min_id, unsigned int max_id) {
-		return gen::construct<sat::node>(gen::inRange(min_id, max_id));
+	// Literals
+	inline Gen<sat::literal> lit_gen_with_nodes(
+		Gen<sat::node>& node_gen) {
+
+		return gen::construct<sat::literal>(
+			node_gen, gen::arbitrary<bool>());
+
+	}
+
+	template<>
+	struct Arbitrary<sat::literal> {
+		static Gen<sat::literal> arbitrary() {
+			return lit_gen_with_nodes(gen::arbitrary<sat::node>());
+		}
+	};
+
+	// Clause
+	inline Gen<sat::clause> clause_gen_with_nodes(
+		Gen<sat::node>& node_gen) {
+
+		auto lit_list_gen = gen::uniqueBy<std::vector<sat::literal>>(
+			lit_gen_with_nodes(node_gen),
+			[](const sat::literal& lit) {
+			return lit.n;
+		});
+		return gen::construct<sat::clause>(lit_list_gen);
+
 	}
 
 	template<>
 	struct Arbitrary<sat::clause> {
 		static Gen<sat::clause> arbitrary() {
-
-			return gen::exec([]() {
-				auto node_list = *gen::unique<std::vector<sat::node>>(
-					gen::arbitrary<sat::node>());
-				auto sgn_list = *gen::container<std::vector<bool>>(
-					node_list.size(), gen::arbitrary<bool>());
-				return sat::clause(sat::clause_data(node_list, sgn_list));
-			});
-
+			return clause_gen_with_nodes(gen::arbitrary<sat::node>());
 		}
 	};
 
-	inline Gen<sat::clause> clause_gen_from_nodes(
-		unsigned int min_id, unsigned int max_id) {
-
-		return gen::exec([min_id, max_id]() {
-			auto node_list = *gen::unique<std::vector<sat::node>>(
-				node_gen_within(min_id, max_id));
-			auto sgn_list = *gen::container<std::vector<bool>>(
-				node_list.size(), gen::arbitrary<bool>());
-			return sat::clause(sat::clause_data(node_list, sgn_list));
-		});
-
-	}
-
+	// Tribool
 	template<>
 	struct Arbitrary<boost::logic::tribool> {
 		static Gen<boost::logic::tribool> arbitrary() {
@@ -69,6 +79,7 @@ namespace rc {
 		}
 	};
 
+	// Assignment
 	template<>
 	struct Arbitrary<sat::assignment> {
 		static Gen<sat::assignment> arbitrary() {

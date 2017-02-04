@@ -17,9 +17,9 @@ namespace rc { namespace detail {
 
 	inline std::ostream& operator<<(
 		std::ostream& os, const sat::clause& c) {
-		for (auto i = 0; i < c.size(); ++i) {
-			os << (c.sgns().at(i) ? "+" : "-");
-			os << c.nodes().at(i) << " ";
+		for (auto lit : c.literals()) {
+			os << (lit.sgn ? "+" : "-");
+			os << lit.n << " ";
 		}
 		return os;
 	}

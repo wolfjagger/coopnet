@@ -16,7 +16,9 @@ namespace rc {
 			return gen::exec([]() {
 				auto size = *gen::inRange(1, 20);
 				auto clause_list = *gen::unique<std::vector<sat::clause>>(
-					clause_gen_from_nodes(0, size));
+					clause_gen_with_nodes(
+						node_gen_with_int_gen(
+							gen::inRange<unsigned int>(0, size))));
 				return sat::problem(
 					size, clause_list.begin(), clause_list.end());
 			});

@@ -64,15 +64,12 @@ void problem::build_graph(node_list&& nodes, clause_list&& clauses) {
 		auto clause_vert = add_vertex(prob_graph, clause_to_add);
 
 		//for (auto node : clause_to_add.nodes()) {
-		for(size_t i=0; i<clause_to_add.size(); ++i) {
+		for(auto& lit : clause_to_add.literals()) {
 
-			//TODO: Add error handling for if node not in map.
-			auto node = clause_to_add.nodes()[i];
-			auto sgn = clause_to_add.sgns()[i];
-			
 			// Add node in clause as edge to graph
-			auto node_vert = map_node_to_vert.at(node);
-			add_edge(prob_graph, node_vert, clause_vert, sgn);
+			//TODO: Add error handling for if node not in map.
+			auto node_vert = map_node_to_vert.at(lit.n);
+			add_edge(prob_graph, node_vert, clause_vert, lit.sgn);
 
 		}
 
