@@ -18,8 +18,8 @@ namespace rc { namespace detail {
 	inline std::ostream& operator<<(
 		std::ostream& os, const sat::clause& c) {
 		for (auto lit : c.literals()) {
-			os << (lit.sgn ? "+" : "-");
-			os << lit.n << " ";
+			os << (lit.second ? "+" : "-");
+			os << lit.first << " ";
 		}
 		return os;
 	}

@@ -26,7 +26,7 @@ namespace sat {
 				// Generate a clause by getting three distinct nodes randomly
 				//  and flip a coin for each literals sgn.
 				auto nums = alphali::rand_vec_leq(num_nodes-1, 3);
-				clauses.emplace_back(clause::lit_storage{
+				clauses.emplace_back(clause{
 					literal(unsigned(nums[0]), take_chance(prob0)),
 					literal(unsigned(nums[1]), take_chance(prob1)),
 					literal(unsigned(nums[2]), take_chance(prob2)),
@@ -51,7 +51,7 @@ namespace sat {
 			for (unsigned int clause_idx = 0; clause_idx < num_clauses1; ++clause_idx) {
 
 				auto nums = alphali::rand_vec_leq(num_nodes1-1, 3);
-				clauses.emplace_back(clause::lit_storage{
+				clauses.emplace_back(clause{
 					literal(unsigned(nums[0]), take_chance(prob0)),
 					literal(unsigned(nums[1]), take_chance(prob1)),
 					literal(unsigned(nums[2]), take_chance(prob2)),
@@ -63,7 +63,7 @@ namespace sat {
 
 				auto nums = alphali::rand_vec_inclusive(
 					num_nodes1, num_nodes1 + num_nodes2 - 1, 3);
-				clauses.emplace_back(clause::lit_storage{
+				clauses.emplace_back(clause{
 					literal(unsigned(nums[0]), take_chance(prob0)),
 					literal(unsigned(nums[1]), take_chance(prob1)),
 					literal(unsigned(nums[2]), take_chance(prob2)),

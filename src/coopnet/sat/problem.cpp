@@ -68,8 +68,8 @@ void problem::build_graph(node_list&& nodes, clause_list&& clauses) {
 
 			// Add node in clause as edge to graph
 			//TODO: Add error handling for if node not in map.
-			auto node_vert = map_node_to_vert.at(lit.n);
-			add_edge(prob_graph, node_vert, clause_vert, lit.sgn);
+			auto node_vert = map_node_to_vert.at(lit.first);
+			add_edge(prob_graph, node_vert, clause_vert, lit.second);
 
 		}
 

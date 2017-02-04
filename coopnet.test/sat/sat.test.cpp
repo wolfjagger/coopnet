@@ -46,8 +46,8 @@ TEST_CASE("Clause", "[sat]") {
 			std::vector<sat::literal>& lits1,
 			std::vector<sat::literal>& lits2) {
 
-			auto clause1 = clause(lits1);
-			auto clause2 = clause(lits2);
+			auto clause1 = clause(lits1.cbegin(), lits1.cend());
+			auto clause2 = clause(lits2.cbegin(), lits2.cend());
 
 			if (lits1 < lits2) RC_ASSERT(clause1 < clause2);
 			

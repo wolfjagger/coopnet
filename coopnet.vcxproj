@@ -138,7 +138,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\coopnet\sat\assignment\assignment.cpp" />
-    <ClCompile Include="src\coopnet\sat\component\clause.cpp" />
     <ClCompile Include="src\coopnet\sat\component\node.cpp" />
     <ClCompile Include="src\coopnet\graph\graph.cpp" />
     <ClCompile Include="src\coopnet\sat\problem.cpp" />

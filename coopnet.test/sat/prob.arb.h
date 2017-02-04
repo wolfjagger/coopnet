@@ -13,14 +13,23 @@ namespace rc {
 	struct Arbitrary<sat::problem> {
 		static Gen<sat::problem> arbitrary() {
 
-			return gen::exec([]() {
-				auto size = *gen::inRange(1, 20);
-				auto clause_list = *gen::unique<std::vector<sat::clause>>(
-					clause_gen_with_nodes(
-						node_gen_with_int_gen(
-							gen::inRange<unsigned int>(0, size))));
-				return sat::problem(
-					size, clause_list.begin(), clause_list.end());
+			auto int_gen = gen::inRange(1, 20);
+
+			return gen::mapcat(int_gen, [](unsigned int size) {
+
+				auto clause_list_gen
+					= gen::unique<std::vector<sat::clause>>(
+						clause_gen_with_nodes(
+							node_gen_with_int_gen(
+								gen::inRange<unsigned int>(0, size))));
+
+				return gen::map(clause_list_gen,
+					[size](std::vector<sat::clause>& vec) {
+
+					return sat::problem(size, vec.cbegin(), vec.cend());
+
+				});
+
 			});
 
 		}
