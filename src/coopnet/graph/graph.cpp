@@ -24,7 +24,10 @@ vertex_descriptor sat::add_vertex(graph& g, const clause& c) {
 
 	auto prop = graph::vertex_property_type();
 	auto name = std::string("c");
-	for (auto n : c.nodes()) name += std::to_string(n.id);
+	for (auto lit : c.literals()) {
+		name += lit.sgn ? "p" : "n";
+		name += std::to_string(lit.n.id);
+	}
 	prop.name = name;
 	prop.kind = vert_prop::Clause;
 

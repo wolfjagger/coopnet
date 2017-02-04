@@ -43,34 +43,13 @@ TEST_CASE("Clause", "[sat]") {
 	SECTION("Comparisons.") {
 
 		auto lam = [](
-			std::vector<std::pair<node, bool>>& nb1,
-			std::vector<std::pair<node, bool>>& nb2) {
+			std::vector<sat::literal>& lits1,
+			std::vector<sat::literal>& lits2) {
 
-			auto nodes1 = std::vector<node>();
-			auto sgns1 = std::vector<bool>();
-			auto nodes2 = std::vector<node>();
-			auto sgns2 = std::vector<bool>();
+			auto clause1 = clause(lits1);
+			auto clause2 = clause(lits2);
 
-			for (auto& p : nb1) {
-				nodes1.push_back(p.first);
-				sgns1.push_back(p.second);
-			}
-
-			for (auto& p : nb2) {
-				nodes2.push_back(p.first);
-				sgns2.push_back(p.second);
-			}
-
-			auto clause1 = clause(clause_data(nodes1, sgns1));
-			auto clause2 = clause(clause_data(nodes2, sgns2));
-
-			if (nodes1 < nodes2) RC_ASSERT(clause1 < clause2);
-			else if (nodes1 > nodes2) RC_ASSERT(clause1 > clause2);
-			else {
-				if (sgns1 < sgns2) RC_ASSERT(clause1 < clause2);
-				else if(sgns1 > sgns2) RC_ASSERT(clause1 > clause2);
-				else RC_ASSERT(clause1 == clause2);
-			}
+			if (lits1 < lits2) RC_ASSERT(clause1 < clause2);
 			
 		};
 

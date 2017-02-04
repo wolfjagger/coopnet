@@ -15,12 +15,24 @@ namespace sat {
 
 	};
 
-	bool operator<(const node& node_1, const node& node_2);
-	bool operator==(const node& node_1, const node& node_2);
+	bool operator<(const node& node1, const node& node2);
+	bool operator==(const node& node1, const node& node2);
 	DEFINE_EXTRA_OPS(node);
 
-
-
 	node_list create_nodes(size_t num_nodes);
+
+
+	struct literal {
+
+		node n;
+		bool sgn;
+
+		literal(node n_init, bool sgn_init);
+
+	};
+
+	bool operator<(const literal& lit1, const literal& lit2);
+	bool operator==(const literal& lit1, const literal& lit2);
+	DEFINE_EXTRA_OPS(literal);
 
 }
