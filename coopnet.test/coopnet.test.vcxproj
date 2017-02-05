@@ -150,15 +150,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="sat\prob.gen.cpp" />
     <ClCompile Include="sat\problem.test.cpp" />
+    <ClCompile Include="sat\sat.gen.cpp" />
     <ClCompile Include="sat\sat.test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="catch.hpp" />
     <ClInclude Include="sat\mock_sat_visitor.h" />
-    <ClInclude Include="sat\prob.arb.h" />
+    <ClInclude Include="sat\prob.gen.h" />
     <ClInclude Include="sat\rc_printing.h" />
-    <ClInclude Include="sat\sat.arb.h" />
+    <ClInclude Include="sat\sat.gen.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\coopnet.vcxproj">

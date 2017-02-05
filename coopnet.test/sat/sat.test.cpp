@@ -1,5 +1,5 @@
 #include "catch.hpp"
-#include "sat.arb.h"
+#include "sat.gen.h"
 
 using namespace sat;
 

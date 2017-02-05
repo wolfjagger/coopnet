@@ -1,6 +1,7 @@
 #include <numeric>
 #include "catch.hpp"
-#include "prob.arb.h"
+#include "prob.gen.h"
+#include "sat.gen.h"
 #include "coopnet/sat/generation/problem_factory.h"
 
 using namespace sat;
