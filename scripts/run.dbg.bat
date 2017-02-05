@@ -1,7 +1,7 @@
 @echo off
 CD ..
 set project_dir=%cd%
-CD x64\Release
+CD x64\Debug
 :all_loop
 coopgephi.exe
 echo.
