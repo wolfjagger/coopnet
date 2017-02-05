@@ -45,16 +45,26 @@ namespace rc {
 	inline Gen<sat::clause> clause_gen_with_nodes(
 		Gen<sat::node>& node_gen) {
 
-		using lit_vector = std::vector<sat::literal>;
+		auto lit_list_gen = gen::container<sat::literal::lit_set>(
+			lit_gen_with_nodes(node_gen));
 
-		auto lit_list_gen = gen::uniqueBy<lit_vector>(
-			lit_gen_with_nodes(node_gen),
-			[](const sat::literal& lit) {
-			return lit.n;
-		});
+		auto lam = [](sat::literal::lit_set& set) {
+			return sat::clause(set.begin(), set.end());
+		};
 
-		auto lam = [](lit_vector& vec) {
-			return sat::clause(vec.begin(), vec.end());
+		return gen::map(lit_list_gen, lam);
+
+	}
+
+	inline Gen<sat::clause> clause_gen_with_nodes(
+		size_t len, Gen<sat::node>& node_gen) {
+
+		auto lit_list_gen
+			= gen::container<sat::literal::lit_set>(
+				len, lit_gen_with_nodes(node_gen));
+
+		auto lam = [](sat::literal::lit_set& set) {
+			return sat::clause(set.begin(), set.end());
 		};
 
 		return gen::map(lit_list_gen, lam);

@@ -43,13 +43,23 @@ TEST_CASE("Clause", "[sat]") {
 	SECTION("Comparisons.") {
 
 		auto lam = [](
-			std::vector<sat::literal>& lits1,
-			std::vector<sat::literal>& lits2) {
+			sat::literal::lit_set& lits0,
+			sat::literal::lit_set& lits1) {
 
+			auto clause0 = clause(lits0.cbegin(), lits0.cend());
 			auto clause1 = clause(lits1.cbegin(), lits1.cend());
-			auto clause2 = clause(lits2.cbegin(), lits2.cend());
 
-			if (lits1 < lits2) RC_ASSERT(clause1 < clause2);
+			if(lits0 == lits1) {
+				RC_ASSERT(clause0 == clause1);
+			} else if (lits0 < lits1) {
+				RC_ASSERT(clause0 != clause1);
+				RC_ASSERT(clause0 < clause1);
+				RC_ASSERT(clause1 > clause0);
+			} else if (lits0 > lits1) {
+				RC_ASSERT(clause0 != clause1);
+				RC_ASSERT(clause0 > clause1);
+				RC_ASSERT(clause1 < clause0);
+			}
 			
 		};
 

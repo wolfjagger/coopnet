@@ -34,10 +34,7 @@ literal::literal(node n_init, bool sgn_init) :
 
 bool sat::operator<(const literal& lit1, const literal& lit2) {
 	if (lit1.n < lit2.n) return true;
-	else if (lit1.n > lit2.n) return false;
-	else {
-		return lit1.sgn < lit2.sgn;
-	}
+	else return (!(lit1.n > lit2.n) && lit1.sgn < lit2.sgn);
 }
 bool sat::operator==(const literal& lit1, const literal& lit2) {
 	return (lit1.n == lit2.n && lit1.sgn == lit2.sgn);

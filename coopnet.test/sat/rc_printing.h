@@ -16,9 +16,16 @@ namespace rc { namespace detail {
 	}
 
 	inline std::ostream& operator<<(
+		std::ostream& os, const sat::literal& lit) {
+		os << lit.sgn ? "p" : "n";
+		os << lit.n;
+		return os;
+	}
+
+	inline std::ostream& operator<<(
 		std::ostream& os, const sat::clause& c) {
 		for (auto lit : c.literals()) {
-			os << (lit.second ? "+" : "-");
+			os << (lit.second ? "p" : "n");
 			os << lit.first << " ";
 		}
 		return os;

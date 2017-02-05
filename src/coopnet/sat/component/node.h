@@ -1,5 +1,6 @@
 #pragma once
 
+#include <set>
 #include "alphali/util/operators.h"
 #include "component_fwd.h"
 
@@ -23,6 +24,18 @@ namespace sat {
 
 
 	struct literal {
+
+	private:
+
+		struct compare_lits {
+			bool operator()(const literal& lit1, const literal& lit2) const {
+				return lit1.n < lit2.n;
+			}
+		};
+
+	public:
+
+		using lit_set = std::set<literal, compare_lits>;
 
 		node n;
 		bool sgn;
