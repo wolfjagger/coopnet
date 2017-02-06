@@ -171,6 +171,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="doc\build\boost.txt" />
+    <Text Include="doc\build\rapidcheck.txt" />
     <Text Include="doc\General Notes\Architecture.txt" />
     <Text Include="src\coopnet\sat\solving\ideas.txt" />
   </ItemGroup>

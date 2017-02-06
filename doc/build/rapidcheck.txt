@@ -1,0 +1,12 @@
+First, make sure the rapidcheck subrepo is initialized.
+
+cd into coopnet/rapidcheck
+mkdir build
+
+Now using VS2015 command prompt, cd into coopnet/rapidcheck/build.
+cmake -G "Visual Studio 14 2015 Win64" ..
+
+This will create the rapidcheck project to build in the coopnet sln.
+
+Note that this project will build x64 rapidcheck only; remove
+ the Win64 to build x86 version.
