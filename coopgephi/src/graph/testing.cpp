@@ -1,6 +1,5 @@
 #include "testing.h"
-#include "coopnet/sat/problem.h"
-#include "coopnet/sat/generation/problem_factory.h"
+#include "coopnet/sat/problem/problem_factory.h"
 
 
 

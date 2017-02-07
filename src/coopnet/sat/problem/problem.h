@@ -1,8 +1,8 @@
 #pragma once
 
 #include "coopnet/graph/graph.h"
-#include "component/node.h"
-#include "component/clause.h"
+#include "coopnet/sat/component/node.h"
+#include "coopnet/sat/component/clause.h"
 
 
 

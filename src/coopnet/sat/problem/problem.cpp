@@ -2,8 +2,8 @@
 #include <queue>
 #include "boost/graph/breadth_first_search.hpp"
 #include "boost/graph/connected_components.hpp"
-#include "assignment/assignment.h"
-#include "visitor/satisfiability_visitor.h"
+#include "coopnet/sat/visitor/satisfiability_visitor.h"
+#include "assignment.h"
 
 using namespace sat;
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "coopnet/sat/assignment/assignment.h"
+#include "coopnet/sat/problem/assignment.h"
 #include "sat_visitor.h"
 
 

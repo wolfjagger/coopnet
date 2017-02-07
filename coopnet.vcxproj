@@ -137,11 +137,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\coopnet\sat\assignment\assignment.cpp" />
+    <ClCompile Include="src\coopnet\sat\problem\assignment.cpp" />
     <ClCompile Include="src\coopnet\sat\component\node.cpp" />
     <ClCompile Include="src\coopnet\graph\graph.cpp" />
-    <ClCompile Include="src\coopnet\sat\problem.cpp" />
-    <ClCompile Include="src\coopnet\sat\generation\problem_factory.cpp" />
+    <ClCompile Include="src\coopnet\sat\problem\problem.cpp" />
+    <ClCompile Include="src\coopnet\sat\problem\problem_factory.cpp" />
+    <ClCompile Include="src\coopnet\sat\problem\problem_util.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\dpll\dpll_formula.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\dpll\dpll_solver.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\dpll\dpll_visitor.cpp" />
@@ -149,13 +150,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\coopnet\graph\bgl_inc.h" />
-    <ClInclude Include="src\coopnet\sat\assignment\assignment.h" />
+    <ClInclude Include="src\coopnet\sat\problem\assignment.h" />
     <ClInclude Include="src\coopnet\sat\component\clause.h" />
     <ClInclude Include="src\coopnet\sat\component\component_fwd.h" />
     <ClInclude Include="src\coopnet\sat\component\node.h" />
     <ClInclude Include="src\coopnet\graph\graph.h" />
-    <ClInclude Include="src\coopnet\sat\problem.h" />
-    <ClInclude Include="src\coopnet\sat\generation\problem_factory.h" />
+    <ClInclude Include="src\coopnet\sat\problem\problem.h" />
+    <ClInclude Include="src\coopnet\sat\problem\problem_factory.h" />
+    <ClInclude Include="src\coopnet\sat\problem\problem_util.h" />
     <ClInclude Include="src\sat\sat_defs.h" />
     <ClInclude Include="src\coopnet\sat\visitor\sat_visitor.h" />
     <ClInclude Include="src\coopnet\sat\solving\dpll\dpll_formula.h" />

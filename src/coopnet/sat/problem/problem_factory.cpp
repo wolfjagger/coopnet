@@ -1,6 +1,9 @@
 #include "problem_factory.h"
+#include <algorithm>
 #include "alphali/util/random.h"
-#include "coopnet/sat/problem.h"
+#include "problem.h"
+#include "problem_util.h"
+
 
 
 namespace sat {
@@ -11,17 +14,34 @@ namespace sat {
 
 	namespace {
 
-		problem generate_3sat_problem(
-			unsigned num_nodes, unsigned num_clauses,
-			float prob0, float prob1, float prob2) {
+		unsigned int calc_max_num_clauses(
+			unsigned int num_nodes, unsigned int num_clauses,
+			unsigned int clause_len = 3) {
 
 			// 3-SAT and expecting no duplicates, so need at least three literals.
-			if (num_nodes < 3)
+			if (num_nodes < clause_len)
 				throw std::exception("Not enough nodes to construct a clause.");
+
+			auto max_num_clauses
+				= static_cast<unsigned int>(
+					problem_util::max_num_clauses_with_length(num_nodes, 3));
+
+			return std::min(max_num_clauses, num_clauses);
+
+		}
+
+
+		problem generate_3sat_problem(
+			unsigned int num_nodes, unsigned int num_clauses,
+			float prob0, float prob1, float prob2) {
+
+			auto max_num_clauses
+				= calc_max_num_clauses(num_nodes, num_clauses);
 
 			auto clauses = std::vector<clause>();
 
-			for (unsigned int clause_idx = 0; clause_idx < num_clauses; ++clause_idx) {
+			for (unsigned int clause_idx = 0;
+				clause_idx < max_num_clauses; ++clause_idx) {
 
 				// Generate a clause by getting three distinct nodes randomly
 				//  and flip a coin for each literals sgn.
@@ -43,12 +63,13 @@ namespace sat {
 			unsigned num_clauses1, unsigned num_clauses2,
 			float prob0, float prob1, float prob2) {
 
-			if (num_nodes1 < 3 || num_nodes2 < 3)
-				throw std::exception("Not enough nodes to construct a clause.");
-
 			auto clauses = std::vector<sat::clause>();
 
-			for (unsigned int clause_idx = 0; clause_idx < num_clauses1; ++clause_idx) {
+			auto max_num_clauses1
+				= calc_max_num_clauses(num_nodes1, num_clauses1);
+
+			for (unsigned int clause_idx = 0;
+				clause_idx < max_num_clauses1; ++clause_idx) {
 
 				auto nums = alphali::rand_vec_leq(num_nodes1-1, 3);
 				clauses.emplace_back(clause{
@@ -59,7 +80,11 @@ namespace sat {
 
 			}
 
-			for (unsigned int clause_idx = 0; clause_idx < num_clauses2; ++clause_idx) {
+			auto max_num_clauses2
+				= calc_max_num_clauses(num_nodes2, num_clauses2);
+
+			for (unsigned int clause_idx = 0;
+				clause_idx < max_num_clauses2; ++clause_idx) {
 
 				auto nums = alphali::rand_vec_inclusive(
 					num_nodes1, num_nodes1 + num_nodes2 - 1, 3);

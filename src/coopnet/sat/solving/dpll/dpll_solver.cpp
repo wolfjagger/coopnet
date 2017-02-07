@@ -2,7 +2,7 @@
 #include <iostream>
 #include "boost/logic/tribool.hpp"
 #include "alphali/containers/random_iterator.h"
-#include "coopnet/sat/problem.h"
+#include "coopnet/sat/problem/problem.h"
 
 using namespace sat;
 

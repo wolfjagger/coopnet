@@ -1,6 +1,6 @@
 #include "dpll_formula.h"
 #include <iostream>
-#include "coopnet/sat/problem.h"
+#include "coopnet/sat/problem/problem.h"
 
 using namespace sat;
 

@@ -1,6 +1,6 @@
 #include "assignment.h"
 #include <algorithm>
-#include "coopnet/sat/problem.h"
+#include "problem.h"
 
 using namespace sat;
 

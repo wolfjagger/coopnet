@@ -2,7 +2,7 @@
 
 #include <queue>
 #include "boost/graph/breadth_first_search.hpp"
-#include "coopnet/sat/assignment/assignment.h"
+#include "coopnet/sat/problem/assignment.h"
 #include "coopnet/sat/visitor/sat_visitor.h"
 #include "dpll_status.h"
 #include "prune_stack.h"

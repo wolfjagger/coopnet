@@ -2,7 +2,6 @@
 #include "catch.hpp"
 #include "prob.gen.h"
 #include "sat.gen.h"
-#include "coopnet/sat/generation/problem_factory.h"
 #include "coopnet/sat/solving/dpll/dpll_solver.h"
 
 using namespace sat;
@@ -28,33 +27,7 @@ TEST_CASE("Problem initialization", "[sat]") {
 
 TEST_CASE("Problem assignment verification", "[sat]") {
 
-	//TODO: Replace with problem generators (in coopnet.test),
-	// and firm up num_nodes/num_clauses relations (in coopnet)
-	auto lam_gen_prob = [](bool assignment_sgn) {
-		auto num_nodes = *rc::gen::inRange<unsigned int>(3, 10);
-		auto num_clauses = *rc::gen::inRange<unsigned int>(
-			1, 2 * num_nodes*num_nodes);
-		return sat::generate_solvable_3sat_problem(
-			num_nodes, num_clauses, assignment_sgn);
-	};
-
-	auto lam_gen_disconnected_prob = [](bool assignment_sgn) {
-		auto num_nodes = *rc::gen::inRange<unsigned int>(3, 6);
-		auto num_clauses = *rc::gen::inRange<unsigned int>(
-			1, 2 * num_nodes*num_nodes);
-		return sat::generate_disconnected_solvable_3sat_problem(
-			num_nodes, num_nodes, num_clauses, num_clauses, assignment_sgn);
-	};
-
-	auto lam_gen_random_prob = []() {
-		auto num_nodes = *rc::gen::inRange<unsigned int>(3, 10);
-		auto hard_num_clauses = unsigned int(std::round(num_nodes * 4.2f));
-		auto num_clauses = *rc::gen::inRange<unsigned int>(
-			hard_num_clauses-num_nodes, hard_num_clauses+num_nodes);
-		return sat::generate_random_3sat_problem(num_nodes, num_clauses);
-	};
-
-	auto lam_check_solvable = [](const problem& prob, bool assignment_sgn) {
+	auto lam_check_solvable = [](const problem& prob, bool assignment_sgn, bool TMP = false) {
 
 		auto assign = prob.create_same_sgn_assignment(assignment_sgn);
 		RC_ASSERT(prob.is_satisfied_by(assign));
@@ -70,11 +43,17 @@ TEST_CASE("Problem assignment verification", "[sat]") {
 
 	};
 
+
+
 	SECTION("Connected, same sign problem satisfiable; dpll solver finds solution.") {
 
-		auto lam = [lam_gen_prob, lam_check_solvable](bool assignment_sgn) {
+		auto lam = [lam_check_solvable](bool assignment_sgn) {
 
-			auto prob = lam_gen_prob(assignment_sgn);
+			auto prob = *rc::same_sgn_prob_gen(
+				std::make_pair(3, 10),
+				std::make_pair(1, 40),
+				assignment_sgn);
+
 			lam_check_solvable(prob, assignment_sgn);
 
 		};
@@ -83,24 +62,32 @@ TEST_CASE("Problem assignment verification", "[sat]") {
 		
 	}
 
-	SECTION("Connected, same sign problem satisfiable; dpll solver finds solution.") {
+	SECTION("Connected, same sign disconnected problem satisfiable; dpll solver finds solution.") {
 
-		auto lam = [lam_gen_disconnected_prob, lam_check_solvable](bool assignment_sgn) {
+		auto lam = [lam_check_solvable](bool assignment_sgn) {
 
-			auto prob = lam_gen_disconnected_prob(assignment_sgn);
+			auto prob = *rc::same_sgn_disconnected_prob_gen(
+				std::make_pair(3, 6),
+				std::make_pair(1, 20),
+				std::make_pair(3, 6),
+				std::make_pair(1, 20),
+				assignment_sgn);
+
 			lam_check_solvable(prob, assignment_sgn);
 
 		};
-
+		
 		REQUIRE(rc::check(lam));
 		
 	}
 
 	SECTION("Random problems give correct assignments if solvable.") {
 		
-		auto lam = [lam_gen_random_prob]() {
+		auto lam = []() {
 
-			auto prob = lam_gen_random_prob();
+			auto prob = *rc::random_prob_gen(
+				std::make_pair(3, 10),
+				std::make_pair(1, 50));
 		
 			auto solver = sat::dpll_solver();
 			auto pair = solver.solve(prob);
