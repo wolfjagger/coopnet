@@ -36,6 +36,22 @@ clause_satisfiability problem::clause_satisfiability_for(
 
 
 
+std::shared_ptr<const assignment> problem::create_same_sgn_assignment(bool sgn) const {
+
+	// Should be satisfied by an assignment of all true
+	std::map<sat::vertex_descriptor, bool> map_assign;
+	for (auto& pair : get_map_node_to_vert()) {
+		map_assign.emplace(pair.second, sgn);
+	}
+	auto assign = std::make_shared<sat::assignment>();
+	assign->data = std::move(map_assign);
+	return assign;
+	
+}
+		
+
+
+
 void problem::build_graph(node_list&& nodes, clause_list&& clauses) {
 
 	num_nodes = nodes.size();

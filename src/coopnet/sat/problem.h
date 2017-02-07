@@ -81,6 +81,8 @@ namespace sat {
 			return num_unsatisfied_by(assign) == 0;
 		}
 
+		std::shared_ptr<const assignment> create_same_sgn_assignment(bool sgn) const;
+
 
 
 		const graph& get_graph() const { return prob_graph; }

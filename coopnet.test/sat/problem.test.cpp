@@ -3,6 +3,7 @@
 #include "prob.gen.h"
 #include "sat.gen.h"
 #include "coopnet/sat/generation/problem_factory.h"
+#include "coopnet/sat/solving/dpll/dpll_solver.h"
 
 using namespace sat;
 
@@ -27,41 +28,99 @@ TEST_CASE("Problem initialization", "[sat]") {
 
 TEST_CASE("Problem assignment verification", "[sat]") {
 
-	auto lam_gen_prob = [](
-		unsigned int num_nodes, unsigned int num_clauses, bool assignment_sgn) {
-
-		return sat::generate_solvable_3sat_problem(
-			num_nodes, num_clauses, assignment_sgn);
-
-	};
-
-	auto lam_gen_assignment = [](const sat::problem& prob, bool assignment_sgn) {
-		// Should be satisfied by an assignment of all true
-		std::map<sat::vertex_descriptor, bool> map_assign;
-		for (auto& pair : prob.get_map_node_to_vert()) {
-			map_assign.emplace(pair.second, assignment_sgn);
-		}
-		auto assign = std::make_shared<sat::assignment>();
-		assign->data = std::move(map_assign);
-		return assign;
-	};
-
-	auto lam_tot = [lam_gen_prob, lam_gen_assignment](bool assignment_sgn) {
-		auto num_nodes = *rc::gen::inRange<unsigned int>(3, 20);
+	//TODO: Replace with problem generators (in coopnet.test),
+	// and firm up num_nodes/num_clauses relations (in coopnet)
+	auto lam_gen_prob = [](bool assignment_sgn) {
+		auto num_nodes = *rc::gen::inRange<unsigned int>(3, 10);
 		auto num_clauses = *rc::gen::inRange<unsigned int>(
 			1, 2 * num_nodes*num_nodes);
-		auto prob = lam_gen_prob(num_nodes, num_clauses, assignment_sgn);
-		auto assign = lam_gen_assignment(prob, assignment_sgn);
-		return prob.is_satisfied_by(assign);
+		return sat::generate_solvable_3sat_problem(
+			num_nodes, num_clauses, assignment_sgn);
 	};
 
-	SECTION("Connected, same sign problem satisfiable.") {
+	auto lam_gen_disconnected_prob = [](bool assignment_sgn) {
+		auto num_nodes = *rc::gen::inRange<unsigned int>(3, 6);
+		auto num_clauses = *rc::gen::inRange<unsigned int>(
+			1, 2 * num_nodes*num_nodes);
+		return sat::generate_disconnected_solvable_3sat_problem(
+			num_nodes, num_nodes, num_clauses, num_clauses, assignment_sgn);
+	};
 
-		auto lam = [lam_tot](bool assignment_sgn) {
-			return lam_tot(assignment_sgn);
+	auto lam_gen_random_prob = []() {
+		auto num_nodes = *rc::gen::inRange<unsigned int>(3, 10);
+		auto hard_num_clauses = unsigned int(std::round(num_nodes * 4.2f));
+		auto num_clauses = *rc::gen::inRange<unsigned int>(
+			hard_num_clauses-num_nodes, hard_num_clauses+num_nodes);
+		return sat::generate_random_3sat_problem(num_nodes, num_clauses);
+	};
+
+	auto lam_check_solvable = [](const problem& prob, bool assignment_sgn) {
+
+		auto assign = prob.create_same_sgn_assignment(assignment_sgn);
+		RC_ASSERT(prob.is_satisfied_by(assign));
+
+		auto solver = sat::dpll_solver();
+		auto pair = solver.solve(prob);
+
+		RC_ASSERT(pair.first == sat::solution_status::Satisfied);
+
+		auto assign_dpll = pair.second;
+		RC_ASSERT(assign_dpll);
+		RC_ASSERT(prob.is_satisfied_by(assign_dpll));
+
+	};
+
+	SECTION("Connected, same sign problem satisfiable; dpll solver finds solution.") {
+
+		auto lam = [lam_gen_prob, lam_check_solvable](bool assignment_sgn) {
+
+			auto prob = lam_gen_prob(assignment_sgn);
+			lam_check_solvable(prob, assignment_sgn);
+
 		};
 
 		REQUIRE(rc::check(lam));
 		
 	}
+
+	SECTION("Connected, same sign problem satisfiable; dpll solver finds solution.") {
+
+		auto lam = [lam_gen_disconnected_prob, lam_check_solvable](bool assignment_sgn) {
+
+			auto prob = lam_gen_disconnected_prob(assignment_sgn);
+			lam_check_solvable(prob, assignment_sgn);
+
+		};
+
+		REQUIRE(rc::check(lam));
+		
+	}
+
+	SECTION("Random problems give correct assignments if solvable.") {
+		
+		auto lam = [lam_gen_random_prob]() {
+
+			auto prob = lam_gen_random_prob();
+		
+			auto solver = sat::dpll_solver();
+			auto pair = solver.solve(prob);
+			switch (pair.first) {
+			case sat::solution_status::Satisfied:
+				RC_ASSERT(prob.is_satisfied_by(pair.second));
+				break;
+			case sat::solution_status::Unsatisfiable:
+				// Note this does not assure it is truly unsatisfiable
+				//  if dpll says it is.
+				break;
+			case sat::solution_status::Undetermined:
+				RC_FAIL();
+				break;
+			}
+
+		};
+
+		REQUIRE(rc::check(lam));
+
+	}
+
 }
