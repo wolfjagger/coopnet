@@ -10,7 +10,7 @@ namespace jj_gephi {
 	void print_graph(const sat::graph& g, const boost::dynamic_properties& dp) {
 
 		// If file exists, choose other file
-		std::string dirname = "../out/";
+		std::string dirname = "../../out/";
 		std::string filename = "gephi_try.graphml";
 		if (std::ifstream(dirname + filename)) {
 
