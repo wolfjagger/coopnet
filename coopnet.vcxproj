@@ -140,6 +140,7 @@
     <ClCompile Include="src\coopnet\sat\problem\assignment.cpp" />
     <ClCompile Include="src\coopnet\sat\component\node.cpp" />
     <ClCompile Include="src\coopnet\graph\graph.cpp" />
+    <ClCompile Include="src\coopnet\sat\problem\literal_shuffler.cpp" />
     <ClCompile Include="src\coopnet\sat\problem\problem.cpp" />
     <ClCompile Include="src\coopnet\sat\problem\problem_factory.cpp" />
     <ClCompile Include="src\coopnet\sat\problem\problem_util.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="src\coopnet\sat\component\component_fwd.h" />
     <ClInclude Include="src\coopnet\sat\component\node.h" />
     <ClInclude Include="src\coopnet\graph\graph.h" />
+    <ClInclude Include="src\coopnet\sat\problem\literal_shuffler.h" />
     <ClInclude Include="src\coopnet\sat\problem\problem.h" />
     <ClInclude Include="src\coopnet\sat\problem\problem_factory.h" />
     <ClInclude Include="src\coopnet\sat\problem\problem_util.h" />

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <map>
+#include <memory>
 #include "coopnet/graph/graph.h"
 #include "coopnet/sat/component/node.h"
 #include "coopnet/sat/component/clause.h"
@@ -9,6 +11,7 @@
 namespace sat {
 
 	struct assignment;
+	class literal_shuffler;
 
 	class problem {
 
@@ -28,7 +31,7 @@ namespace sat {
 		boost::dynamic_properties dyn_props;
 
 		// Map node with id to vertex_descriptor
-		std::map<node, vertex_descriptor> map_node_to_vert;
+		std::shared_ptr<std::map<node, vertex_descriptor>> map_node_to_vert;
 
 		// Connected components members
 		size_t num_connected_components;
@@ -88,7 +91,7 @@ namespace sat {
 		const graph& get_graph() const { return prob_graph; }
 		const boost::dynamic_properties& get_properties() const { return dyn_props; }
 
-		const std::map<node, vertex_descriptor>& get_map_node_to_vert() const {
+		std::shared_ptr<const std::map<node, vertex_descriptor>> get_map_node_to_vert() const {
 			return map_node_to_vert;
 		}
 
@@ -102,6 +105,11 @@ namespace sat {
 
 		auto get_num_nodes() const { return num_nodes; }
 		auto get_num_clauses() const { return num_clauses; }
+		auto get_num_verts() const { return num_nodes + num_clauses; }
+
+
+
+		void apply_shuffle(const literal_shuffler& shuffler);
 
 
 

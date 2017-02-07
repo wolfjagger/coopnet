@@ -36,10 +36,18 @@ namespace sat {
 
 	// Ease of use for adding node and property to graph
 	vertex_descriptor add_vertex(graph& g, node n);
+	vertex_descriptor change_vertex(
+		graph& g, vertex_descriptor vert, node n);
 	// Ease of use for adding clause and property to graph
 	vertex_descriptor add_vertex(graph& g, const clause& c);
+	vertex_descriptor change_vertex(
+		graph& g, vertex_descriptor vert, const clause& c);
 	// Ease of use for adding clause and property to graph
 	edge_descriptor add_edge(graph& g,
+		vertex_descriptor node_desc,
+		vertex_descriptor clause_desc,
+		bool sgn);
+	edge_descriptor change_edge(graph& g,
 		vertex_descriptor node_desc,
 		vertex_descriptor clause_desc,
 		bool sgn);

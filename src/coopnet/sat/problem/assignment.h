@@ -31,6 +31,7 @@ namespace sat {
 	struct assignment {
 
 		using map = std::map<vertex_descriptor, bool>;
+		using pair = std::pair<vertex_descriptor, bool>;
 		
 		map data;
 
