@@ -11,13 +11,13 @@ using namespace sat;
 
 literal_shuffler::literal_shuffler(const problem& prob) {
 
-	literals = std::vector<sat::literal>();
+	literals = std::vector<literal>();
 	literals.reserve(prob.get_num_nodes());
-	for (auto i = 0; i < literals.size(); ++i) {
+	for (auto i = 0; i < prob.get_num_nodes(); ++i) {
 		literals.emplace_back(i, true);
 	}
 
-	map_node_to_vert = prob.get_map_node_to_vert();
+	map_node_to_vert = &prob.get_node_vert_map();
 
 	shuffle();
 
@@ -40,7 +40,7 @@ void literal_shuffler::shuffle() {
 literal literal_shuffler::shuffle_literal(const literal& lit) const {
 
 	auto new_lit = literals.at(lit.n.id);
-	new_lit.sgn = lit.sgn == new_lit.sgn;
+	new_lit.sgn = (lit.sgn == new_lit.sgn);
 	return lit;
 
 }
@@ -48,8 +48,8 @@ literal literal_shuffler::shuffle_literal(const literal& lit) const {
 void literal_shuffler::apply_to_assignment(assignment& assign) const {
 
 	for_each(literals.cbegin(), literals.cend(), [this, &assign](const literal& lit) {
-		auto& sgn = assign.data[map_node_to_vert->at(lit.n.id)];
-		sgn = sgn == lit.sgn;
+		auto& sgn = assign.data.at(lit.n);
+		sgn = (sgn == lit.sgn);
 	});
 
 }

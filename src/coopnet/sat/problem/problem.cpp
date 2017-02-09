@@ -64,7 +64,8 @@ namespace {
 clause_satisfiability problem::clause_satisfiability_for(
 	std::shared_ptr<const assignment> assign) const {
 
-	auto satisfiability_collector = collect_satisfiability_visitor(assign);
+	auto satisfiability_collector
+		= collect_satisfiability_visitor(*this, assign);
 	auto bfs_visitor = boost::make_bfs_visitor(satisfiability_collector);
 
 	auto sources = std::vector<size_t>();
@@ -88,14 +89,15 @@ clause_satisfiability problem::clause_satisfiability_for(
 
 
 
-std::shared_ptr<const assignment> problem::create_same_sgn_assignment(bool sgn) const {
+std::shared_ptr<assignment> problem::create_same_sgn_assignment(bool sgn) const {
 
 	// Should be satisfied by an assignment of all true
-	auto map_assign = std::map<sat::vertex_descriptor, bool>();
-	for (auto i = 0; i < num_nodes; ++i) {
-		auto vert = map_node_to_vert->at(i);
-		map_assign.emplace(vert, sgn);
+	auto map_assign = std::map<node, bool>();
+	for(auto pair : map_node_to_vert->left) {
+		auto node = pair.first;
+		map_assign.emplace(node, sgn);
 	}
+
 	auto assign = std::make_shared<sat::assignment>();
 	assign->data = std::move(map_assign);
 	return assign;
@@ -107,21 +109,22 @@ std::shared_ptr<const assignment> problem::create_same_sgn_assignment(bool sgn) 
 void problem::apply_shuffle(const literal_shuffler& shuffler) {
 
 	// Copy swap
-	auto map_cpy = *map_node_to_vert;
+	auto map_cpy = node_vert_map();
+	std::for_each(map_node_to_vert->left.begin(), map_node_to_vert->left.end(),
+		[&shuffler, &map_cpy](auto& pair) {
+
+		auto& current_node = pair.first;
+		map_cpy.insert(node_vert_map::value_type(
+			shuffler.literals[current_node.id].n, pair.second));
+
+	});
+	std::swap(*map_node_to_vert, map_cpy);
+
+
 	for(auto i=0; i < shuffler.literals.size(); ++i) {
 
 		auto lit = shuffler.literals[i];
-		auto vert = map_node_to_vert->at(lit.n);
-
-		map_cpy.at(i) = vert;
-
-	}
-	std::swap(map_cpy, *map_node_to_vert);
-
-	for(auto i=0; i < shuffler.literals.size(); ++i) {
-
-		auto lit = shuffler.literals[i];
-		auto vert = map_node_to_vert->at(i);
+		auto vert = map_node_to_vert->left.at(i);
 		change_vertex(prob_graph, vert, i);
 
 		if (!lit.sgn) {
@@ -147,14 +150,14 @@ void problem::build_graph(node_list&& nodes, clause_list&& clauses) {
 	prob_graph = graph();
 
 	// Temp map to connect node-clause edges
-	map_node_to_vert = std::make_shared<std::map<node, vertex_descriptor>>();
+	map_node_to_vert = std::make_unique<node_vert_map>();
 
 	// Add all nodes in sequence to graph
 	for(auto node_to_add : nodes) {
 
 		// Add node as vertex to graph
 		auto node_vert = add_vertex(prob_graph, node_to_add);
-		map_node_to_vert->emplace(node_to_add, node_vert);
+		map_node_to_vert->insert(node_vert_map::value_type(node_to_add, node_vert));
 
 	}
 
@@ -168,7 +171,7 @@ void problem::build_graph(node_list&& nodes, clause_list&& clauses) {
 
 			// Add node in clause as edge to graph
 			//TODO: Add error handling for if node not in map.
-			auto node_vert = map_node_to_vert->at(lit.first);
+			auto node_vert = map_node_to_vert->left.at(lit.first);
 			add_edge(prob_graph, node_vert, clause_vert, lit.second);
 
 		}

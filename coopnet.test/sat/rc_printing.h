@@ -5,6 +5,7 @@
 #include "coopnet/sat/component/node.h"
 #include "coopnet/sat/component/clause.h"
 #include "coopnet/sat/problem/assignment.h"
+#include "coopnet/sat/problem/problem.h"
 
 
 
@@ -31,6 +32,7 @@ namespace rc { namespace detail {
 		return os;
 	}
 
+
 	inline std::ostream& operator<<(
 		std::ostream& os, const boost::logic::tribool& b) {
 		if (b) {
@@ -43,12 +45,13 @@ namespace rc { namespace detail {
 		return os;
 	}
 
+
 	inline std::ostream& operator<<(
 		std::ostream& os, const sat::assignment& assign) {
 		os << "assignment:" << std::endl;
 		for (auto iter = assign.data.cbegin();
 			iter != assign.data.cend(); ++iter) {
-			os << " k" << iter->first << " v" << iter->second;
+			os << " k" << iter->first << " v" << iter->second ? " T" : " F";
 		}
 		return os << std::endl;
 	}
@@ -60,6 +63,28 @@ namespace rc { namespace detail {
 			iter != assign.data.cend(); ++iter) {
 			os << " k" << iter->first << " v" << iter->second;
 		}
+		return os << std::endl;
+	}
+
+
+
+	inline std::ostream& operator<<(
+		std::ostream& os, const sat::problem& prob) {
+
+		os << "problem:" << std::endl;
+
+		const auto& g = prob.get_graph();
+		auto vert_pair = boost::vertices(prob.get_graph());
+		for(auto vert = vert_pair.first; vert != vert_pair.second; ++vert) {
+			const auto& prop = g[*vert];
+			os << "vert " << prop.kind << prop.name << std::endl;
+		}
+		auto edge_pair = boost::edges(prob.get_graph());
+		for (auto edge = edge_pair.first; edge != edge_pair.second; ++edge) {
+			const auto& prop = g[*edge];
+			os << "edge " << prop.sgn << std::endl;
+		}
+
 		return os << std::endl;
 	}
 

@@ -8,9 +8,9 @@ using namespace sat;
 
 incomplete_assignment::incomplete_assignment(const problem& prob) {
 
-	const auto& map_node_to_vert = *prob.get_map_node_to_vert();
-	std::for_each(map_node_to_vert.cbegin(), map_node_to_vert.cend(),
-		[this](auto& pair) { data.emplace(pair.second, boost::indeterminate); });
+	const auto& map_node_to_vert = prob.get_node_vert_map();
+	std::for_each(map_node_to_vert.left.begin(), map_node_to_vert.left.end(),
+		[this](auto& pair) { data.emplace(pair.first, boost::indeterminate); });
 
 }
 
@@ -30,7 +30,7 @@ assignment::assignment(const incomplete_assignment& incomplete_assign) {
 		throw std::exception("Incomplete assignment cannot be transformed.");
 	}
 
-	auto copy_pred = [this](std::pair<vertex_descriptor, boost::tribool> pair) {
+	auto copy_pred = [this](std::pair<node, boost::tribool> pair) {
 		data.emplace(pair.first, bool(pair.second));
 	};
 

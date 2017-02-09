@@ -3,6 +3,7 @@
 #include "boost/logic/tribool.hpp"
 #include "alphali/containers/random_iterator.h"
 #include "coopnet/sat/problem/problem.h"
+#include "coopnet/sat/component/node.h"
 
 using namespace sat;
 
@@ -15,7 +16,7 @@ namespace {
 	void DEBUG_print_assignment(const dpll_formula& formula) {
 		if(DEBUG_should_print_assignment) {
 			auto tmp_pred =
-				[](std::pair<vertex_descriptor, boost::logic::tribool> pair) {
+				[](std::pair<node, boost::logic::tribool> pair) {
 				if (pair.second) {
 					std::cout << "T";
 				} else if (!pair.second) {
@@ -102,9 +103,9 @@ void dpll_solver::reduce_formula() {
 }
 
 // Formula should be the same if unsuccessful; reverses itself
-bool dpll_solver::recursive_reduce(vertex_descriptor node, bool choice) {
+bool dpll_solver::recursive_reduce(node n, bool choice) {
 
-	formula->set_node(node, choice);
+	formula->set_node(n, choice);
 	if (!formula->is_contradicting()) {
 		DEBUG_print_assignment(*formula);
 		reduce_formula();
@@ -114,7 +115,7 @@ bool dpll_solver::recursive_reduce(vertex_descriptor node, bool choice) {
 	if(DEBUG_should_print_assignment) std::cout << "Contradictory\n";
 	DEBUG_print_assignment(*formula);
 
-	formula->reverse_prune_to_assignment(node);
+	formula->reverse_prune_to_assignment(n);
 	formula->set_contradicting(false);
 
 	return false;
@@ -130,7 +131,7 @@ namespace {
 	auto rand_engine = std::mt19937_64(std::random_device()());
 }
 
-boost::optional<vertex_descriptor>
+boost::optional<node>
 dpll_solver::choose_next_node(node_choice_mode mode) const {
 
 	auto& assign_map = formula->get_incomplete_assignment().data;
@@ -142,7 +143,7 @@ dpll_solver::choose_next_node(node_choice_mode mode) const {
 
 	// If none, return no node
 	if (std::none_of(assign_map.cbegin(), assign_map.cend(), node_choice_pred))
-		return boost::optional<vertex_descriptor>();
+		return boost::optional<node>();
 
 	// Otherwise, return node based on mode
 	using iterator = incomplete_assignment::map::const_iterator;

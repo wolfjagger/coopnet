@@ -151,6 +151,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\coopnet\graph\bgl_inc.h" />
+    <ClInclude Include="src\coopnet\graph\graph_map.h" />
     <ClInclude Include="src\coopnet\sat\problem\assignment.h" />
     <ClInclude Include="src\coopnet\sat\component\clause.h" />
     <ClInclude Include="src\coopnet\sat\component\component_fwd.h" />

@@ -2,6 +2,7 @@
 
 #include <queue>
 #include "boost/graph/breadth_first_search.hpp"
+#include "coopnet/graph/graph_map.h"
 #include "coopnet/sat/problem/assignment.h"
 #include "coopnet/sat/visitor/sat_visitor.h"
 #include "dpll_status.h"
@@ -31,6 +32,7 @@ namespace sat {
 
 	struct dpll_prop_maps {
 
+		node_vert_map node_to_vertex_map;
 		incomplete_assignment_prop_map partial_assignment_map;
 		dpll_vert_status_prop_map vert_status_map;
 		dpll_edge_status_prop_map edge_status_map;
@@ -39,10 +41,12 @@ namespace sat {
 		dpll_prop_maps() = default;
 
 		dpll_prop_maps(
+			node_vert_map init_node_to_vertex_map,
 			incomplete_assignment_prop_map init_partial_assignment_map,
 			dpll_vert_status_prop_map init_vert_status_map,
 			dpll_edge_status_prop_map init_edge_status_map,
 			dpll_color_prop_map init_color_map) :
+			node_to_vertex_map(init_node_to_vertex_map),
 			partial_assignment_map(init_partial_assignment_map),
 			vert_status_map(init_vert_status_map),
 			edge_status_map(init_edge_status_map),

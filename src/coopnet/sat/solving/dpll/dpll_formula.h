@@ -48,9 +48,9 @@ namespace sat {
 
 
 
-		void set_node(vertex_descriptor node, bool first_choice);
+		void set_node(node n, bool first_choice);
 
-		void reverse_prune_to_assignment(vertex_descriptor node);
+		void reverse_prune_to_assignment(node n);
 
 		const incomplete_assignment& get_incomplete_assignment() const {
 			return partial_assign;

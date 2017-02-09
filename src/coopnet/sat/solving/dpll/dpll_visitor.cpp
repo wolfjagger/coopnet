@@ -112,7 +112,8 @@ void dpll_begin_vert_visitor::clause_event(
 				change_vert_status(clause, dpll_vert_status::Inactive);
 				break;
 			case dpll_edge_status::PushNodeToClause:
-				if (g[*edge].sgn == maps.partial_assignment_map[boost::target(*edge, g)]) {
+				auto n = maps.node_to_vertex_map.right.at(boost::target(*edge, g));
+				if (g[*edge].sgn == maps.partial_assignment_map[n]) {
 					change_edge_status(*edge, dpll_edge_status::Inactive);
 					change_vert_status(clause, dpll_vert_status::Inactive);
 				} else {
@@ -160,7 +161,8 @@ void dpll_begin_vert_visitor::select_node(
 void dpll_begin_vert_visitor::change_assignment(
 	vertex_descriptor node, boost::logic::tribool new_assign) {
 	
-	auto& value = maps.partial_assignment_map[node];
+	auto current_node = maps.node_to_vertex_map.right.at(node);
+	auto& value = maps.partial_assignment_map[current_node];
 	auto prune_data = std::make_pair(node, value);
 	prune_action_stack.data.push(prune_action(prune_data));
 	value = new_assign;
@@ -201,6 +203,8 @@ void dpll_edge_visitor::edge_event(
 	const edge_prop& prop,
 	vertex_descriptor node, vertex_descriptor clause) {
 
+	auto current_node = maps.node_to_vertex_map.right.at(node);
+
 	auto status = maps.edge_status_map[edge];
 
 	// If edge is active or inactive, there is no action required;
@@ -219,7 +223,7 @@ void dpll_edge_visitor::edge_event(
 		// If pushing node to clause, remove clause iff sgn = sgn(node)
 		auto clause_status = maps.vert_status_map[clause];
 		if (clause_status != dpll_vert_status::Inactive
-			&& prop.sgn == maps.partial_assignment_map[node]) {
+			&& prop.sgn == maps.partial_assignment_map[current_node]) {
 
 			change_vert_status(clause, dpll_vert_status::Remove);
 

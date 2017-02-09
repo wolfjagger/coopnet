@@ -34,9 +34,9 @@ namespace sat {
 	private:
 
 		void reduce_formula();
-		bool recursive_reduce(vertex_descriptor node, bool choice);
+		bool recursive_reduce(node n, bool choice);
 
-		boost::optional<vertex_descriptor>
+		boost::optional<node>
 			choose_next_node(node_choice_mode mode) const;
 
 	};

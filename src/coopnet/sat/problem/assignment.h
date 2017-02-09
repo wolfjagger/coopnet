@@ -1,7 +1,9 @@
 #pragma once
 
 #include "boost/logic/tribool.hpp"
+#include "alphali/util/operators.h"
 #include "coopnet/graph/graph.h"
+#include "coopnet/sat/component/node.h"
 
 
 
@@ -11,8 +13,8 @@ namespace sat {
 
 	struct incomplete_assignment {
 
-		using map = std::map<vertex_descriptor, boost::tribool>;
-		using pair = std::pair<vertex_descriptor, boost::tribool>;
+		using map = std::map<node, boost::tribool>;
+		using pair = std::pair<node, boost::tribool>;
 
 		map data;
 
@@ -28,10 +30,11 @@ namespace sat {
 	}
 
 
+
 	struct assignment {
 
-		using map = std::map<vertex_descriptor, bool>;
-		using pair = std::pair<vertex_descriptor, bool>;
+		using map = std::map<node, bool>;
+		using pair = std::pair<node, bool>;
 		
 		map data;
 
@@ -39,5 +42,15 @@ namespace sat {
 		assignment(const incomplete_assignment& incomplete_assign);
 
 	};
+
+	inline bool operator==(const assignment& assign1, const assignment& assign2) {
+		return assign1.data == assign2.data;
+	}
+
+	inline bool operator<(const assignment& assign1, const assignment& assign2) {
+		return assign1.data < assign2.data;
+	}
+
+	DEFINE_EXTRA_OPS(assignment);
 
 }

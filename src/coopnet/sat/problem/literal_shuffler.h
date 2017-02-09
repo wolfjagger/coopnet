@@ -22,10 +22,11 @@ namespace sat {
 	private:
 
 		std::vector <literal> literals;
-		std::shared_ptr<const std::map<node, vertex_descriptor>> map_node_to_vert;
+		const node_vert_map* map_node_to_vert;
 
 	public:
 
+		// Note: shuffles on creation
 		literal_shuffler(const problem& prob);
 
 
