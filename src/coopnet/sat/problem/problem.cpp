@@ -1,6 +1,5 @@
 #include "problem.h"
 #include <queue>
-#include <type_traits>
 #include "boost/graph/breadth_first_search.hpp"
 #include "boost/graph/connected_components.hpp"
 #include "coopnet/sat/visitor/satisfiability_visitor.h"
