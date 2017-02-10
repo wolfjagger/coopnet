@@ -3,7 +3,6 @@
 #include <map>
 #include <memory>
 #include "coopnet/graph/graph.h"
-#include "coopnet/graph/graph_map.h"
 #include "coopnet/sat/component/node.h"
 #include "coopnet/sat/component/clause.h"
 
@@ -32,7 +31,7 @@ namespace sat {
 		boost::dynamic_properties dyn_props;
 
 		// Map node with id to vertex_descriptor
-		std::unique_ptr<node_vert_map> map_node_to_vert;
+		std::shared_ptr<node_vert_map> map_node_to_vert;
 
 		// Connected components members
 		size_t num_connected_components;
@@ -92,8 +91,8 @@ namespace sat {
 		const graph& get_graph() const { return prob_graph; }
 		const boost::dynamic_properties& get_properties() const { return dyn_props; }
 
-		const node_vert_map& get_node_vert_map() const {
-			return *map_node_to_vert;
+		std::shared_ptr<const node_vert_map> get_node_vert_map() const {
+			return map_node_to_vert;
 		}
 
 		size_t get_num_connected_components() const {

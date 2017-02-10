@@ -47,7 +47,7 @@ dpll_formula::dpll_formula(const problem& prob) :
 	}
 
 	prop_maps = dpll_prop_maps(
-		prob.get_node_vert_map(), partial_assign.data,
+		partial_assign.data,
 		vert_status_map, edge_status_map, color_map);
 	prune_visitor = std::make_unique<dpll_visitor>(
 		prune_action_stack, grey_buffer, prop_maps);
@@ -74,7 +74,7 @@ dpll_formula& dpll_formula::operator=(const dpll_formula& other) {
 	color_map = other.color_map;
 
 	prop_maps = dpll_prop_maps(
-		other.prop_maps.node_to_vertex_map, partial_assign.data,
+		partial_assign.data,
 		vert_status_map, edge_status_map, color_map);
 
 	prune_visitor = std::make_unique<dpll_visitor>(
@@ -92,17 +92,17 @@ void dpll_formula::set_node(node n, bool value) {
 	// partial_graph remove node_to_set and reduce (unit clauses
 	//  & pure literals), supplying the stack to append
 
-	auto vert = prop_maps.node_to_vertex_map.left.at(n);
+	auto vert_node = partial_assign.node_to_vertex_map->left.at(n);
 
-	prop_maps.vert_status_map[vert] = value ?
+	prop_maps.vert_status_map[vert_node] = value ?
 		dpll_vert_status::SetToTrue : dpll_vert_status::SetToFalse;
 
 	auto assign_prune_data
-		= std::make_pair(vert, boost::logic::indeterminate);
+		= std::make_pair(vert_node, boost::logic::indeterminate);
 	prune_action_stack.data.push(prune_action(assign_prune_data));
 
 	boost::breadth_first_visit(
-		prob_graph.get(), vert, grey_buffer,
+		prob_graph.get(), vert_node, grey_buffer,
 		*prune_visitor, prop_maps.color_map);
 
 }
@@ -111,7 +111,7 @@ void dpll_formula::reverse_prune_to_assignment(node n) {
 
 	if(DEBUG_print_prune) std::cout << "Pruning\n";
 
-	auto vert_node = prop_maps.node_to_vertex_map.left.at(n);
+	auto vert_node = partial_assign.node_to_vertex_map->left.at(n);
 
 	auto done = false;
 	while (!done && !prune_action_stack.data.empty()) {
@@ -127,7 +127,7 @@ void dpll_formula::reverse_prune_to_assignment(node n) {
 					action.supp_data);
 			auto vert = incomplete_assignment_data.first;
 			if(DEBUG_print_prune) std::cout << "Assign " << vert << "\n";
-			prop_maps.partial_assignment_map[n]
+			prop_maps.partial_assignment_map[vert]
 				= incomplete_assignment_data.second;
 			if (vert == vert_node) done = true;
 			break;
@@ -157,12 +157,13 @@ void dpll_formula::reverse_prune_to_assignment(node n) {
 
 bool dpll_formula::is_SAT() const {
 
-	auto is_SAT_pred =
-		[](std::pair<node, boost::logic::tribool> pair) {
+	auto is_indeterminate_pred =
+		[](std::pair<vertex_descriptor, boost::logic::tribool> pair) {
 		return boost::logic::indeterminate(pair.second);
 	};
 
 	return std::none_of(
-		partial_assign.data.cbegin(), partial_assign.data.cend(), is_SAT_pred);
+		partial_assign.data.cbegin(), partial_assign.data.cend(),
+		is_indeterminate_pred);
 
 }

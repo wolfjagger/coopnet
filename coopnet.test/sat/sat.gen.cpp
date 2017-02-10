@@ -88,7 +88,7 @@ Arbitrary<sat::incomplete_assignment>::arbitrary() {
 	return gen::build<sat::incomplete_assignment>(
 		gen::set(&sat::incomplete_assignment::data,
 			gen::container<sat::incomplete_assignment::map>(
-				gen::arbitrary<sat::node>(),
+				gen::arbitrary<sat::vertex_descriptor>(),
 				gen::arbitrary<boost::logic::tribool>())));
 	
 }

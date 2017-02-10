@@ -1,6 +1,6 @@
 #pragma once
 
-#include "coopnet/graph/graph_map.h"
+#include "coopnet/graph/graph.h"
 #include "coopnet/sat/problem/assignment.h"
 #include "sat_visitor.h"
 
@@ -18,7 +18,7 @@ namespace sat {
 		// Shared so that when this visitor is converted to e.g.
         //  a breadth-first visitor, the state can be retrieved.
 		std::shared_ptr<clause_satisfiability> satisfiability;
-		node_vert_map node_to_vertex_map;
+		std::shared_ptr<const node_vert_map> node_to_vertex_map;
 
 		explicit collect_satisfiability_visitor(
 			const problem& prob,
@@ -36,9 +36,9 @@ namespace sat {
 			vertex_descriptor vert_node, vertex_descriptor vert_clause) {
 
 			// If sign of literal in clause matches assignment, clause is satisfied
-			auto edge_node = node_to_vertex_map.right.at(vert_node);
+			auto n = node_to_vertex_map->right.at(vert_node);
 			auto sgn_of_literal = edge_property.sgn;
-			auto assigned_val = assigned->data.at(edge_node);
+			auto assigned_val = assigned->data.at(n);
 			if(sgn_of_literal == assigned_val) {
 				satisfiability->clauses_satisfied.insert(vert_clause);
 			}

@@ -30,9 +30,6 @@ namespace {
 		auto assign_dpll = pair.second;
 		RC_ASSERT(assign_dpll);
 
-		using namespace rc::detail;
-		std::cout << *assign_dpll;
-
 		RC_ASSERT(prob.is_satisfied_by(assign_dpll));
 
 	};
@@ -182,7 +179,11 @@ TEST_CASE("Literal shuffle", "[sat]") {
 			shuffler.apply_to_assignment(*assign);
 			RC_ASSERT(prob.is_satisfied_by(assign));
 
-			RC_ASSERT(*assign != assign_cpy);
+			if(shuffler.flips_nodes()) {
+				RC_ASSERT(*assign != assign_cpy);
+			} else {
+				RC_ASSERT(*assign == assign_cpy);
+			}
 
 		};
 

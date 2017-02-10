@@ -11,12 +11,12 @@ using namespace sat;
 
 namespace {
 
-	const bool DEBUG_should_print_assignment = false;
+	constexpr bool DEBUG_should_print_assignment = false;
 
 	void DEBUG_print_assignment(const dpll_formula& formula) {
 		if(DEBUG_should_print_assignment) {
 			auto tmp_pred =
-				[](std::pair<node, boost::logic::tribool> pair) {
+				[](incomplete_assignment::pair pair) {
 				if (pair.second) {
 					std::cout << "T";
 				} else if (!pair.second) {
@@ -134,7 +134,8 @@ namespace {
 boost::optional<node>
 dpll_solver::choose_next_node(node_choice_mode mode) const {
 
-	auto& assign_map = formula->get_incomplete_assignment().data;
+	auto& assign = formula->get_incomplete_assignment();
+	auto& assign_map = assign.data;
 
 	// Find unset node
 	const auto node_choice_pred = [](const auto& pair) {
@@ -160,6 +161,8 @@ dpll_solver::choose_next_node(node_choice_mode mode) const {
 			assign_map.cbegin(), assign_map.cend(), node_choice_pred, rand_engine);
 	}
 
-	return next_node->first;
+	auto node = assign.node_to_vertex_map->right.at(next_node->first);
+
+	return node;
 	
 }

@@ -1,7 +1,8 @@
 #pragma once
 
-#include "bgl_inc.h"
+#include "boost/bimap.hpp"
 #include "coopnet/sat/component/component_fwd.h"
+#include "bgl_inc.h"
 
 
 
@@ -36,22 +37,25 @@ namespace sat {
 
 	// Ease of use for adding node and property to graph
 	vertex_descriptor add_vertex(graph& g, node n);
-	vertex_descriptor change_vertex(
-		graph& g, vertex_descriptor vert, node n);
 	// Ease of use for adding clause and property to graph
 	vertex_descriptor add_vertex(graph& g, const clause& c);
-	vertex_descriptor change_vertex(
-		graph& g, vertex_descriptor vert, const clause& c);
 	// Ease of use for adding clause and property to graph
 	edge_descriptor add_edge(graph& g,
 		vertex_descriptor node_desc,
 		vertex_descriptor clause_desc,
 		bool sgn);
-	edge_descriptor change_edge(graph& g,
-		vertex_descriptor node_desc,
-		vertex_descriptor clause_desc,
-		bool sgn);
 
+
+
+	using node_vert_map = boost::bimap<node, vertex_descriptor>;
+
+
+
+	void rename_verts(graph& g, const node_vert_map& node_to_vertex_map);
+
+	void set_node_name(vert_prop& prop, node n);
+	void set_clause_name(vert_prop& prop, const clause& c);
+	void set_edge_sgn(edge_prop& prop, bool sgn);
 
 
 	struct clause_satisfiability {

@@ -17,7 +17,7 @@ literal_shuffler::literal_shuffler(const problem& prob) {
 		literals.emplace_back(i, true);
 	}
 
-	map_node_to_vert = &prob.get_node_vert_map();
+	map_node_to_vert = prob.get_node_vert_map();
 
 	shuffle();
 
@@ -29,9 +29,18 @@ void literal_shuffler::shuffle() {
 
 	alphali::shuffle(literals.begin(), literals.end());
 
-	for_each(literals.begin(), literals.end(), [](literal& lit) {
+	std::for_each(literals.begin(), literals.end(), [](literal& lit) {
 		if (alphali::coin_flip()) lit.sgn = !lit.sgn;
 	});
+
+}
+
+
+
+bool literal_shuffler::flips_nodes() const {
+
+	return std::any_of(literals.cbegin(), literals.cend(),
+		[this](const literal& lit) { return !lit.sgn; });
 
 }
 
@@ -47,9 +56,12 @@ literal literal_shuffler::shuffle_literal(const literal& lit) const {
 
 void literal_shuffler::apply_to_assignment(assignment& assign) const {
 
-	for_each(literals.cbegin(), literals.cend(), [this, &assign](const literal& lit) {
+	std::for_each(literals.cbegin(), literals.cend(),
+		[this, &assign](const literal& lit) {
+
 		auto& sgn = assign.data.at(lit.n);
 		sgn = (sgn == lit.sgn);
+
 	});
 
 }

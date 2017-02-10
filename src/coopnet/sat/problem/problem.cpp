@@ -1,5 +1,6 @@
 #include "problem.h"
 #include <queue>
+#include <type_traits>
 #include "boost/graph/breadth_first_search.hpp"
 #include "boost/graph/connected_components.hpp"
 #include "coopnet/sat/visitor/satisfiability_visitor.h"
@@ -57,6 +58,27 @@ namespace {
 
 	}
 
+	template<typename bfs_visitor>
+	void apply_visitor(bfs_visitor& visitor, const graph& g,
+		const std::vector<vertex_descriptor>& source_verts) {
+
+		auto sources = std::vector<size_t>();
+		for (auto source_vert : source_verts)
+			sources.push_back(boost::vertex(source_vert, g));
+
+		auto buffer = boost::queue<vertex_descriptor>();
+
+		using vec_color_type = std::vector<vertex_descriptor>;
+		auto vec_colors = vec_color_type(boost::num_vertices(g));
+		auto color_map = boost::make_iterator_property_map(
+			vec_colors.begin(), get(boost::vertex_index, g));
+
+		boost::breadth_first_search(
+			g, sources.cbegin(), sources.cend(), buffer,
+			visitor, color_map);
+
+	}
+
 }
 
 
@@ -66,22 +88,9 @@ clause_satisfiability problem::clause_satisfiability_for(
 
 	auto satisfiability_collector
 		= collect_satisfiability_visitor(*this, assign);
-	auto bfs_visitor = boost::make_bfs_visitor(satisfiability_collector);
+	auto bfs = boost::make_bfs_visitor(satisfiability_collector);
 
-	auto sources = std::vector<size_t>();
-	for (auto source_vert : connected_component_vertices)
-		sources.push_back(boost::vertex(source_vert, prob_graph));
-
-	auto buffer = boost::queue<vertex_descriptor>();
-
-	using vec_color_type = std::vector<vertex_descriptor>;
-	auto vec_colors = vec_color_type(boost::num_vertices(prob_graph));
-	auto color_map = boost::make_iterator_property_map(
-			vec_colors.begin(), get(boost::vertex_index, prob_graph));
-
-	boost::breadth_first_search(
-		prob_graph, sources.cbegin(), sources.cend(), buffer,
-		bfs_visitor, color_map);
+	apply_visitor(bfs, prob_graph, connected_component_vertices);
 	
 	return *satisfiability_collector.satisfiability;
 	
@@ -108,24 +117,28 @@ std::shared_ptr<assignment> problem::create_same_sgn_assignment(bool sgn) const 
 
 void problem::apply_shuffle(const literal_shuffler& shuffler) {
 
-	// Copy swap
+	// First change node_vert_map to re-point the nodes
+	// NOTE: This will also change it for satsifiability_visitor,
+	//  incomplete_assignment, and anything that holds the same
+	//  shared_ptr. Change them too!
+
+	// Need copy and swap because we can't have duplicates
 	auto map_cpy = node_vert_map();
-	std::for_each(map_node_to_vert->left.begin(), map_node_to_vert->left.end(),
-		[&shuffler, &map_cpy](auto& pair) {
+	for (auto iter = map_node_to_vert->right.begin();
+		iter != map_node_to_vert->right.end(); ++iter) {
 
-		auto& current_node = pair.first;
-		map_cpy.insert(node_vert_map::value_type(
-			shuffler.literals[current_node.id].n, pair.second));
+		auto vert = iter->first;
+		auto old_node = iter->second;
+		auto new_node = shuffler.literals[old_node.id].n;
+		map_cpy.right.insert(std::make_pair(vert, new_node));
 
-	});
-	std::swap(*map_node_to_vert, map_cpy);
+	}
+	std::swap(map_cpy, *map_node_to_vert);
 
+	// Now change edge sgns
+	for(auto lit : shuffler.literals) {
 
-	for(auto i=0; i < shuffler.literals.size(); ++i) {
-
-		auto lit = shuffler.literals[i];
-		auto vert = map_node_to_vert->left.at(i);
-		change_vertex(prob_graph, vert, i);
+		auto vert = map_node_to_vert->left.at(lit.n);
 
 		if (!lit.sgn) {
 
@@ -136,6 +149,9 @@ void problem::apply_shuffle(const literal_shuffler& shuffler) {
 
 		}
 	}
+
+	// Finally, rename nodes and clauses
+	rename_verts(prob_graph, *map_node_to_vert);
 
 }
 		
@@ -150,7 +166,7 @@ void problem::build_graph(node_list&& nodes, clause_list&& clauses) {
 	prob_graph = graph();
 
 	// Temp map to connect node-clause edges
-	map_node_to_vert = std::make_unique<node_vert_map>();
+	map_node_to_vert = std::make_shared<node_vert_map>();
 
 	// Add all nodes in sequence to graph
 	for(auto node_to_add : nodes) {

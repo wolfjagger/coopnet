@@ -22,7 +22,7 @@ namespace sat {
 	private:
 
 		std::vector <literal> literals;
-		const node_vert_map* map_node_to_vert;
+		std::shared_ptr<const node_vert_map> map_node_to_vert;
 
 	public:
 
@@ -32,6 +32,10 @@ namespace sat {
 
 
 		void shuffle();
+
+
+		bool flips_nodes() const;
+		
 
 		literal shuffle_literal(const literal& lit) const;
 
