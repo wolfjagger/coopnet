@@ -4,7 +4,7 @@
 
 
 
-namespace testing {
+namespace coopplot {
 
 	sat::problem random_problem();
 

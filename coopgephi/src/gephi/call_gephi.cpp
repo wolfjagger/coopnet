@@ -1,11 +1,11 @@
-#include "output.h"
+#include "call_gephi.h"
 #include <fstream>
 #include <string>
 #include "boost/graph/graphml.hpp"
 
 
 
-namespace jj_gephi {
+namespace coopgephi {
 
 	void print_graph(const sat::graph& g, const boost::dynamic_properties& dp) {
 

@@ -1,9 +1,9 @@
-#include "testing.h"
+#include "create_data.h"
 #include "coopnet/sat/problem/problem_factory.h"
 
 
 
-namespace testing {
+namespace coopplot {
 
 	sat::problem random_problem() {
 
