@@ -21,11 +21,13 @@
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\net\create_data.cpp" />
-    <ClCompile Include="src\gnu\call_gnu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\gnu\call_gnu.h" />
+    <ClInclude Include="src\gnu\create_dat.h" />
+    <ClInclude Include="src\gnu\plot_creator.h" />
     <ClInclude Include="src\net\create_data.h" />
+    <ClInclude Include="src\net\sat_xy_data.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{BF6ED0BD-EB1C-4BDF-A410-D383610A9A6C}</ProjectGuid>
@@ -91,7 +93,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\src;..\..\boost;..\alphali</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;..\src;..\..\boost;..\alphali</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>coopnet.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
