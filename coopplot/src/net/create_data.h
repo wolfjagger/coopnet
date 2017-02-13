@@ -7,6 +7,8 @@
 namespace coopplot {
 
 	sat_xy_data<double, double> create_sat_data(
-		int num_pts, double start_x, double end_x);
+		int num_nodes,
+		double start_ratio_clause_node, double end_ratio_clause_node,
+		int num_pts, int num_average);
 
 }

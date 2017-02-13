@@ -9,14 +9,19 @@ void graph_satisfiability() {
 
 	using namespace coopplot;
 
-	auto num = 20;
-	auto start_x = 0.0;
-	auto end_x = 3 * alphali::pi;
+	auto num_nodes = 40;
+	auto start_ratio = 2.5;
+	auto end_ratio = 5.5;
+	auto num_pts = 7;
+	auto num_average = 20;
 
-	range_data<double> x_range = { std::floor(start_x), std::ceil(end_x) };
-	range_data<double> y_range = { -1.0, 1.0 };
+	auto data = create_sat_data(
+		num_nodes,
+		start_ratio, end_ratio,
+		num_pts, num_average);
 
-	auto data = create_sat_data(num, start_x, end_x);
+	range_data<double> x_range = { 2.0, 6.0 };
+	range_data<double> y_range = { 0.0, 1.0 };
 
 	save_and_plot_sat_xy(x_range, y_range, data, "satisfiability.dat");
 
