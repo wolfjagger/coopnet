@@ -8,7 +8,7 @@
 void print_random_problem() {
 
 	// Now print a random problem to file
-	auto prob = coopgephi::random_problem();
+	auto prob = coopgephi::random_problem(280, 1000);
 
 	auto g = prob.get_graph();
 	auto p = prob.get_properties();
