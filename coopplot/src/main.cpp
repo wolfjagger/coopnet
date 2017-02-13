@@ -5,31 +5,20 @@
 
 
 
-void print_random_problem() {
+void graph_satisfiability() {
 
 	using namespace coopplot;
 
-	//TODO: Replace with calculation to get sat_data from coopnet satisfiability.
-	auto prob = random_problem();
-
-	using x_type = double;
-	using y_type = double;
-	range_data<x_type> x_range = { 0.0, 7.0 };
-	range_data<y_type> y_range = { -1.0, 1.0 };
-
 	auto num = 20;
 	auto start_x = 0.0;
-	auto diff_x = 2 * alphali::pi / (num - 1);
-	auto vec_y = std::vector<double>();
-	for (auto i = 0; i < num; ++i) {
-		auto x = start_x + i*diff_x;
-		vec_y.push_back(std::sin(x));
-	}
-	auto data = sat_xy_data<x_type, y_type>(
-		std::make_pair(
-			std::array<double, 2>{start_x, diff_x}, vec_y));
+	auto end_x = 3 * alphali::pi;
 
-	save_and_plot_sat_xy(x_range, y_range, data, "tmp_sat.dat");
+	range_data<double> x_range = { std::floor(start_x), std::ceil(end_x) };
+	range_data<double> y_range = { -1.0, 1.0 };
+
+	auto data = create_sat_data(num, start_x, end_x);
+
+	save_and_plot_sat_xy(x_range, y_range, data, "satisfiability.dat");
 
 }
 
@@ -42,7 +31,7 @@ int main(int, char*[]) {
 	auto clock = system_clock();
 	auto beg_time = clock.now();
 
-	print_random_problem();
+	graph_satisfiability();
 
 	auto end_time = clock.now();
 

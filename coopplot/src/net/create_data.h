@@ -1,11 +1,12 @@
 #pragma once
 
-#include "coopnet/sat/problem/problem.h"
+#include "sat_xy_data.h"
 
 
 
 namespace coopplot {
 
-	sat::problem random_problem();
+	sat_xy_data<double, double> create_sat_data(
+		int num_pts, double start_x, double end_x);
 
 }

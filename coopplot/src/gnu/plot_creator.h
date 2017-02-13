@@ -1,8 +1,6 @@
 #pragma once
 
 #include <fstream>
-#include <iostream>
-#include <string>
 #include "net/sat_xy_data.h"
 #include "create_dat.h"
 
@@ -10,12 +8,12 @@
 
 namespace coopplot {
 
-	template<class data_type> using range_data = std::array<data_type, 2>;
-
 	template<typename x_type, typename y_type>
 	class plot_creator {
 
 	private:
+
+		static constexpr char* out_dir = "../../out/";
 
 		static constexpr char* header = "gnuplot -p -e \"plot";
 		static constexpr char* sep = " ";
@@ -68,16 +66,20 @@ namespace coopplot {
 			sat_xy_data<x_type, y_type> sat_data,
 			std::string filename) {
 
+			// Prepend the output directory
+			filename = std::string(out_dir) + filename;
+
 			p_filename
 				= std::make_unique<std::string>(std::move(filename));
 
+			// Generate dat file string
 			auto file_str = boost::apply_visitor(
 				create_dat<double, double>(),
 				sat_data.payload);
 
-			auto file = std::ofstream(*p_filename);
-
-			file << file_str;
+			// Create dat file from string
+			std::ofstream file(*p_filename);
+			file << std::move(file_str) << std::endl;
 
 		}
 
