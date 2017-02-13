@@ -1,8 +1,8 @@
 #pragma once
 
 #include <fstream>
-#include "net/sat_xy_data.h"
 #include "create_dat.h"
+#include "xy_data.h"
 
 
 
@@ -25,6 +25,7 @@ namespace coopplot {
 		std::string options_str = "with lines";
 
 		std::unique_ptr<std::string> p_filename;
+		size_t num_y_cols;
 
 	public:
 
@@ -63,8 +64,8 @@ namespace coopplot {
 		// This creates the dat file that will be plotted.
 		//  File must be created before gnuplot_str is called.
 		void create_dat_file(
-			sat_xy_data<x_type, y_type> sat_data,
-			std::string filename) {
+			std::string filename,
+			xy_data<x_type, y_type> sat_data) {
 
 			// Prepend the output directory
 			filename = std::string(out_dir) + filename;
@@ -81,6 +82,10 @@ namespace coopplot {
 			std::ofstream file(*p_filename);
 			file << std::move(file_str) << std::endl;
 
+			num_y_cols = boost::apply_visitor(
+				calc_num_y_cols<double, double>(),
+				sat_data.payload);
+
 		}
 
 		// Formats the string for calling gnuplot to plot the data.
@@ -96,9 +101,7 @@ namespace coopplot {
 				str += sep;
 				str += y_range_str;
 				str += sep;
-				str += gnu_quote + *p_filename + gnu_quote;
-				str += sep;
-				str += options_str;
+				str += core_str();
 				str += footer;
 
 				return str;
@@ -106,6 +109,38 @@ namespace coopplot {
 			} else {
 				throw std::exception(
 					"gnu dat file not created!");
+			}
+
+		}
+
+		std::string core_str() const {
+
+			if(num_y_cols == 1) {
+
+				std::string str;
+				str += gnu_quote + *p_filename + gnu_quote;
+				str += sep;
+				str += options_str;
+				str += sep;
+				return str;
+
+			} else {
+
+				std::string str;
+				for(auto i=0; i<num_y_cols; ++i) {
+
+					str += gnu_quote + *p_filename + gnu_quote;
+					str += sep;
+					str += "using 1:" + std::to_string(i+2);
+					str += sep;
+					str += options_str;
+					str += ",";
+					str += sep;
+
+				}
+
+				return str;
+
 			}
 
 		}

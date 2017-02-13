@@ -27,7 +27,7 @@
     <ClInclude Include="src\gnu\create_dat.h" />
     <ClInclude Include="src\gnu\plot_creator.h" />
     <ClInclude Include="src\net\create_data.h" />
-    <ClInclude Include="src\net\sat_xy_data.h" />
+    <ClInclude Include="src\gnu\xy_data.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{BF6ED0BD-EB1C-4BDF-A410-D383610A9A6C}</ProjectGuid>

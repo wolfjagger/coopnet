@@ -1,14 +1,19 @@
 #pragma once
 
-#include "sat_xy_data.h"
+#include "gnu/xy_data.h"
 
 
 
 namespace coopplot {
 
-	sat_xy_data<double, double> create_sat_data(
+	xy_data<double, double> create_sat_data(
 		int num_nodes,
 		double start_ratio_clause_node, double end_ratio_clause_node,
-		int num_pts, int num_average);
+		int num_ratios, int num_average);
+
+	xy_data<double, double> create_multiple_sat_data(
+		int start_num_nodes, int end_num_nodes, int num_plots,
+		double start_ratio_clause_node, double end_ratio_clause_node,
+		int num_ratios, int num_average);
 
 }
