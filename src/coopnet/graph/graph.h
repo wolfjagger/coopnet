@@ -51,7 +51,8 @@ namespace sat {
 
 
 
-	void rename_verts(graph& g, const node_vert_map& node_to_vertex_map);
+	void rename_verts(
+		graph& g, const node_vert_map& node_to_vertex_map);
 
 	void set_node_name(vert_prop& prop, node n);
 	void set_clause_name(vert_prop& prop, const clause& c);

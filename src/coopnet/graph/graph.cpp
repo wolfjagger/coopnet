@@ -77,7 +77,8 @@ void sat::rename_verts(graph& g, const node_vert_map& node_to_vertex_map) {
 			for (auto edge_iter = edge_pair.first;
 				edge_iter != edge_pair.second; ++edge_iter) {
 
-				auto n = node_to_vertex_map.right.at(boost::target(*edge_iter, g));
+				auto n = node_to_vertex_map.right.at(
+					boost::target(*edge_iter, g));
 				lits.emplace(std::make_pair(n, g[*edge_iter].sgn));
 
 			}

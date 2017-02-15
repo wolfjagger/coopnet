@@ -35,7 +35,7 @@ echo Choose tests to run (either by name of TEST_CASE or [tag]),
 echo  or leave blank to repeat previous test.
 set /p test_choice="Choice:  "
 
-ALphaLi.Test.exe %options% %test_choice%
+coopnet.test.exe %options% %test_choice%
 echo.
 echo.
 echo.

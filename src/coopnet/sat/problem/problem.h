@@ -11,7 +11,8 @@
 namespace sat {
 
 	struct assignment;
-	class literal_shuffler;
+	class node_shuffler;
+	class sgn_shuffler;
 
 	class problem {
 
@@ -109,7 +110,13 @@ namespace sat {
 
 
 
-		void apply_shuffle(const literal_shuffler& shuffler);
+		/*
+		NOTE: This will also change it for satsifiability_visitor,
+		incomplete_assignment, and anything that holds the same
+		shared_ptr. Change them too!
+		*/
+		void shuffle_nodes(const node_shuffler& shuffler);
+		void shuffle_sgns(const sgn_shuffler& shuffler);
 
 
 

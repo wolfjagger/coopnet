@@ -4,7 +4,7 @@
 #include "boost/graph/connected_components.hpp"
 #include "coopnet/sat/visitor/satisfiability_visitor.h"
 #include "assignment.h"
-#include "literal_shuffler.h"
+#include "shuffler.h"
 
 using namespace sat;
 
@@ -114,13 +114,9 @@ std::shared_ptr<assignment> problem::create_same_sgn_assignment(bool sgn) const 
 
 
 
-void problem::apply_shuffle(const literal_shuffler& shuffler) {
+void problem::shuffle_nodes(const node_shuffler& shuffler) {
 
-	// First change node_vert_map to re-point the nodes
-	// NOTE: This will also change it for satsifiability_visitor,
-	//  incomplete_assignment, and anything that holds the same
-	//  shared_ptr. Change them too!
-
+	// Change node_vert_map to re-point the nodes
 	// Need copy and swap because we can't have duplicates
 	auto map_cpy = node_vert_map();
 	for (auto iter = map_node_to_vert->right.begin();
@@ -128,18 +124,25 @@ void problem::apply_shuffle(const literal_shuffler& shuffler) {
 
 		auto vert = iter->first;
 		auto old_node = iter->second;
-		auto new_node = shuffler.literals[old_node.id].n;
-		map_cpy.right.insert(std::make_pair(vert, new_node));
+		auto new_node = shuffler.nodes.at(old_node.id);
+		map_cpy.left.insert(std::make_pair(new_node, vert));
 
 	}
 	std::swap(map_cpy, *map_node_to_vert);
 
+	// Rename nodes and clauses
+	rename_verts(prob_graph, *map_node_to_vert);
+
+}
+
+void problem::shuffle_sgns(const sgn_shuffler& shuffler) {
+
 	// Now change edge sgns
-	for(auto lit : shuffler.literals) {
+	for (auto i = 0; i < num_nodes; ++i) {
 
-		auto vert = map_node_to_vert->left.at(lit.n);
+		if (!shuffler.sgns.at(i)) {
 
-		if (!lit.sgn) {
+			auto vert = map_node_to_vert->left.at(node(i));
 
 			auto edge_pair = boost::out_edges(vert, prob_graph);
 			for_each(edge_pair.first, edge_pair.second, [this](edge_descriptor e) {
@@ -149,7 +152,7 @@ void problem::apply_shuffle(const literal_shuffler& shuffler) {
 		}
 	}
 
-	// Finally, rename nodes and clauses
+	// Rename nodes and clauses
 	rename_verts(prob_graph, *map_node_to_vert);
 
 }

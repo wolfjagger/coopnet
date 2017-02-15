@@ -1,11 +1,30 @@
 #include <numeric>
 #include "catch.hpp"
-#include "coopnet/sat/problem/literal_shuffler.h"
+#include "coopnet/sat/problem/shuffler.h"
 #include "coopnet/sat/solving/dpll/dpll_solver.h"
 #include "prob.gen.h"
 #include "rc_printing.h"
 
 using namespace sat;
+
+
+
+TEST_CASE("Problem initialization", "[sat]") {
+	
+	SECTION("Problem graph has correct size after init.") {
+
+		auto lam = [](const problem& prob) {
+
+			RC_ASSERT(prob.get_graph().m_vertices.size()
+				== prob.get_num_nodes() + prob.get_num_clauses());
+
+		};
+
+		REQUIRE(rc::check(lam));
+
+	}
+
+}
 
 
 
@@ -54,27 +73,6 @@ namespace {
 	};
 
 }
-
-
-
-TEST_CASE("Problem initialization", "[sat]") {
-	
-	SECTION("Problem graph has correct size after init.") {
-
-		auto lam = [](const problem& prob) {
-
-			RC_ASSERT(prob.get_graph().m_vertices.size()
-				== prob.get_num_nodes() + prob.get_num_clauses());
-
-		};
-
-		REQUIRE(rc::check(lam));
-
-	}
-
-}
-
-
 
 TEST_CASE("Problem assignment verification", "[sat]") {
 
@@ -179,7 +177,7 @@ TEST_CASE("Literal shuffle", "[sat]") {
 			shuffler.apply_to_assignment(*assign);
 			RC_ASSERT(prob.is_satisfied_by(assign));
 
-			if(shuffler.flips_nodes()) {
+			if (shuffler.flips_sgns()) {
 				RC_ASSERT(*assign != assign_cpy);
 			} else {
 				RC_ASSERT(*assign == assign_cpy);
