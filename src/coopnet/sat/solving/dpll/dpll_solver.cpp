@@ -69,8 +69,9 @@ auto dpll_solver::do_solve(const problem& prob) -> solve_return {
 	}
 
 	formula = std::make_unique<dpll_formula>(prob);
+	choices = std::stack<std::pair<node, bool>>();
 
-	reduce_formula();
+	find_assignment();
 
 	if (formula->is_SAT()) {
 		auto assign = assignment(formula->get_incomplete_assignment());
@@ -88,48 +89,69 @@ auto dpll_solver::do_solve(const problem& prob) -> solve_return {
 
 
 
-void dpll_solver::reduce_formula() {
+void dpll_solver::find_assignment() {
 
-	auto new_node = choose_next_node(node_choice_mode::Next);
+	while (true) {
 
-	// If no valid new node, formula is reduced
-	if (!new_node.is_initialized()) return;
+		auto new_node = choose_next_node(node_choice_mode::Next);
 
-	// Try true assignment
-	auto success_true = recursive_reduce(*new_node, true);
+		// If no valid new node, formula is reduced
+		if (!new_node.is_initialized()) break;
+
+		reduce_with_selection(*new_node, true);
+		
+		if (formula->is_contradicting()) {
+
+			auto last_choice_success = change_last_free_choice();
+
+			if (!last_choice_success) break;
+
+		}
+
+	}
+
 	DEBUG_print_assignment(*formula);
-	if (success_true) return;
-
-	// Try false assignment
-	auto success_false = recursive_reduce(*new_node, false);
-	DEBUG_print_assignment(*formula);
-	if (success_false) return;
-
-	formula->set_contradicting(true);
 
 }
 
-// Formula should be the same if unsuccessful; reverses itself
-bool dpll_solver::recursive_reduce(node n, bool choice) {
 
-	formula->set_node(n, choice);
-	if (!formula->is_contradicting()) {
+
+bool dpll_solver::change_last_free_choice() {
+
+	if (DEBUG) std::cout << "Contradictory\n";
+
+	while(!choices.empty()) {
+
+		auto choice = choices.top();
+		choices.pop();
+
+		auto n = choice.first;
+		auto b = choice.second;
+		formula->reverse_prune_to_assignment(n);
+		formula->set_contradicting(false);
 		DEBUG_print_assignment(*formula);
-		reduce_formula();
-		if (!formula->is_contradicting()) return true;
+
+		if (b == true) {
+
+			reduce_with_selection(n, !b);
+			if(!formula->is_contradicting()) return true;
+
+		}
+
 	}
 
-	if(DEBUG)
-		std::cout << "Contradictory\n";
-	DEBUG_print_assignment(*formula);
-
-	formula->reverse_prune_to_assignment(n);
-	formula->set_contradicting(false);
-
+	formula->set_contradicting(true);
 	return false;
 
 }
 
+void dpll_solver::reduce_with_selection(node n, bool choice) {
+
+	choices.push(std::make_pair(n, choice));
+	formula->set_node(n, choice);
+	DEBUG_print_assignment(*formula);
+
+}
 
 
 

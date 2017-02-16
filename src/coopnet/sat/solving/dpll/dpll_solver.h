@@ -22,6 +22,7 @@ namespace sat {
 	private:
 
 		std::unique_ptr<dpll_formula> formula;
+		std::stack<std::pair<node, bool>> choices;
 
 	public:
 
@@ -33,8 +34,10 @@ namespace sat {
 
 	private:
 
-		void reduce_formula();
-		bool recursive_reduce(node n, bool choice);
+		void find_assignment();
+
+		bool change_last_free_choice();
+		void reduce_with_selection(node n, bool choice);
 
 		boost::optional<node>
 			choose_next_node(node_choice_mode mode) const;

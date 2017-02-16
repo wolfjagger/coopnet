@@ -105,8 +105,8 @@ void dpll_begin_vert_visitor::clause_event(
 		auto satisfying_edge = std::find_if(
 			edges_pair.first, edges_pair.second, satisfy_clause_fcn);
 
-		// If any edge is set to constrain the node, constrain it
-		//  (select_node will check for multiple conflicting constraints)
+		// If any edge is set to satisfy the clause, satisfy it
+		//  (satisfy_clause will check for multiple conflicting constraints)
 		if (satisfying_edge != edges_pair.second) {
 			change_edge_status(*satisfying_edge, dpll_edge_status::Inactive);
 			satisfy_clause(g, clause);
@@ -120,6 +120,7 @@ void dpll_begin_vert_visitor::clause_event(
 			
 			// If no edges left, no way to satisfy clause: contradicting
 			if (num_active_edges == 0) {
+				if(DEBUG) std::cout << "Contradict: no edges to satisfy clause.\n";
 				is_contradicting = true;
 			}
 			// If one edge left, it must be used to satisfy clause
@@ -166,6 +167,7 @@ void dpll_begin_vert_visitor::select_node(
 			if (g[*edge].sgn == sgn) {
 				change_edge_status(*edge, dpll_edge_status::Inactive);
 			} else {
+				if(DEBUG) std::cout << "Contradict: opposite constraints on node.\n";
 				is_contradicting = true;
 			}
 			break;
@@ -306,6 +308,7 @@ void dpll_edge_visitor::edge_event(
 		case dpll_vert_status::SetToTrue:
 
 			if (!prop.sgn) {
+				if (DEBUG) std::cout << "Contradict: Can't constrain node to false when already true.\n";
 				is_contradicting = true;
 			}
 			break;
@@ -313,6 +316,7 @@ void dpll_edge_visitor::edge_event(
 		case dpll_vert_status::SetToFalse:
 
 			if (prop.sgn) {
+				if (DEBUG) std::cout << "Contradict: Can't constrain node to true when already false.\n";
 				is_contradicting = true;
 			}
 			break;
