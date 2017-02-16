@@ -90,6 +90,7 @@ namespace sat {
 	private:
 
 		void select_node(const graph& g, vertex_descriptor node, bool sgn);
+		void satisfy_clause(const graph& g, vertex_descriptor clause);
 
 		void change_assignment(
 			vertex_descriptor node, boost::logic::tribool value);

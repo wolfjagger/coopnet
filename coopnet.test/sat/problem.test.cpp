@@ -189,4 +189,31 @@ TEST_CASE("Literal shuffle", "[sat]") {
 
 	}
 
+	SECTION("Shuffling does not change DPLL solving.") {
+
+		auto lam = []() {
+
+			auto prob = *rc::random_prob_gen(
+				std::make_pair(3, 10),
+				std::make_pair(10, 40));
+
+			auto shuffler = sat::literal_shuffler(prob);
+
+			auto solver = dpll_solver();
+
+			using namespace rc::detail;
+
+			auto solution_pair1 = solver.solve(prob);
+			shuffler.apply_to_problem(prob);
+			auto solution_pair2 = solver.solve(prob);
+
+			RC_ASSERT(
+				solution_pair1.first == solution_pair2.first);
+
+		};
+
+		REQUIRE(rc::check(lam));
+
+	}
+
 }

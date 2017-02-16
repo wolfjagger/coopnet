@@ -119,11 +119,11 @@ void problem::shuffle_nodes(const node_shuffler& shuffler) {
 	// Change node_vert_map to re-point the nodes
 	// Need copy and swap because we can't have duplicates
 	auto map_cpy = node_vert_map();
-	for (auto iter = map_node_to_vert->right.begin();
-		iter != map_node_to_vert->right.end(); ++iter) {
+	for (auto iter = map_node_to_vert->left.begin();
+		iter != map_node_to_vert->left.end(); ++iter) {
 
-		auto vert = iter->first;
-		auto old_node = iter->second;
+		auto old_node = iter->first;
+		auto vert = iter->second;
 		auto new_node = shuffler.nodes.at(old_node.id);
 		map_cpy.left.insert(std::make_pair(new_node, vert));
 
@@ -138,11 +138,12 @@ void problem::shuffle_nodes(const node_shuffler& shuffler) {
 void problem::shuffle_sgns(const sgn_shuffler& shuffler) {
 
 	// Now change edge sgns
-	for (auto i = 0; i < num_nodes; ++i) {
+	for (auto iter = map_node_to_vert->left.begin();
+		iter != map_node_to_vert->left.end(); ++iter) {
 
-		if (!shuffler.sgns.at(i)) {
+		if (!shuffler.sgns.at(iter->first.id)) {
 
-			auto vert = map_node_to_vert->left.at(node(i));
+			auto vert = iter->second;
 
 			auto edge_pair = boost::out_edges(vert, prob_graph);
 			for_each(edge_pair.first, edge_pair.second, [this](edge_descriptor e) {
@@ -201,4 +202,23 @@ void problem::build_graph(node_list&& nodes, clause_list&& clauses) {
 	connected_component_vertices = calculate_connected_components(prob_graph);
 	num_connected_components = connected_component_vertices.size();
 	
+}
+
+
+
+
+
+std::ostream& sat::operator<<(std::ostream& os, const problem& prob) {
+
+	os << "problem:" << std::endl;
+
+	const auto& g = prob.get_graph();
+	auto vert_pair = boost::vertices(prob.get_graph());
+	for (auto vert = vert_pair.first; vert != vert_pair.second; ++vert) {
+		const auto& prop = g[*vert];
+		os << prop.kind << prop.name << std::endl;
+	}
+
+	return os << std::endl;
+
 }

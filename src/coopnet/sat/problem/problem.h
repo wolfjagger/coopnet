@@ -126,4 +126,6 @@ namespace sat {
 
 	};
 
+	std::ostream& operator<<(std::ostream& os, const problem& prob);
+
 }

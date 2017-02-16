@@ -11,10 +11,10 @@ using namespace sat;
 
 namespace {
 
-	constexpr bool DEBUG_should_print_assignment = false;
+	constexpr bool DEBUG = false;
 
 	void DEBUG_print_assignment(const dpll_formula& formula) {
-		if(DEBUG_should_print_assignment) {
+		if(DEBUG) {
 			auto tmp_pred =
 				[](incomplete_assignment::pair pair) {
 				if (pair.second) {
@@ -63,6 +63,11 @@ namespace {
 
 auto dpll_solver::do_solve(const problem& prob) -> solve_return {
 	
+	if (DEBUG) {
+		std::cout << "Solving problem:\n";
+		std::cout << prob;
+	}
+
 	formula = std::make_unique<dpll_formula>(prob);
 
 	reduce_formula();
@@ -76,6 +81,8 @@ auto dpll_solver::do_solve(const problem& prob) -> solve_return {
 		return std::make_pair(
 			solution_status::Unsatisfiable, std::shared_ptr<sat::assignment>());
 	}
+
+	formula = nullptr;
 
 }
 
@@ -112,7 +119,8 @@ bool dpll_solver::recursive_reduce(node n, bool choice) {
 		if (!formula->is_contradicting()) return true;
 	}
 
-	if(DEBUG_should_print_assignment) std::cout << "Contradictory\n";
+	if(DEBUG)
+		std::cout << "Contradictory\n";
 	DEBUG_print_assignment(*formula);
 
 	formula->reverse_prune_to_assignment(n);

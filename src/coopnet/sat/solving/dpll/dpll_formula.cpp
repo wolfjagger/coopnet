@@ -7,7 +7,7 @@ using namespace sat;
 
 
 namespace {
-	constexpr bool DEBUG_print_prune = false;
+	constexpr bool DEBUG = false;
 }
 
 
@@ -94,12 +94,16 @@ void dpll_formula::set_node(node n, bool value) {
 
 	auto vert_node = partial_assign.node_to_vertex_map->left.at(n);
 
-	prop_maps.vert_status_map[vert_node] = value ?
-		dpll_vert_status::SetToTrue : dpll_vert_status::SetToFalse;
+	auto vert_prune_data
+		= std::make_pair(vert_node, dpll_vert_status::Active);
+	prune_action_stack.data.push(prune_action(vert_prune_data));
 
-	auto assign_prune_data
-		= std::make_pair(vert_node, boost::logic::indeterminate);
-	prune_action_stack.data.push(prune_action(assign_prune_data));
+	auto status = value ? 
+		dpll_vert_status::SetToTrue : dpll_vert_status::SetToFalse;
+	prop_maps.vert_status_map[vert_node] = status;
+
+	if (DEBUG) std::cout << "Assign node " << n.id <<
+		" with vert " << vert_node << " to " << status << std::endl;
 
 	boost::breadth_first_visit(
 		prob_graph.get(), vert_node, grey_buffer,
@@ -109,7 +113,7 @@ void dpll_formula::set_node(node n, bool value) {
 
 void dpll_formula::reverse_prune_to_assignment(node n) {
 
-	if(DEBUG_print_prune) std::cout << "Pruning\n";
+	if(DEBUG) std::cout << "Pruning\n";
 
 	auto vert_node = partial_assign.node_to_vertex_map->left.at(n);
 
@@ -126,29 +130,43 @@ void dpll_formula::reverse_prune_to_assignment(node n) {
 				boost::get<incomplete_assignment_prune_data>(
 					action.supp_data);
 			auto vert = incomplete_assignment_data.first;
-			if(DEBUG_print_prune) std::cout << "Assign " << vert << "\n";
+			if(DEBUG) std::cout << "Prune assign " << vert << "\n";
 			prop_maps.partial_assignment_map[vert]
 				= incomplete_assignment_data.second;
-			if (vert == vert_node) done = true;
 			break;
 		}
 		case prune_object::Vertex: {
+
 			auto& vertex_data =
 				boost::get<vertex_prune_data>(action.supp_data);
 			auto vert = vertex_data.first;
-			if(DEBUG_print_prune) std::cout << "Vert status " << vert << "\n";
-			prop_maps.vert_status_map[vert] = vertex_data.second;
+			auto status = vertex_data.second;
+
+			if(DEBUG)
+				std::cout << "Prune vert status " << vert << " " << status << "\n";
+
+			prop_maps.vert_status_map[vert] = status;
+
+			// If vert is prune-to vert, set to done (status is set first, not assignment)
+			if (vert == vert_node && status == dpll_vert_status::Active) done = true;
+
 			break;
+
 		}
 		case prune_object::Edge: {
+
 			auto& edge_data =
 				boost::get<edge_prune_data>(action.supp_data);
 			auto edge = edge_data.first;
-			if(DEBUG_print_prune) std::cout << "Edge status " << edge << "\n";
-			prop_maps.edge_status_map[edge] = edge_data.second;
+			auto status = edge_data.second;
+
+			if(DEBUG)
+				std::cout << "Prune edge status " << edge << " " << status << "\n";
+
+			prop_maps.edge_status_map[edge] = status;
 			break;
-		}
-		}
+
+		}}
 
 	}
 

@@ -70,23 +70,6 @@ namespace rc { namespace detail {
 
 
 	inline std::ostream& operator<<(
-		std::ostream& os, const sat::problem& prob) {
-
-		os << "problem:" << std::endl;
-
-		const auto& g = prob.get_graph();
-		auto vert_pair = boost::vertices(prob.get_graph());
-		for(auto vert = vert_pair.first; vert != vert_pair.second; ++vert) {
-			const auto& prop = g[*vert];
-			os << prop.kind << prop.name << std::endl;
-		}
-
-		return os << std::endl;
-	}
-
-
-
-	inline std::ostream& operator<<(
 		std::ostream& os, sat::solution_status status) {
 
 		switch (status) {
