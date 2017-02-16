@@ -1,8 +1,13 @@
 #include "dpll_visitor.h"
+#include <iostream>
 
 using namespace sat;
 
 
+
+namespace {
+	constexpr bool DEBUG = false;
+}
 
 // This visitor will decide if the vert should be removed:
 //  either if it only has one edge (clause)
@@ -31,26 +36,43 @@ void dpll_begin_vert_visitor::node_event(
 		auto inactive_edges_fcn = [this](edge_descriptor e) {
 			return maps.edge_status_map[e] == dpll_edge_status::Inactive;
 		};
+
 		if (std::all_of(
 			edges_pair.first, edges_pair.second, inactive_edges_fcn)) {
 
 			//TODO: Select at random?
 			select_node(g, node, true);
 
-		}
-		// Otherwise, if all edges have same sgn, select node = sgn
-		else {
+		} else {
 
-			auto sgn_first = g[*edges_pair.first].sgn;
-			auto all_same_fcn = [sgn_first, &g](edge_descriptor e) {
-				return sgn_first == g[e].sgn;
+			auto constrain_node_fcn = [this](edge_descriptor e) {
+				return maps.edge_status_map[e] == dpll_edge_status::ConstrainNode;
 			};
+			auto constraining_edge = std::find_if(
+				edges_pair.first, edges_pair.second, constrain_node_fcn);
 
-			if (std::all_of(
-				edges_pair.first, edges_pair.second, all_same_fcn)) {
+			// If any edge is set to constrain the node, constrain it
+			//  (select_node will check for multiple conflicting constraints)
+			if (constraining_edge != edges_pair.second) {
+				change_edge_status(*constraining_edge, dpll_edge_status::Inactive);
+				select_node(g, node, g[*constraining_edge].sgn);
+			}
+			// Otherwise, if all active edges have same sgn, select node = sgn
+			else {
 
-				select_node(g, node, sgn_first);
+				auto sgn_first = g[*edges_pair.first].sgn;
+				auto all_active_same_sgn_fcn = [sgn_first, &g, this](edge_descriptor e) {
+					return (maps.edge_status_map[e] == dpll_edge_status::Active
+						&& sgn_first == g[e].sgn);
+				};
+
+				if (std::all_of(
+					edges_pair.first, edges_pair.second, all_active_same_sgn_fcn)) {
+
+					select_node(g, node, sgn_first);
 				
+				}
+
 			}
 
 		}
@@ -66,64 +88,55 @@ void dpll_begin_vert_visitor::clause_event(
 
 	auto& clause_status = maps.vert_status_map[clause];
 
-	if(clause_status == dpll_vert_status::Remove) {
+	switch(clause_status) {
+	case dpll_vert_status::Remove: {
 
-		auto edges_pair = boost::out_edges(clause, g);
-		for (auto edge = edges_pair.first;
-			edge != edges_pair.second; ++edge) {
+		satisfy_clause(g, clause);
+		break;
 
-			auto& status = maps.edge_status_map[*edge];
-			switch (status) {
-			case dpll_edge_status::PushClauseToNode:
-
-				throw std::exception("This case shouldn't happen");
-				break;
-
-			case dpll_edge_status::PushNodeToClause:
-
-				// If pushing node info to clause, info is now unnecessary
-				change_edge_status(*edge, dpll_edge_status::Inactive);
-
-			}
-
-		}
-
-	} else if(clause_status != dpll_vert_status::Inactive) {
+	}
+	case dpll_vert_status::Active: {
 
 		auto edges_pair = boost::out_edges(clause, g);
 
-		auto active_edges_fcn = [this](edge_descriptor e) {
-			return maps.edge_status_map[e] != dpll_edge_status::Inactive;
+		auto satisfy_clause_fcn = [this](edge_descriptor e) {
+			return maps.edge_status_map[e] == dpll_edge_status::SatisfyClause;
 		};
-		auto num_active_edges = std::count_if(
-			edges_pair.first, edges_pair.second, active_edges_fcn);
-		
-		if (num_active_edges == 0) {
-			is_contradicting = true;
-		} else if (num_active_edges == 1) {
+		auto satisfying_edge = std::find_if(
+			edges_pair.first, edges_pair.second, satisfy_clause_fcn);
+
+		// If any edge is set to constrain the node, constrain it
+		//  (select_node will check for multiple conflicting constraints)
+		if (satisfying_edge != edges_pair.second) {
+			change_edge_status(*satisfying_edge, dpll_edge_status::Inactive);
+			satisfy_clause(g, clause);
+		} else {
 			
-			auto edge = std::find_if(
+			auto active_edges_fcn = [this](edge_descriptor e) {
+				return maps.edge_status_map[e] == dpll_edge_status::Active;
+			};
+			auto num_active_edges = std::count_if(
 				edges_pair.first, edges_pair.second, active_edges_fcn);
 			
-			auto status = maps.edge_status_map[*edge];
-			switch (status) {
-			case dpll_edge_status::Active:
-				change_edge_status(*edge, dpll_edge_status::PushClauseToNode);
-				change_vert_status(clause, dpll_vert_status::Inactive);
-				break;
-			case dpll_edge_status::PushNodeToClause:
-				auto node = boost::target(*edge, g);
-				if (g[*edge].sgn == maps.partial_assignment_map[node]) {
-					change_edge_status(*edge, dpll_edge_status::Inactive);
-					change_vert_status(clause, dpll_vert_status::Inactive);
-				} else {
-					is_contradicting = true;
-				}
-				break;
+			// If no edges left, no way to satisfy clause: contradicting
+			if (num_active_edges == 0) {
+				is_contradicting = true;
+			}
+			// If one edge left, it must be used to satisfy clause
+			else if (num_active_edges == 1) {
+			
+				auto edge = std::find_if(
+					edges_pair.first, edges_pair.second, active_edges_fcn);
+
+				change_edge_status(*edge, dpll_edge_status::ConstrainNode);
+				satisfy_clause(g, clause);
+
 			}
 			
 		}
-	}
+		break;
+
+	}}
 
 }
 
@@ -141,9 +154,15 @@ void dpll_begin_vert_visitor::select_node(
 		auto status = maps.edge_status_map[*edge];
 		switch (status) {
 		case dpll_edge_status::Active:
-			change_edge_status(*edge, dpll_edge_status::PushNodeToClause);
+			// If active edge, use to satisfy clause (if correct sgn) or remove
+			if (g[*edge].sgn == sgn) {
+				change_edge_status(*edge, dpll_edge_status::SatisfyClause);
+			} else {
+				change_edge_status(*edge, dpll_edge_status::Remove);
+			}
 			break;
-		case dpll_edge_status::PushClauseToNode:
+		case dpll_edge_status::ConstrainNode:
+			// If already set to constrain node, set inactive or contradict
 			if (g[*edge].sgn == sgn) {
 				change_edge_status(*edge, dpll_edge_status::Inactive);
 			} else {
@@ -158,10 +177,49 @@ void dpll_begin_vert_visitor::select_node(
 
 }
 
+void dpll_begin_vert_visitor::satisfy_clause(
+	const graph& g, vertex_descriptor clause) {
+	
+	auto edges_pair = boost::out_edges(clause, g);
+	for (auto edge = edges_pair.first;
+		edge != edges_pair.second; ++edge) {
+
+		auto status = maps.edge_status_map[*edge];
+		switch (status) {
+		case dpll_edge_status::Active:
+		case dpll_edge_status::SatisfyClause:
+			// Even if pushing node info to clause, info is now unnecessary
+			change_edge_status(*edge, dpll_edge_status::Remove);
+			break;
+		}
+
+	}
+
+	change_vert_status(clause, dpll_vert_status::Inactive);
+
+}
+
+
+
+namespace {
+	std::ostream& operator<<(std::ostream& os, boost::logic::tribool b) {
+		if (b) {
+			return os << "T";
+		} else if (!b) {
+			return os << "F";
+		} else {
+			return os << "I";
+		}
+	}
+}
+
 void dpll_begin_vert_visitor::change_assignment(
 	vertex_descriptor node, boost::logic::tribool new_assign) {
 	
 	auto& value = maps.partial_assignment_map[node];
+
+	if (DEBUG) std::cout << "node " << node << " assignment " << value << " to " << new_assign << std::endl;
+	
 	auto prune_data = std::make_pair(node, value);
 	prune_action_stack.data.push(prune_action(prune_data));
 	value = new_assign;
@@ -172,9 +230,12 @@ void dpll_begin_vert_visitor::change_vert_status(
 	vertex_descriptor vert, dpll_vert_status new_status) {
 
 	auto& status = maps.vert_status_map[vert];
-	auto prune_data = std::make_pair(vert, status);
-	prune_action_stack.data.push(prune_action(prune_data));
-	status = new_status;
+	if (status != new_status) {
+		if(DEBUG) std::cout << "vert " << vert << " goes " << status << " to " << new_status << std::endl;
+		auto prune_data = std::make_pair(vert, status);
+		prune_action_stack.data.push(prune_action(prune_data));
+		status = new_status;
+	}
 
 }
 
@@ -182,21 +243,24 @@ void dpll_begin_vert_visitor::change_edge_status(
 	edge_descriptor edge, dpll_edge_status new_status) {
 
 	auto& status = maps.edge_status_map[edge];
-	auto prune_data = std::make_pair(edge, status);
-	prune_action_stack.data.push(prune_action(prune_data));
-	status = new_status;
+	if (status != new_status) {
+		if(DEBUG) std::cout << "edge " << edge << " goes " << status << " to " << new_status << std::endl;
+		auto prune_data = std::make_pair(edge, status);
+		prune_action_stack.data.push(prune_action(prune_data));
+		status = new_status;
+	}
 
 }
 
 
 
-	// This has three responsibilities.
-	// (1) color unvisited vertex to visit it
-	// (2) it needs to propagate removals to the next vertices,
-	//  with cases depending on the circumstances:
-	//  (a) node = a => remove clause iff sgn(edge) == a
-	//  (b) clause => set node = a iff clause.num_edges == 1
-	// (3) remove edge
+// This has three responsibilities.
+// (1) color unvisited vertex to visit it
+// (2) it needs to propagate removals to the next vertices,
+//  with cases depending on the circumstances:
+//  (a) node = a => remove clause iff sgn(edge) == a
+//  (b) clause => set node = a iff clause.num_edges == 1
+// (3) remove edge
 void dpll_edge_visitor::edge_event(
 	const graph& g, edge_descriptor edge,
 	const edge_prop& prop,
@@ -209,18 +273,18 @@ void dpll_edge_visitor::edge_event(
 	if (status == dpll_edge_status::Active
 		|| status == dpll_edge_status::Inactive) return;
 
-	// If edge should be traversed, propagate white color to target if black
+	// If edge should be traversed (i.e. has status SatisfyClause, ConstrainNode, or Remove),
+	//  propagate white color to target if black
 	auto& color = maps.color_map[boost::target(edge, g)];
 	if (color == default_color_type::black_color)
 		color = default_color_type::white_color;
 
 	switch (status) {
-	case dpll_edge_status::PushNodeToClause: {
+	case dpll_edge_status::SatisfyClause: {
 
-		// If pushing node to clause, remove clause iff sgn = sgn(node)
+		// If node satisfies clause, remove clause
 		auto clause_status = maps.vert_status_map[clause];
-		if (clause_status != dpll_vert_status::Inactive
-			&& prop.sgn == maps.partial_assignment_map[node]) {
+		if (clause_status != dpll_vert_status::Inactive) {
 
 			change_vert_status(clause, dpll_vert_status::Remove);
 
@@ -228,9 +292,9 @@ void dpll_edge_visitor::edge_event(
 		break;
 
 	}
-	case dpll_edge_status::PushClauseToNode: {
+	case dpll_edge_status::ConstrainNode: {
 
-		// If pushing clause to node, set node to sgn
+		// If clause constrains node, set node to sgn
 		auto node_status = maps.vert_status_map[node];
 		switch (node_status) {
 		case dpll_vert_status::Active:
@@ -257,8 +321,7 @@ void dpll_edge_visitor::edge_event(
 
 		break;
 
-	}
-	}
+	}}
 	
 	change_edge_status(edge, dpll_edge_status::Inactive);
 
@@ -269,9 +332,12 @@ void dpll_edge_visitor::change_vert_status(
 	vertex_descriptor vert, dpll_vert_status new_status) {
 
 	auto& status = maps.vert_status_map[vert];
-	auto prune_data = std::make_pair(vert, status);
-	prune_action_stack.data.push(prune_action(prune_data));
-	status = new_status;
+	if (status != new_status) {
+		if(DEBUG) std::cout << "vert " << vert << " goes " << status << " to " << new_status << std::endl;
+		auto prune_data = std::make_pair(vert, status);
+		prune_action_stack.data.push(prune_action(prune_data));
+		status = new_status;
+	}
 
 }
 
@@ -279,9 +345,12 @@ void dpll_edge_visitor::change_edge_status(
 	edge_descriptor edge, dpll_edge_status new_status) {
 
 	auto& status = maps.edge_status_map[edge];
-	auto prune_data = std::make_pair(edge, status);
-	prune_action_stack.data.push(prune_action(prune_data));
-	status = new_status;
+	if (status != new_status) {
+		if(DEBUG) std::cout << "edge " << edge << " goes " << status << " to " << new_status << std::endl;
+		auto prune_data = std::make_pair(edge, status);
+		prune_action_stack.data.push(prune_action(prune_data));
+		status = new_status;
+	}
 
 }
 
