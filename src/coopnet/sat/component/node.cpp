@@ -21,7 +21,7 @@ bool sat::operator==(const node& node1, const node& node2) {
 
 node_list sat::create_nodes(size_t num_nodes) {
 	auto list = node_list();
-	for (auto i = 0; i < num_nodes; ++i) list.emplace_back(i);
+	for (unsigned int i = 0; i < num_nodes; ++i) list.emplace_back(i);
 	return list;
 }
 

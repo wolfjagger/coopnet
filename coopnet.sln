@@ -7,7 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "coopnet", "coopnet.vcxproj"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "boost-msvc", "..\boost\boost\boost-msvc.vcxproj", "{5DB9B8CC-C208-46CE-8F91-0D3586644B73}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AlphaLi", "alphali\AlphaLi\AlphaLi.vcxitems", "{45D41ACC-2C3C-43D2-BC10-02AA73FFC7C7}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "alphali", "alphali\alphali.vcxitems", "{45D41ACC-2C3C-43D2-BC10-02AA73FFC7C7}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AlphaLi.Test", "alphali\AlphaLi.Test\AlphaLi.Test.vcxproj", "{ECE2B819-B89D-4D3B-9230-6CDFD7142C1C}"
 EndProject
@@ -27,8 +27,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "coopplot", "coopplot\cooppl
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		alphali\AlphaLi\AlphaLi.vcxitems*{45d41acc-2c3c-43d2-bc10-02aa73ffc7c7}*SharedItemsImports = 9
-		alphali\AlphaLi\AlphaLi.vcxitems*{ece2b819-b89d-4d3b-9230-6cdfd7142c1c}*SharedItemsImports = 4
+		alphali\alphali.vcxitems*{45d41acc-2c3c-43d2-bc10-02aa73ffc7c7}*SharedItemsImports = 9
+		alphali\alphali.vcxitems*{ece2b819-b89d-4d3b-9230-6cdfd7142c1c}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -78,21 +78,19 @@ Global
 		{ECE2B819-B89D-4D3B-9230-6CDFD7142C1C}.MinSizeRel|x86.ActiveCfg = Release|Win32
 		{ECE2B819-B89D-4D3B-9230-6CDFD7142C1C}.MinSizeRel|x86.Build.0 = Release|Win32
 		{ECE2B819-B89D-4D3B-9230-6CDFD7142C1C}.Release|x64.ActiveCfg = Release|x64
-		{ECE2B819-B89D-4D3B-9230-6CDFD7142C1C}.Release|x64.Build.0 = Release|x64
 		{ECE2B819-B89D-4D3B-9230-6CDFD7142C1C}.Release|x86.ActiveCfg = Release|Win32
-		{ECE2B819-B89D-4D3B-9230-6CDFD7142C1C}.Release|x86.Build.0 = Release|Win32
 		{ECE2B819-B89D-4D3B-9230-6CDFD7142C1C}.RelWithDebInfo|x64.ActiveCfg = Release|x64
 		{ECE2B819-B89D-4D3B-9230-6CDFD7142C1C}.RelWithDebInfo|x64.Build.0 = Release|x64
 		{ECE2B819-B89D-4D3B-9230-6CDFD7142C1C}.RelWithDebInfo|x86.ActiveCfg = Release|Win32
 		{ECE2B819-B89D-4D3B-9230-6CDFD7142C1C}.RelWithDebInfo|x86.Build.0 = Release|Win32
 		{9DA8B4A7-BCDF-3CA9-9E7C-1C15C4D6D88A}.Debug|x64.ActiveCfg = Debug|x64
-		{9DA8B4A7-BCDF-3CA9-9E7C-1C15C4D6D88A}.Debug|x86.ActiveCfg = Debug|x64
+		{9DA8B4A7-BCDF-3CA9-9E7C-1C15C4D6D88A}.Debug|x86.ActiveCfg = Debug|Win32
+		{9DA8B4A7-BCDF-3CA9-9E7C-1C15C4D6D88A}.Debug|x86.Build.0 = Debug|Win32
 		{9DA8B4A7-BCDF-3CA9-9E7C-1C15C4D6D88A}.MinSizeRel|x64.ActiveCfg = MinSizeRel|x64
 		{9DA8B4A7-BCDF-3CA9-9E7C-1C15C4D6D88A}.MinSizeRel|x64.Build.0 = MinSizeRel|x64
 		{9DA8B4A7-BCDF-3CA9-9E7C-1C15C4D6D88A}.MinSizeRel|x86.ActiveCfg = MinSizeRel|x64
 		{9DA8B4A7-BCDF-3CA9-9E7C-1C15C4D6D88A}.Release|x64.ActiveCfg = Release|x64
-		{9DA8B4A7-BCDF-3CA9-9E7C-1C15C4D6D88A}.Release|x64.Build.0 = Release|x64
-		{9DA8B4A7-BCDF-3CA9-9E7C-1C15C4D6D88A}.Release|x86.ActiveCfg = Release|x64
+		{9DA8B4A7-BCDF-3CA9-9E7C-1C15C4D6D88A}.Release|x86.ActiveCfg = Release|Win32
 		{9DA8B4A7-BCDF-3CA9-9E7C-1C15C4D6D88A}.RelWithDebInfo|x64.ActiveCfg = RelWithDebInfo|x64
 		{9DA8B4A7-BCDF-3CA9-9E7C-1C15C4D6D88A}.RelWithDebInfo|x64.Build.0 = RelWithDebInfo|x64
 		{9DA8B4A7-BCDF-3CA9-9E7C-1C15C4D6D88A}.RelWithDebInfo|x86.ActiveCfg = RelWithDebInfo|x64
@@ -104,9 +102,7 @@ Global
 		{3AB17D78-1EF5-499D-86B7-BD068E8EEB18}.MinSizeRel|x86.ActiveCfg = Release|Win32
 		{3AB17D78-1EF5-499D-86B7-BD068E8EEB18}.MinSizeRel|x86.Build.0 = Release|Win32
 		{3AB17D78-1EF5-499D-86B7-BD068E8EEB18}.Release|x64.ActiveCfg = Release|x64
-		{3AB17D78-1EF5-499D-86B7-BD068E8EEB18}.Release|x64.Build.0 = Release|x64
 		{3AB17D78-1EF5-499D-86B7-BD068E8EEB18}.Release|x86.ActiveCfg = Release|Win32
-		{3AB17D78-1EF5-499D-86B7-BD068E8EEB18}.Release|x86.Build.0 = Release|Win32
 		{3AB17D78-1EF5-499D-86B7-BD068E8EEB18}.RelWithDebInfo|x64.ActiveCfg = Release|x64
 		{3AB17D78-1EF5-499D-86B7-BD068E8EEB18}.RelWithDebInfo|x64.Build.0 = Release|x64
 		{3AB17D78-1EF5-499D-86B7-BD068E8EEB18}.RelWithDebInfo|x86.ActiveCfg = Release|Win32

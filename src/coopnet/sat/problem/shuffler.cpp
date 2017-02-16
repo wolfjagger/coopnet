@@ -15,7 +15,7 @@ node_shuffler::node_shuffler(const problem& prob) {
 	nodes = std::vector<node>();
 	auto num_nodes = prob.get_num_nodes();
 	nodes.reserve(num_nodes);
-	for (auto i = 0; i < num_nodes; ++i) {
+	for (unsigned int i = 0; i < num_nodes; ++i) {
 		nodes.emplace_back(i);
 	}
 
@@ -52,8 +52,8 @@ node node_shuffler::shuffled_node(node orig) const {
 void node_shuffler::apply_to_assignment(assignment& assign) const {
 
 	auto old_map = assign.data;
-	for (auto i = 0; i < nodes.size(); ++i) {
-		assign.data.at(nodes[i]) = old_map.at(node(i));
+	for(auto& n : nodes) {
+		assign.data.at(n) = old_map.at(n);
 	}
 
 }
@@ -69,7 +69,7 @@ sgn_shuffler::sgn_shuffler(const problem& prob) {
 	sgns = std::vector<bool>();
 	auto num_nodes = prob.get_num_nodes();
 	sgns.reserve(num_nodes);
-	for (auto i = 0; i < num_nodes; ++i) {
+	for (size_t i = 0; i < num_nodes; ++i) {
 		sgns.emplace_back(true);
 	}
 
@@ -90,8 +90,8 @@ sgn_shuffler::sgn_shuffler(const problem& prob, std::vector<bool> shuffle_sgns) 
 
 void sgn_shuffler::shuffle() {
 
-	for (auto i = 0; i < sgns.size(); ++i) {
-		sgns[i] = alphali::coin_flip();
+	for (auto& sgn : sgns) {
+		sgn = alphali::coin_flip();
 	}
 
 }
@@ -110,7 +110,7 @@ bool sgn_shuffler::shuffled_sgn(node n) const {
 
 void sgn_shuffler::apply_to_assignment(assignment& assign) const {
 
-	for (auto i = 0; i < sgns.size(); ++i) {
+	for (unsigned int i = 0; i < sgns.size(); ++i) {
 		if (!sgns[i]) {
 			auto& sgn = assign.data.at(node(i));
 			sgn = !sgn;
