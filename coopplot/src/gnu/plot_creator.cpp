@@ -68,6 +68,8 @@ namespace coopplot {
 
 	}
 
+
+
 	void plotfile::rm() {
 
 		out_file.close();
@@ -91,6 +93,8 @@ namespace coopplot {
 		out_file = std::fstream(path);
 
 		out_file << factory.produce_file_str() << std::endl;
+
+		out_file.close();
 
 	}
 

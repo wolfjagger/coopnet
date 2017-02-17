@@ -34,7 +34,6 @@ namespace coopplot {
 		//plotfile(const plotfile& other, string new_location, string new_filename);
 		//plotfile(const plotfile& other, string new_location);
 
-		//TODO: Move methods for plotfile
 		void mv(string new_relative_location, string new_filename);
 		void mv(string new_relative_location);
 
@@ -116,16 +115,20 @@ namespace coopplot {
 
 	private:
 
+		string header = "# gnuplot";
+		string footer = "# end gnuplot";
+		static constexpr char* gnu_quote = "\"";
+
+		string title_str = "";
+
+		std::vector<string> plot_title_strs = std::vector<string>();
+
 		string x_range_str = "";
 		string y_range_str = "";
 
-		string header = "gnuplot -p -e \"plot";
-		string footer = "\"";
-		static constexpr char* gnu_quote = "\\\"";
-
 		string options_str = "with lines";
-		string gnudat_path;
 
+		string gnudat_path;
 		size_t num_y_cols;
 
 	public:
@@ -144,6 +147,29 @@ namespace coopplot {
 		}
 
 
+
+		// GLOBAL OPTIONS
+
+		// Set gnuplot title; defaults to ""
+		void set_title(string title) {
+			title_str = "set title ";
+			title_str += gnu_quote + std::move(title) + gnu_quote;
+		}
+
+
+
+		// PER-PLOT OPTIONS
+
+		// Set gnuplot plot titles; defaults to empty
+		void set_plot_titles(const std::vector<string>& plot_titles) {
+			plot_title_strs = std::vector<string>();
+			for (auto title : plot_titles) {
+				auto str = std::string();
+				str += "title ";
+				str += gnu_quote + std::move(title) + gnu_quote;
+				plot_title_strs.push_back(std::move(str));
+			}
+		}
 
 		// Set min and max x; default chosen by gnuplot
 		void set_x_range(range_data<x_type> x_range) {
@@ -173,13 +199,15 @@ namespace coopplot {
 		string produce_file_str() const override {
 
 			auto str = std::string();
+
 			str += header;
-			str += sep;
-			str += x_range_str;
-			str += sep;
-			str += y_range_str;
-			str += sep;
-			str += core_str();
+			str += "\n";
+			if(!title_str.empty()) {
+				str += title_str;
+				str += "\n";
+			}
+			str += plot_str();
+			str += "\n";
 			str += footer;
 
 			return str;
@@ -188,31 +216,74 @@ namespace coopplot {
 
 
 
+		static std::string system_str(
+			std::string script_string) {
+			auto str = std::string();
+			str += "gnuplot -p -e ";
+			str += "\"";
+			str += "load ";
+			str += "\\\"";
+			str += std::move(script_string);
+			str += "\\\"";
+			str += "\"";
+			return str;
+		}
+
+
+
 	private:
+
+		std::string plot_str() const {
+
+			std::string str;
+			str += "plot ";
+			str += sep;
+			str += x_range_str;
+			str += sep;
+			str += y_range_str;
+			str += sep;
+			str += core_str();
+			return str;
+
+		}
 
 		std::string core_str() const {
 
+			std::string str;
+
 			if(num_y_cols == 1) {
 
-				std::string str;
 				str += gnu_quote + gnudat_path + gnu_quote;
 				str += sep;
+				if(plot_title_strs.size() >= 1) {
+					str += plot_title_strs[0];
+					str += sep;
+				}
 				str += options_str;
 				str += sep;
+				if(plot_title_strs.empty()) {
+					str += "notitle";
+					str += sep;
+				}
 				return str;
 
 			} else {
 
-				std::string str;
 				for(size_t i=0; i<num_y_cols; ++i) {
 
 					str += gnu_quote + gnudat_path + gnu_quote;
 					str += sep;
 					str += "using 1:" + std::to_string(i+2);
 					str += sep;
+					if (plot_title_strs.size() >= i + 1) {
+						str += plot_title_strs[i];
+						str += sep;
+					}
 					str += options_str;
-					str += ",";
-					str += sep;
+					if(i < num_y_cols - 1) {
+						str += ",";
+						str += sep;
+					}
 
 				}
 

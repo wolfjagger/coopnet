@@ -14,27 +14,36 @@ namespace coopplot {
 	void save_and_plot_sat_xy(
 		range_data<x_type> x_range, range_data<y_type> y_range,
 		xy_data<x_type, y_type> data,
-		std::string foldername, std::string datname, std::string gnuname) {
+		const std::string& foldername,
+		const std::string& datname,
+		const std::string& gnuname,
+		std::string title = std::string(),
+		std::vector<std::string> titles = std::vector<std::string>()) {
 
 		//TODO: create folder
 
 		auto gnudat_factory
-			= gnudat_string_factory<x_type, y_type>(
-				data);
-		auto datfile = plotfile(foldername, datname, gnudat_factory);
+			= gnudat_string_factory<x_type, y_type>(data);
+		auto filename = datname + ".dat";
+		auto datfile = plotfile(foldername, filename, gnudat_factory);
+
+		auto num_y_cols = gnudat_factory.get_num_y_cols();
 
 		auto gnuscript_factory
 			= gnuscript_string_factory<x_type, y_type>(
-				datfile.full_path(), x_range, y_range,
-				gnudat_factory.get_num_y_cols());
-		auto scriptfile = plotfile(foldername, gnuname, gnuscript_factory);
+				datfile.full_path(), x_range, y_range, num_y_cols);
 
-		auto script_string = scriptfile.get_file_str();
+		if (!title.empty()) gnuscript_factory.set_title(title);
+		if (!titles.empty()) gnuscript_factory.set_plot_titles(titles);
 
+		auto gnuscriptname = gnuname + ".p";
+		auto gnufile = plotfile(foldername, gnuscriptname, gnuscript_factory);
+
+		auto system_str
+			= gnuscript_factory.system_str(gnufile.full_path());
 		std::cout << "Plotting:" << std::endl;
-		std::cout << script_string << std::endl;
-
-		std::system(script_string.c_str());
+		std::cout << system_str << std::endl;
+		std::system(system_str.c_str());
 
 	}
 
