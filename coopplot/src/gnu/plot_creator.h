@@ -8,30 +8,135 @@
 
 namespace coopplot {
 
-	template<typename x_type, typename y_type>
-	class plot_creator {
+	class plot_string_factory;
 
-	private:
+	class plotfile {
 
-		static constexpr char* out_dir = "../../out/";
+	protected:
 
-		static constexpr char* header = "gnuplot -p -e \"plot";
+		using string = std::string;
+		using fstream = std::fstream;
+		using istream = std::istream;
+
+		string out_dir = "../../out/";
+
+		string relative_location;
+		string filename;
+		fstream out_file;
+
+	public:
+
+		plotfile(string initrelative_location, string init_filename,
+			const plot_string_factory& factory);
+		plotfile(string init_relative_location, string initfilename);
+
+		//TODO: Copy ctor for plotfile
+		//plotfile(const plotfile& other, string new_location, string new_filename);
+		//plotfile(const plotfile& other, string new_location);
+
+		//TODO: Move methods for plotfile
+		void mv(string new_relative_location, string new_filename);
+		void mv(string new_relative_location);
+
+		// Throws! And puts class into inconsistent state.
+		void rm();
+
+		void change_data(const plot_string_factory& factory);
+
+		string get_file_str();
+
+		string full_path() const;
+
+	};
+
+
+
+	class plot_string_factory {
+
+	protected:
+
+		using string = std::string;
+
 		static constexpr char* sep = " ";
-		static constexpr char* footer = "\"";
-		static constexpr char* gnu_quote = "\\\"";
 
-		std::string x_range_str = "";
-		std::string y_range_str = "";
-		std::string options_str = "with lines";
+	public:
 
-		std::unique_ptr<std::string> p_filename;
+		virtual string produce_file_str() const = 0;
+
+	};
+
+
+
+	class trivial_string_factory : public plot_string_factory {
+
+	public:
+
+		string produce_file_str() const override {
+			return "";
+		}
+
+	};
+
+
+
+	template<typename x_type, typename y_type>
+	class gnudat_string_factory : public plot_string_factory {
+
+		xy_data<x_type, y_type> data;
+
 		size_t num_y_cols;
 
 	public:
 
-		plot_creator() = default;
+		gnudat_string_factory(xy_data<x_type, y_type> init_data) :
+			data(init_data),
+			num_y_cols(boost::apply_visitor(
+				calc_num_y_cols<x_type, y_type>(), data.payload)) {
 
-		plot_creator(range_data<x_type> x_range, range_data<y_type> y_range) {
+		}
+
+		string produce_file_str() const override {
+
+			return boost::apply_visitor(
+				create_dat<x_type, y_type>(),
+				data.payload);
+
+		}
+
+		size_t get_num_y_cols() const {
+			return num_y_cols;
+		}
+
+	};
+
+
+
+	template<typename x_type, typename y_type>
+	class gnuscript_string_factory : public plot_string_factory {
+
+	private:
+
+		string x_range_str = "";
+		string y_range_str = "";
+
+		string header = "gnuplot -p -e \"plot";
+		string footer = "\"";
+		static constexpr char* gnu_quote = "\\\"";
+
+		string options_str = "with lines";
+		string gnudat_path;
+
+		size_t num_y_cols;
+
+	public:
+
+		gnuscript_string_factory() = default;
+
+		gnuscript_string_factory(string dat_path,
+			range_data<x_type> x_range, range_data<y_type> y_range,
+			size_t init_num_y_cols) :
+			gnudat_path(dat_path),
+			num_y_cols(init_num_y_cols) {
 
 			set_x_range(x_range);
 			set_y_range(y_range);
@@ -61,64 +166,36 @@ namespace coopplot {
 
 
 
-		// This creates the dat file that will be plotted.
-		//  File must be created before gnuplot_str is called.
-		void create_dat_file(
-			std::string filename,
-			xy_data<x_type, y_type> sat_data) {
-
-			// Prepend the output directory
-			filename = std::string(out_dir) + filename;
-
-			p_filename
-				= std::make_unique<std::string>(std::move(filename));
-
-			// Generate dat file string
-			auto file_str = boost::apply_visitor(
-				create_dat<double, double>(),
-				sat_data.payload);
-
-			// Create dat file from string
-			std::ofstream file(*p_filename);
-			file << std::move(file_str) << std::endl;
-
-			num_y_cols = boost::apply_visitor(
-				calc_num_y_cols<double, double>(),
-				sat_data.payload);
-
-		}
+		
 
 		// Formats the string for calling gnuplot to plot the data.
 		//  Dat file must be created before this call (throws otherwise).
-		std::string gnuplot_str() const {
+		string produce_file_str() const override {
 
-			if (p_filename) {
+			auto str = std::string();
+			str += header;
+			str += sep;
+			str += x_range_str;
+			str += sep;
+			str += y_range_str;
+			str += sep;
+			str += core_str();
+			str += footer;
 
-				auto str = std::string();
-				str += header;
-				str += sep;
-				str += x_range_str;
-				str += sep;
-				str += y_range_str;
-				str += sep;
-				str += core_str();
-				str += footer;
-
-				return str;
-
-			} else {
-				throw std::exception(
-					"gnu dat file not created!");
-			}
+			return str;
 
 		}
+
+
+
+	private:
 
 		std::string core_str() const {
 
 			if(num_y_cols == 1) {
 
 				std::string str;
-				str += gnu_quote + *p_filename + gnu_quote;
+				str += gnu_quote + gnudat_path + gnu_quote;
 				str += sep;
 				str += options_str;
 				str += sep;
@@ -127,9 +204,9 @@ namespace coopplot {
 			} else {
 
 				std::string str;
-				for(auto i=0; i<num_y_cols; ++i) {
+				for(size_t i=0; i<num_y_cols; ++i) {
 
-					str += gnu_quote + *p_filename + gnu_quote;
+					str += gnu_quote + gnudat_path + gnu_quote;
 					str += sep;
 					str += "using 1:" + std::to_string(i+2);
 					str += sep;

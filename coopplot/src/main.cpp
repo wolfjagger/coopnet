@@ -39,7 +39,9 @@ void graph_satisfiability() {
 	range_data<double> x_range = { 2.0, 6.0 };
 	range_data<double> y_range = { 0.0, 1.0 };
 
-	save_and_plot_sat_xy(x_range, y_range, data, "satisfiability.dat");
+
+	save_and_plot_sat_xy(x_range, y_range, data,
+		"tmp_folder", "satisfiability.dat", "gnuplot.sh");
 
 }
 
@@ -81,7 +83,9 @@ void graph_multi_satisfiability() {
 	range_data<double> x_range = { 1.0, 6.0 };
 	range_data<double> y_range = { 0.0, 1.0 };
 
-	save_and_plot_sat_xy(x_range, y_range, data, "multi_satisfiability.dat");
+	
+	save_and_plot_sat_xy(x_range, y_range, data,
+		"tmp_folder", "multi_satisfiability.dat", "gnuplot.sh");
 
 }
 
