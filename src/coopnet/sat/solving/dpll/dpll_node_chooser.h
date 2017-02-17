@@ -1,60 +1,35 @@
 #pragma once
 
-#include "boost/optional.hpp"
-#include "coopnet/sat/problem/assignment.h"
+#include <memory>
+#include "coopnet/sat/solving/node_chooser.h"
 
 
 
 namespace sat {
 
-	class dpll_formula;
-
-	// Note: Will include sort by largest connection,
-	//  watched literals or clauses, most clauses solved, etc.
-	class dpll_node_chooser {
-
-	protected:
-
-		using assignment_map = incomplete_assignment::map;
-
-	public:
-
-		boost::optional<node> choose(const dpll_formula& formula);
-
-	protected:
-
-		virtual vertex_descriptor do_choose(const assignment_map& assign_map) = 0;
-
+	enum class dpll_node_choice_mode {
+		Next, Last, Random
 	};
+	
 
 
+	inline std::unique_ptr<node_chooser>
+		create_dpll_node_chooser(dpll_node_choice_mode mode) {
 
+		switch (mode) {
+		case dpll_node_choice_mode::Next:
+			return std::make_unique<next_node_chooser>();
+		case dpll_node_choice_mode::Last:
+			return std::make_unique<last_node_chooser>();
+		case dpll_node_choice_mode::Random:
+			return std::make_unique<rand_node_chooser>();
+		default:
+			return std::unique_ptr<node_chooser>();
+		}
 
+	}
 
-	class next_node_chooser : public dpll_node_chooser {
-
-	protected:
-
-		vertex_descriptor do_choose(const assignment_map& assign_map) override;
-
-	};
-
-
-	class last_node_chooser : public dpll_node_chooser {
-
-	protected:
-
-		vertex_descriptor do_choose(const assignment_map& assign_map) override;
-
-	};
-
-
-	class rand_node_chooser : public dpll_node_chooser {
-
-	protected:
-
-		vertex_descriptor do_choose(const assignment_map& assign_map) override;
-
-	};
+	// Note: other dpll_node_choosers deriving from node_chooser will go here,
+	//  and we retain the .cpp to put their definitions.
 
 }

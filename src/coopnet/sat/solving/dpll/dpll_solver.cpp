@@ -38,21 +38,16 @@ namespace {
 
 
 
-dpll_solver::dpll_solver(node_choice_mode mode) {
-
-	switch (mode) {
-	case node_choice_mode::Next:
-		node_chooser = std::make_unique<next_node_chooser>();
-		break;
-	case node_choice_mode::Last:
-		node_chooser = std::make_unique<last_node_chooser>();
-		break;
-	case node_choice_mode::Random:
-		node_chooser = std::make_unique<rand_node_chooser>();
-		break;
-	}
+dpll_solver::dpll_solver(dpll_node_choice_mode mode) :
+	complete_solver(std::move(create_dpll_node_chooser(mode))) {
 
 }
+
+dpll_solver::~dpll_solver() {
+
+}
+
+
 
 /*
 * Recursive DPLL(F,p)
@@ -110,7 +105,7 @@ void dpll_solver::find_assignment() {
 
 	while (true) {
 
-		auto new_node = node_chooser->choose(*formula);
+		auto new_node = n_chooser->choose(*formula);
 
 		// If no valid new node, formula is reduced
 		if (!new_node.is_initialized()) break;

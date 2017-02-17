@@ -13,11 +13,10 @@ namespace {
 
 
 dpll_formula::dpll_formula(const problem& prob) :
-	prob_graph(std::cref(prob.get_graph())),
+	formula(prob),
 	contradicting(false),
 	prune_action_stack(),
 	grey_buffer(),
-	partial_assign(prob),
 	vert_status_map(),
 	edge_status_map(),
 	color_map() {
@@ -54,33 +53,7 @@ dpll_formula::dpll_formula(const problem& prob) :
 
 }
 
-
-
-dpll_formula::dpll_formula(const dpll_formula& other) :
-	prob_graph(other.prob_graph) {
-	*this = other;
-}
-
-dpll_formula& dpll_formula::operator=(const dpll_formula& other) {
-
-	prob_graph = other.prob_graph;
-	contradicting = other.contradicting;
-	prune_action_stack = other.prune_action_stack;
-	grey_buffer = other.grey_buffer;
-
- 	partial_assign = other.partial_assign;
-	vert_status_map = other.vert_status_map;
-	edge_status_map = other.edge_status_map;
-	color_map = other.color_map;
-
-	prop_maps = dpll_prop_maps(
-		partial_assign.data,
-		vert_status_map, edge_status_map, color_map);
-
-	prune_visitor = std::make_unique<dpll_visitor>(
-		prune_action_stack, grey_buffer, prop_maps);
-	
-	return *this;
+dpll_formula::~dpll_formula() {
 
 }
 
@@ -169,19 +142,5 @@ void dpll_formula::reverse_prune_to_assignment(node n) {
 		}}
 
 	}
-
-}
-
-
-bool dpll_formula::is_SAT() const {
-
-	auto is_indeterminate_pred =
-		[](std::pair<vertex_descriptor, boost::logic::tribool> pair) {
-		return boost::logic::indeterminate(pair.second);
-	};
-
-	return std::none_of(
-		partial_assign.data.cbegin(), partial_assign.data.cend(),
-		is_indeterminate_pred);
 
 }

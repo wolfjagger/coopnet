@@ -1,7 +1,29 @@
 #include "solver.h"
+#include "node_chooser.h"
 
 using namespace sat;
 
+
+
+solver::solver(std::unique_ptr<node_chooser> chooser) :
+	n_chooser(std::move(chooser)) {
+
+}
+
+solver::~solver() {
+
+}
+
+
+
+complete_solver::complete_solver(std::unique_ptr<node_chooser> chooser) :
+	solver(std::move(chooser)) {
+
+}
+
+complete_solver::~complete_solver() {
+
+}
 
 
 auto complete_solver::solve(const problem& prob) -> solve_return {
@@ -15,6 +37,16 @@ auto complete_solver::solve(const problem& prob) -> solve_return {
 
 }
 
+
+
+incomplete_solver::incomplete_solver(std::unique_ptr<node_chooser> chooser) :
+	solver(std::move(chooser)) {
+
+}
+
+incomplete_solver::~incomplete_solver() {
+
+}
 
 
 auto incomplete_solver::solve(const problem& prob) -> solve_return {

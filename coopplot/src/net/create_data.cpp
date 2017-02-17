@@ -76,7 +76,7 @@ namespace coopplot {
 		auto x_domain = create_x_domain(
 			start_ratio_clause_node, end_ratio_clause_node, num_ratios);
 
-		auto solver = sat::dpll_solver();
+		auto solver = sat::dpll_solver(sat::dpll_node_choice_mode::Next);
 
 		auto vec_y = std::vector<double>();
 		vec_y.reserve(num_ratios);
@@ -114,7 +114,7 @@ namespace coopplot {
 
 		auto diff_num_nodes = (end_num_nodes - start_num_nodes) / (num_plots-1);
 
-		auto solver = sat::dpll_solver();
+		auto solver = sat::dpll_solver(sat::dpll_node_choice_mode::Next);
 
 		auto vec_ys = std::vector<std::vector<double>>();
 		vec_ys.reserve(num_ratios);

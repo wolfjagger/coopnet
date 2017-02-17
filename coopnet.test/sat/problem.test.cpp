@@ -41,7 +41,7 @@ namespace {
 
 	auto lam_dpll_solve_satisfiable = [](const problem& prob) {
 
-		auto solver = sat::dpll_solver();
+		auto solver = sat::dpll_solver(dpll_node_choice_mode::Next);
 		auto pair = solver.solve(prob);
 
 		RC_ASSERT(pair.first == sat::solution_status::Satisfied);
@@ -55,7 +55,7 @@ namespace {
 
 	auto lam_dpll_solve_unknown = [](const problem& prob) {
 
-		auto solver = sat::dpll_solver();
+		auto solver = sat::dpll_solver(dpll_node_choice_mode::Next);
 		auto pair = solver.solve(prob);
 		switch (pair.first) {
 		case sat::solution_status::Satisfied:
@@ -199,7 +199,7 @@ TEST_CASE("Literal shuffle", "[sat]") {
 
 			auto shuffler = sat::literal_shuffler(prob);
 
-			auto solver = dpll_solver();
+			auto solver = dpll_solver(dpll_node_choice_mode::Next);
 
 			using namespace rc::detail;
 

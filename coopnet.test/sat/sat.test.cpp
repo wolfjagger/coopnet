@@ -80,7 +80,7 @@ TEST_CASE("Assignment", "[sat]") {
 		auto lam = []() {
 
 			auto partial_assign
-				= *rc::gen::suchThat<sat::incomplete_assignment>(is_indeterminate);
+				= *rc::gen::suchThat<sat::incomplete_assignment>(is_ind_assignment);
 
 			RC_ASSERT_THROWS(auto assign = sat::assignment(partial_assign));
 			
