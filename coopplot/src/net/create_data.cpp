@@ -6,6 +6,12 @@
 
 
 
+namespace {
+	constexpr bool PRINT_sub_timing = false;
+}
+
+
+
 namespace coopplot {
 
 	namespace {
@@ -29,16 +35,28 @@ namespace coopplot {
 
 			for (auto j = 0; j < num_average; ++j) {
 
-				auto timer = alphali::timer();
+				if(PRINT_sub_timing) {
+					
+					auto timer = alphali::timer();
 
-				auto problem
-					= sat::generate_random_3sat_problem(num_nodes, num_clauses);
-				auto solution_pair = solver.solve(problem);
-				if (solution_pair.first == sat::solution_status::Satisfied)
-					++num_satisfiable;
+					auto problem
+						= sat::generate_random_3sat_problem(num_nodes, num_clauses);
+					auto solution_pair = solver.solve(problem);
+					if (solution_pair.first == sat::solution_status::Satisfied)
+						++num_satisfiable;
 
-				timer.stop();
-				timer.output("Generate and solve problem");
+					timer.stop();
+					timer.output("Generate/solve");
+
+				} else {
+
+					auto problem
+						= sat::generate_random_3sat_problem(num_nodes, num_clauses);
+					auto solution_pair = solver.solve(problem);
+					if (solution_pair.first == sat::solution_status::Satisfied)
+						++num_satisfiable;
+
+				}
 
 			}
 
@@ -64,6 +82,8 @@ namespace coopplot {
 		vec_y.reserve(num_ratios);
 		for (auto i = 0; i < num_ratios; ++i) {
 
+			auto timer = alphali::timer();
+				
 			auto ratio = start_ratio_clause_node + i*x_domain[1];
 			auto num_clauses = unsigned int(std::ceil(num_nodes * ratio));
 
@@ -72,6 +92,9 @@ namespace coopplot {
 			vec_y.push_back(
 				frac_satisfiable(
 					solver, num_nodes, num_clauses, num_average));
+
+			timer.stop();
+			timer.output("Set of num_node/num_clause");
 
 		}
 
