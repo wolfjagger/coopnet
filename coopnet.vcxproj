@@ -159,6 +159,7 @@
     <ClCompile Include="src\coopnet\sat\problem\problem_factory.cpp" />
     <ClCompile Include="src\coopnet\sat\problem\problem_util.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\dpll\dpll_formula.cpp" />
+    <ClCompile Include="src\coopnet\sat\solving\dpll\dpll_node_chooser.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\dpll\dpll_solver.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\dpll\dpll_visitor.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\solver.cpp" />
@@ -174,6 +175,7 @@
     <ClInclude Include="src\coopnet\sat\problem\problem.h" />
     <ClInclude Include="src\coopnet\sat\problem\problem_factory.h" />
     <ClInclude Include="src\coopnet\sat\problem\problem_util.h" />
+    <ClInclude Include="src\coopnet\sat\solving\dpll\dpll_node_chooser.h" />
     <ClInclude Include="src\sat\sat_defs.h" />
     <ClInclude Include="src\coopnet\sat\visitor\sat_visitor.h" />
     <ClInclude Include="src\coopnet\sat\solving\dpll\dpll_formula.h" />

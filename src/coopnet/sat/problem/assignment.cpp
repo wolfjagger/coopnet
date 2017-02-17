@@ -35,8 +35,6 @@ incomplete_assignment::incomplete_assignment(const problem& prob) {
 
 bool incomplete_assignment::is_indeterminate() const {
 
-	return std::any_of(data.cbegin(), data.cend(), [](const pair& p) {
-		return boost::indeterminate(p.second);
-	});
+	return std::any_of(data.cbegin(), data.cend(), is_ind_pair);
 
 }

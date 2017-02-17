@@ -1,9 +1,10 @@
 #include "dpll_solver.h"
 #include <iostream>
 #include "boost/logic/tribool.hpp"
-#include "alphali/containers/random_iterator.h"
 #include "coopnet/sat/problem/problem.h"
 #include "coopnet/sat/component/node.h"
+#include "dpll_formula.h"
+#include "dpll_node_chooser.h"
 
 using namespace sat;
 
@@ -36,6 +37,22 @@ namespace {
 }
 
 
+
+dpll_solver::dpll_solver(node_choice_mode mode) {
+
+	switch (mode) {
+	case node_choice_mode::Next:
+		node_chooser = std::make_unique<next_node_chooser>();
+		break;
+	case node_choice_mode::Last:
+		node_chooser = std::make_unique<last_node_chooser>();
+		break;
+	case node_choice_mode::Random:
+		node_chooser = std::make_unique<rand_node_chooser>();
+		break;
+	}
+
+}
 
 /*
 * Recursive DPLL(F,p)
@@ -93,7 +110,7 @@ void dpll_solver::find_assignment() {
 
 	while (true) {
 
-		auto new_node = choose_next_node(node_choice_mode::Next);
+		auto new_node = node_chooser->choose(*formula);
 
 		// If no valid new node, formula is reduced
 		if (!new_node.is_initialized()) break;
@@ -151,48 +168,4 @@ void dpll_solver::reduce_with_selection(node n, bool choice) {
 	formula->set_node(n, choice);
 	DEBUG_print_assignment(*formula);
 
-}
-
-
-
-
-
-namespace {
-	auto rand_engine = std::mt19937_64(std::random_device()());
-}
-
-boost::optional<node>
-dpll_solver::choose_next_node(node_choice_mode mode) const {
-
-	auto& assign = formula->get_incomplete_assignment();
-	auto& assign_map = assign.data;
-
-	// Find unset node
-	const auto node_choice_pred = [](const auto& pair) {
-		return boost::indeterminate(pair.second);
-	};
-
-	// If none, return no node
-	if (std::none_of(assign_map.cbegin(), assign_map.cend(), node_choice_pred))
-		return boost::optional<node>();
-
-	// Otherwise, return node based on mode
-	using iterator = incomplete_assignment::map::const_iterator;
-	iterator next_node;
-	switch (mode) {
-	case node_choice_mode::Next:
-		next_node = std::find_if(
-			assign_map.cbegin(), assign_map.cend(), node_choice_pred);
-	case node_choice_mode::Last:
-		next_node = std::find_if(
-			assign_map.crbegin(), assign_map.crend(), node_choice_pred).base();
-	case node_choice_mode::Random:
-		next_node = alphali::random_find_if(
-			assign_map.cbegin(), assign_map.cend(), node_choice_pred, rand_engine);
-	}
-
-	auto node = assign.node_to_vertex_map->right.at(next_node->first);
-
-	return node;
-	
 }

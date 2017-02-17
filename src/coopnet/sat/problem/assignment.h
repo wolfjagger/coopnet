@@ -51,8 +51,12 @@ namespace sat {
 
 	};
 
-	inline bool is_indeterminate(const incomplete_assignment& assign) {
+	inline bool is_ind_assignment(const incomplete_assignment& assign) {
 		return assign.is_indeterminate();
+	}
+
+	inline bool is_ind_pair(const incomplete_assignment::pair& pair) {
+		return boost::indeterminate(pair.second);
 	}
 
 }
