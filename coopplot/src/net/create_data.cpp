@@ -1,6 +1,5 @@
 #include "create_data.h"
-#include <chrono>
-#include <iostream>
+#include "alphali/util/timer.h"
 #include "coopnet/sat/problem/problem.h"
 #include "coopnet/sat/problem/problem_factory.h"
 #include "coopnet/sat/solving/dpll/dpll_solver.h"
@@ -30,9 +29,7 @@ namespace coopplot {
 
 			for (auto j = 0; j < num_average; ++j) {
 
-				using namespace std::chrono;
-				auto clock = system_clock();
-				auto beg_time = clock.now();
+				auto timer = alphali::timer();
 
 				auto problem
 					= sat::generate_random_3sat_problem(num_nodes, num_clauses);
@@ -40,12 +37,8 @@ namespace coopplot {
 				if (solution_pair.first == sat::solution_status::Satisfied)
 					++num_satisfiable;
 
-				auto end_time = clock.now();
-
-				auto time_diff = duration_cast<milliseconds>(end_time - beg_time);
-				auto secs = float(time_diff.count()) / 1000;
-
-				std::cout << "Took " << secs << " secs" << std::endl;
+				timer.stop();
+				timer.output("Generate and solve problem");
 
 			}
 
@@ -112,10 +105,7 @@ namespace coopplot {
 			vec_y.reserve(num_plots);
 			for(auto j=0; j < num_plots; ++j) {
 
-				using namespace std::chrono;
-
-				auto clock = system_clock();
-				auto beg_time = clock.now();
+				auto timer = alphali::timer();
 
 				auto num_nodes = start_num_nodes + j*diff_num_nodes;
 				auto num_clauses = unsigned int(std::ceil(num_nodes * ratio));
@@ -127,12 +117,8 @@ namespace coopplot {
 					frac_satisfiable(
 						solver, num_nodes, num_clauses, num_average));
 
-				auto end_time = clock.now();
-
-				auto time_diff = duration_cast<milliseconds>(end_time - beg_time);
-				auto secs = float(time_diff.count()) / 1000;
-
-				std::cout << "Took " << secs << " secs" << std::endl;
+				timer.stop();
+				timer.output("Set of num_node/num_clause");
 
 			}
 

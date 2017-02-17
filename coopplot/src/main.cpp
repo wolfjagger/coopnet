@@ -1,5 +1,5 @@
-#include <chrono>
 #include "alphali/util/math.h"
+#include "alphali/util/timer.h"
 #include "net/create_data.h"
 #include "gnu/call_gnu.h"
 
@@ -16,10 +16,7 @@ void graph_satisfiability(const std::string& foldername) {
 	auto num_average = 20;
 
 
-	using namespace std::chrono;
-
-	auto clock = system_clock();
-	auto beg_time = clock.now();
+	auto timer = alphali::timer();
 
 
 	auto data = create_sat_data(
@@ -28,12 +25,8 @@ void graph_satisfiability(const std::string& foldername) {
 		num_ratios, num_average);
 
 
-	auto end_time = clock.now();
-
-	auto time_diff = duration_cast<milliseconds>(end_time - beg_time);
-	auto secs = float(time_diff.count()) / 1000;
-
-	std::cout << "create_sat_data took " << secs << " secs" << std::endl;
+	timer.stop();
+	timer.output("create_sat_data");
 
 
 	std::string title = "Satisfiability with ";
@@ -62,13 +55,10 @@ void graph_multi_satisfiability(const std::string& foldername) {
 	auto start_ratio = 3.5;
 	auto end_ratio = 5.5;
 	auto num_ratios = 21;
-	auto num_average = 20;
+	auto num_average = 100;
 
 
-	using namespace std::chrono;
-
-	auto clock = system_clock();
-	auto beg_time = clock.now();
+	auto timer = alphali::timer();
 
 
 	auto data = create_multiple_sat_data(
@@ -77,16 +67,11 @@ void graph_multi_satisfiability(const std::string& foldername) {
 		num_ratios, num_average);
 
 
-	auto end_time = clock.now();
-
-	auto time_diff = duration_cast<milliseconds>(end_time - beg_time);
-	auto secs = float(time_diff.count()) / 1000;
-
-	std::cout << "create_multiple_sat_data took "
-		<< secs << " secs" << std::endl;
+	timer.stop();
+	timer.output("create_multiple_sat_data");
 
 
-	std::string title = "Multiple num_node satisfiability";
+	std::string title = "Multiple num node satisfiability";
 	auto plot_titles = std::vector<std::string>();
 	auto diff_num_nodes
 		= (end_num_nodes - start_num_nodes) / (num_plots - 1);
