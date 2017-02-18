@@ -53,10 +53,6 @@ dpll_formula::dpll_formula(const problem& prob) :
 
 }
 
-dpll_formula::~dpll_formula() {
-
-}
-
 
 
 void dpll_formula::set_node(node n, bool value) {

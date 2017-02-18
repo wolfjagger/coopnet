@@ -41,7 +41,7 @@ namespace sat {
 		dpll_formula(dpll_formula&& other) = default;
 		dpll_formula& operator=(dpll_formula&& other) = default;
 
-		~dpll_formula() override;
+		~dpll_formula() = default;
 
 
 

@@ -2,6 +2,7 @@
 #include <queue>
 #include "boost/graph/breadth_first_search.hpp"
 #include "boost/graph/connected_components.hpp"
+#include "coopnet/sat/solving/formula.h"
 #include "coopnet/sat/visitor/satisfiability_visitor.h"
 #include "assignment.h"
 #include "shuffler.h"
@@ -66,8 +67,10 @@ clause_satisfiability problem::clause_satisfiability_for(
 
 	auto satisfiability_collector
 		= collect_satisfiability_visitor(*this, assign);
+
+	auto form = formula(*this);
 	
-	apply_visitor(satisfiability_collector);
+	form.visit_problem(satisfiability_collector);
 	
 	return *satisfiability_collector.satisfiability;
 	

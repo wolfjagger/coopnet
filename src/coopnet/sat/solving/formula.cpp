@@ -1,5 +1,6 @@
 #include "formula.h"
 #include <iostream>
+#include "coopnet/sat/problem/problem.h"
 
 using namespace sat;
 
@@ -17,15 +18,7 @@ formula::formula(const problem& prob) :
 
 }
 
-formula::~formula() {
 
-}
-
-
-
-const graph& formula::get_prob_graph() const {
-	return prob.get().get_graph();
-}
 
 bool formula::is_SAT() const {
 
@@ -33,4 +26,13 @@ bool formula::is_SAT() const {
 		partial_assign.data.cbegin(), partial_assign.data.cend(),
 		is_ind_pair);
 
+}
+
+const graph& formula::get_prob_graph() const {
+	return prob.get().get_graph();
+}
+
+const std::vector<vertex_descriptor>&
+formula::get_prob_connected_component_entry_pts() const {
+	return prob.get().connected_component_entry_pts();
 }

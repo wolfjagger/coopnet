@@ -69,52 +69,6 @@ namespace sat {
 
 
 
-		template<typename visitor>
-		void apply_visitor(visitor& v) {
-
-			auto bfv = boost::make_bfs_visitor(v);
-
-			auto sources = std::vector<size_t>();
-			for (auto source_vert : connected_component_vertices)
-				sources.push_back(boost::vertex(source_vert, prob_graph));
-
-			auto buffer = boost::queue<vertex_descriptor>();
-
-			using vec_color_type = std::vector<vertex_descriptor>;
-			auto vec_colors = vec_color_type(boost::num_vertices(prob_graph));
-			auto color_map = boost::make_iterator_property_map(
-				vec_colors.begin(), get(boost::vertex_index, prob_graph));
-
-			boost::breadth_first_search(
-				prob_graph, sources.cbegin(), sources.cend(), buffer,
-				bfv, color_map);
-
-		}
-
-		template<typename visitor>
-		void apply_visitor(const visitor& v) const {
-
-			auto bfv = boost::make_bfs_visitor(v);
-
-			auto sources = std::vector<size_t>();
-			for (auto source_vert : connected_component_vertices)
-				sources.push_back(boost::vertex(source_vert, prob_graph));
-
-			auto buffer = boost::queue<vertex_descriptor>();
-
-			using vec_color_type = std::vector<vertex_descriptor>;
-			auto vec_colors = vec_color_type(boost::num_vertices(prob_graph));
-			auto color_map = boost::make_iterator_property_map(
-				vec_colors.begin(), get(boost::vertex_index, prob_graph));
-
-			boost::breadth_first_search(
-				prob_graph, sources.cbegin(), sources.cend(), buffer,
-				bfv, color_map);
-
-		}
-
-
-
 		// Should test if shared_ptr costs us.
 		//  Would it be better to copy it in, or maybe just reference?
 		clause_satisfiability clause_satisfiability_for(
@@ -146,7 +100,7 @@ namespace sat {
 			return num_connected_components;
 		}
 		const std::vector<vertex_descriptor>&
-			connected_component_vertex_entry_pts() const {
+			connected_component_entry_pts() const {
 			return connected_component_vertices;
 		}
 
