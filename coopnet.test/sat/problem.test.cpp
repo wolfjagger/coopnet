@@ -53,13 +53,23 @@ namespace {
 
 	};
 
-	auto lam_dpll_solve_unknown = [](const problem& prob) {
+	auto lam_dpll_unknown_all = [](const problem& prob) {
 
-		auto solver = sat::dpll_solver(dpll_node_choice_mode::Next);
-		auto pair = solver.solve(prob);
-		switch (pair.first) {
+		auto solver_next = sat::dpll_solver(dpll_node_choice_mode::Next);
+		auto pair_next = solver_next.solve(prob);
+		auto solver_last = sat::dpll_solver(dpll_node_choice_mode::Last);
+		auto pair_last = solver_last.solve(prob);
+		auto solver_rand = sat::dpll_solver(dpll_node_choice_mode::Random);
+		auto pair_rand = solver_rand.solve(prob);
+
+		RC_ASSERT(pair_next.first == pair_last.first);
+		RC_ASSERT(pair_next.first == pair_rand.first);
+
+		switch (pair_next.first) {
 		case sat::solution_status::Satisfied:
-			RC_ASSERT(prob.is_satisfied_by(pair.second));
+			RC_ASSERT(prob.is_satisfied_by(pair_next.second));
+			RC_ASSERT(prob.is_satisfied_by(pair_last.second));
+			RC_ASSERT(prob.is_satisfied_by(pair_rand.second));
 			break;
 		case sat::solution_status::Unsatisfiable:
 			// Note this does not assure it is truly unsatisfiable
@@ -82,7 +92,7 @@ TEST_CASE("Problem assignment verification", "[sat]") {
 
 			auto prob = *rc::same_sgn_prob_gen(
 				std::make_pair(3, 10),
-				std::make_pair(1, 40),
+				std::make_pair(1, 50),
 				assignment_sgn);
 
 			lam_create_same_sgn_assign(prob, assignment_sgn);
@@ -101,9 +111,9 @@ TEST_CASE("Problem assignment verification", "[sat]") {
 
 			auto prob = *rc::same_sgn_disconnected_prob_gen(
 				std::make_pair(3, 6),
-				std::make_pair(1, 20),
+				std::make_pair(1, 30),
 				std::make_pair(3, 6),
-				std::make_pair(1, 20),
+				std::make_pair(1, 30),
 				assignment_sgn);
 
 			lam_create_same_sgn_assign(prob, assignment_sgn);
@@ -116,7 +126,7 @@ TEST_CASE("Problem assignment verification", "[sat]") {
 		
 	}
 
-	SECTION("Random problems give correct assignments if solvable.") {
+	SECTION("Random problems give correct assignments if solvable and node choice doesn't matter.") {
 		
 		auto lam = []() {
 
@@ -124,7 +134,7 @@ TEST_CASE("Problem assignment verification", "[sat]") {
 				std::make_pair(3, 10),
 				std::make_pair(1, 50));
 
-			lam_dpll_solve_unknown(prob);
+			lam_dpll_unknown_all(prob);
 
 		};
 
@@ -165,7 +175,7 @@ TEST_CASE("Literal shuffle", "[sat]") {
 
 			auto prob = *rc::same_sgn_prob_gen(
 				std::make_pair(7, 10),
-				std::make_pair(10, 40),
+				std::make_pair(10, 50),
 				true);
 
 			auto assign = lam_create_same_sgn_assign(prob, true);
@@ -195,7 +205,7 @@ TEST_CASE("Literal shuffle", "[sat]") {
 
 			auto prob = *rc::random_prob_gen(
 				std::make_pair(3, 10),
-				std::make_pair(10, 40));
+				std::make_pair(10, 50));
 
 			auto shuffler = sat::literal_shuffler(prob);
 

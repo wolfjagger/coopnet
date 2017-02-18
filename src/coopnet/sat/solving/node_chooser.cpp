@@ -41,7 +41,7 @@ vertex_descriptor next_node_chooser::do_choose(const assignment_map& assign_map)
 vertex_descriptor last_node_chooser::do_choose(const assignment_map& assign_map) {
 
 	auto iter = std::find_if(
-		assign_map.crbegin(), assign_map.crend(), is_ind_pair).base();
+		assign_map.crbegin(), assign_map.crend(), is_ind_pair);
 	return iter->first;
 
 }
