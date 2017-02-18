@@ -22,6 +22,7 @@
     <ClCompile Include="src\gnu\plot_creator.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\net\create_data.cpp" />
+    <ClCompile Include="src\net\graph_sat.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\gnu\call_gnu.h" />
@@ -29,6 +30,7 @@
     <ClInclude Include="src\gnu\plot_creator.h" />
     <ClInclude Include="src\net\create_data.h" />
     <ClInclude Include="src\gnu\xy_data.h" />
+    <ClInclude Include="src\net\graph_sat.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{BF6ED0BD-EB1C-4BDF-A410-D383610A9A6C}</ProjectGuid>
