@@ -39,6 +39,8 @@ namespace {
 
 	};
 
+	// Here and below: Add CHOICE for node_choice_mode.
+	//  Choose at high level!
 	auto lam_dpll_solve_satisfiable = [](const problem& prob) {
 
 		auto solver = sat::dpll_solver(dpll_node_choice_mode::Next);
@@ -62,7 +64,7 @@ namespace {
 		auto solver_rand = sat::dpll_solver(dpll_node_choice_mode::Random);
 		auto pair_rand = solver_rand.solve(prob);
 		auto solver_most_sat = sat::dpll_solver(dpll_node_choice_mode::MostClausesSat);
-		auto pair_most_sat = solver_rand.solve(prob);
+		auto pair_most_sat = solver_most_sat.solve(prob);
 
 		RC_ASSERT(pair_next.first == pair_last.first);
 		RC_ASSERT(pair_next.first == pair_rand.first);

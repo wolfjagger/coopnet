@@ -81,7 +81,7 @@ auto dpll_solver::do_solve(const problem& prob) -> solve_return {
 	}
 
 	formula = std::make_unique<dpll_formula>(prob);
-	choices = std::stack<std::pair<node, bool>>();
+	choices = std::stack<std::tuple<node, bool, bool>>();
 
 	find_assignment();
 
@@ -105,12 +105,12 @@ void dpll_solver::find_assignment() {
 
 	while (true) {
 
-		auto new_node = n_chooser->choose(*formula);
+		auto new_choice = n_chooser->choose(*formula);
 
 		// If no valid new node, formula is reduced
-		if (!new_node.is_initialized()) break;
+		if (!new_choice.is_initialized()) break;
 
-		reduce_with_selection(*new_node, true);
+		reduce_with_selection(new_choice->first, new_choice->second, true);
 		
 		if (formula->is_contradicting()) {
 
@@ -137,15 +137,15 @@ bool dpll_solver::change_last_free_choice() {
 		auto choice = choices.top();
 		choices.pop();
 
-		auto n = choice.first;
-		auto b = choice.second;
+		auto n = std::get<0>(choice);
+		auto b = std::get<1>(choice);
 		formula->reverse_prune_to_assignment(n);
 		formula->set_contradicting(false);
 		DEBUG_print_assignment(*formula);
 
-		if (b == true) {
+		if (std::get<2>(choice) == true) {
 
-			reduce_with_selection(n, !b);
+			reduce_with_selection(n, !b, false);
 			if(!formula->is_contradicting()) return true;
 
 		}
@@ -157,9 +157,15 @@ bool dpll_solver::change_last_free_choice() {
 
 }
 
-void dpll_solver::reduce_with_selection(node n, bool choice) {
+void dpll_solver::reduce_with_selection(node n, bool choice, bool is_first_time) {
 
-	choices.push(std::make_pair(n, choice));
+	if (DEBUG) {
+		std::cout << "Choose node " << std::to_string(n.id);
+		std::cout << " to be " << (choice ? "true" : "false");
+		std::cout << " for the " << (is_first_time ? "first" : "second") << " time."<< std::endl;
+	}
+
+	choices.push({ n, choice, is_first_time });
 	formula->set_node(n, choice);
 	DEBUG_print_assignment(*formula);
 

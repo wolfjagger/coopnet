@@ -17,7 +17,9 @@ namespace sat {
 	private:
 
 		std::unique_ptr<dpll_formula> formula;
-		std::stack<std::pair<node, bool>> choices;
+
+		// Choice: node, sgn, first time chosen (out of two)
+		std::stack<std::tuple<node, bool, bool>> choices;
 
 	public:
 
@@ -40,7 +42,7 @@ namespace sat {
 		void find_assignment();
 
 		bool change_last_free_choice();
-		void reduce_with_selection(node n, bool choice);
+		void reduce_with_selection(node n, bool choice, bool is_first_time);
 
 	};
 

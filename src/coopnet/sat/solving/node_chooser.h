@@ -16,14 +16,15 @@ namespace sat {
 	protected:
 
 		using assignment_map = incomplete_assignment::map;
+		using vert_choice = std::pair<vertex_descriptor, bool>;
 
 	public:
 
-		boost::optional<node> choose(const formula& form);
+		boost::optional<std::pair<node, bool>> choose(const formula& form);
 
 	protected:
 
-		virtual vertex_descriptor do_choose(
+		virtual vert_choice do_choose(
 			const formula& form, const assignment_map& assign_map) = 0;
 
 	};
@@ -36,7 +37,7 @@ namespace sat {
 
 	protected:
 
-		vertex_descriptor do_choose(
+		vert_choice do_choose(
 			const formula& form, const assignment_map& assign_map) override;
 
 	};
@@ -46,7 +47,7 @@ namespace sat {
 
 	protected:
 
-		vertex_descriptor do_choose(
+		vert_choice do_choose(
 			const formula& form, const assignment_map& assign_map) override;
 
 	};
@@ -56,7 +57,7 @@ namespace sat {
 
 	protected:
 
-		vertex_descriptor do_choose(
+		vert_choice do_choose(
 			const formula& form, const assignment_map& assign_map) override;
 
 	};

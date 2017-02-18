@@ -21,9 +21,10 @@ namespace sat {
 
 		const dpll_prop_maps maps;
 
-		unsigned int max_num_clauses_sat;
-		bool sgn_sat;
-		vertex_descriptor chosen_node;
+		std::shared_ptr<vertex_descriptor> chosen_node;
+		std::shared_ptr<bool> sgn_sat;
+
+		int max_num_clauses_sat;
 
 	public:
 
@@ -41,9 +42,8 @@ namespace sat {
 
 
 
-		vertex_descriptor get_chosen_node() const {
-			return chosen_node;
-		}
+		std::pair<vertex_descriptor, bool> retreive_choice() const;
+
 	};
 
 }

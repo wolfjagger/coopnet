@@ -1,5 +1,6 @@
 #include "node_chooser.h"
 #include "alphali/containers/random_iterator.h"
+#include "alphali/util/random.h"
 #include "coopnet/sat/solving/dpll/dpll_formula.h"
 
 
@@ -8,19 +9,21 @@ using namespace sat;
 
 
 
-boost::optional<node> node_chooser::choose(const formula& form) {
+boost::optional<std::pair<node, bool>> node_chooser::choose(const formula& form) {
 
 	auto& assign = form.get_incomplete_assignment();
 	auto& assign_map = assign.data;
 
 	// If none, return no node
 	if (std::none_of(assign_map.cbegin(), assign_map.cend(), is_ind_pair)) {
-		return boost::optional<node>();
+		return boost::optional<std::pair<node, bool>>();
 	} else {
 
-		auto vert = do_choose(form, assign_map);
+		auto choice = do_choose(form, assign_map);
 
-		return assign.node_to_vertex_map->right.at(vert);
+		auto node = assign.node_to_vertex_map->right.at(choice.first);
+
+		return std::make_pair(node, choice.second);
 
 	}
 
@@ -30,21 +33,23 @@ boost::optional<node> node_chooser::choose(const formula& form) {
 
 
 
-vertex_descriptor next_node_chooser::do_choose(
-	const formula& form, const assignment_map& assign_map) {
+auto next_node_chooser::do_choose(
+	const formula& form, const assignment_map& assign_map)
+	-> vert_choice {
 
 	auto iter = std::find_if(
 		assign_map.cbegin(), assign_map.cend(), is_ind_pair);
-	return iter->first;
+	return std::make_pair(iter->first, true);
 
 }
 
-vertex_descriptor last_node_chooser::do_choose(
-	const formula& form, const assignment_map& assign_map) {
+auto last_node_chooser::do_choose(
+	const formula& form, const assignment_map& assign_map)
+	-> vert_choice {
 
 	auto iter = std::find_if(
 		assign_map.crbegin(), assign_map.crend(), is_ind_pair);
-	return iter->first;
+	return std::make_pair(iter->first, false);
 
 }
 
@@ -55,11 +60,12 @@ namespace {
 }
 
 
-vertex_descriptor rand_node_chooser::do_choose(
-	const formula& form, const assignment_map& assign_map) {
+auto rand_node_chooser::do_choose(
+	const formula& form, const assignment_map& assign_map)
+	-> vert_choice {
 
 	auto iter = alphali::random_find_if(
 		assign_map.cbegin(), assign_map.cend(), is_ind_pair, rand_engine);
-	return iter->first;
+	return std::make_pair(iter->first, alphali::coin_flip());
 
 }

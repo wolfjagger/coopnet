@@ -17,7 +17,7 @@ namespace sat {
 
 	protected:
 
-		vertex_descriptor do_choose(
+		vert_choice do_choose(
 			const formula& form, const assignment_map& assign_map) override;
 
 	};
