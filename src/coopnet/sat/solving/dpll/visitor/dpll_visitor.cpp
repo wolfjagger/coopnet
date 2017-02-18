@@ -9,6 +9,18 @@ namespace {
 	constexpr bool DEBUG = false;
 }
 
+
+
+dpll_begin_vert_visitor::dpll_begin_vert_visitor(
+	prune_stack& prune_action_stack,
+	bool& is_contradicting,
+	dpll_prop_maps maps) :
+	prune_action_stack(prune_action_stack),
+	is_contradicting(is_contradicting),
+	maps(maps) {}
+
+
+
 // This visitor will decide if the vert should be removed:
 //  either if it only has one edge (clause)
 //  or if it has all edges with same sign (node).
@@ -256,6 +268,18 @@ void dpll_begin_vert_visitor::change_edge_status(
 
 
 
+
+
+dpll_edge_visitor::dpll_edge_visitor(
+	prune_stack& prune_action_stack,
+	bool& is_contradicting,
+	dpll_prop_maps maps) :
+	prune_action_stack(prune_action_stack),
+	is_contradicting(is_contradicting),
+	maps(maps) {}
+
+
+
 // This has three responsibilities.
 // (1) color unvisited vertex to visit it
 // (2) it needs to propagate removals to the next vertices,
@@ -357,6 +381,18 @@ void dpll_edge_visitor::change_edge_status(
 	}
 
 }
+
+
+
+
+
+dpll_finish_vert_visitor::dpll_finish_vert_visitor(
+	boost::queue<vertex_descriptor>& grey_buffer,
+	bool& is_contradicting,
+	dpll_prop_maps maps) :
+	grey_buffer(grey_buffer),
+	is_contradicting(is_contradicting),
+	maps(maps) {}
 
 
 

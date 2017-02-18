@@ -18,7 +18,7 @@ boost::optional<node> node_chooser::choose(const formula& form) {
 		return boost::optional<node>();
 	} else {
 
-		auto vert = do_choose(assign_map);
+		auto vert = do_choose(form, assign_map);
 
 		return assign.node_to_vertex_map->right.at(vert);
 
@@ -30,7 +30,8 @@ boost::optional<node> node_chooser::choose(const formula& form) {
 
 
 
-vertex_descriptor next_node_chooser::do_choose(const assignment_map& assign_map) {
+vertex_descriptor next_node_chooser::do_choose(
+	const formula& form, const assignment_map& assign_map) {
 
 	auto iter = std::find_if(
 		assign_map.cbegin(), assign_map.cend(), is_ind_pair);
@@ -38,7 +39,8 @@ vertex_descriptor next_node_chooser::do_choose(const assignment_map& assign_map)
 
 }
 
-vertex_descriptor last_node_chooser::do_choose(const assignment_map& assign_map) {
+vertex_descriptor last_node_chooser::do_choose(
+	const formula& form, const assignment_map& assign_map) {
 
 	auto iter = std::find_if(
 		assign_map.crbegin(), assign_map.crend(), is_ind_pair);
@@ -53,7 +55,8 @@ namespace {
 }
 
 
-vertex_descriptor rand_node_chooser::do_choose(const assignment_map& assign_map) {
+vertex_descriptor rand_node_chooser::do_choose(
+	const formula& form, const assignment_map& assign_map) {
 
 	auto iter = alphali::random_find_if(
 		assign_map.cbegin(), assign_map.cend(), is_ind_pair, rand_engine);

@@ -29,7 +29,15 @@ namespace sat {
 
 	}
 
-	// Note: other dpll_node_choosers deriving from node_chooser will go here,
-	//  and we retain the .cpp to put their definitions.
+
+
+	class dpll_node_chooser : public node_chooser {
+
+	protected:
+
+		vertex_descriptor do_choose(
+			const formula& form, const assignment_map& assign_map) override;
+
+	};
 
 }

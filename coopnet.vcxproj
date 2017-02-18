@@ -163,8 +163,9 @@
     <ClCompile Include="src\coopnet\sat\solving\formula.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\node_chooser.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\dpll\dpll_solver.cpp" />
-    <ClCompile Include="src\coopnet\sat\solving\dpll\dpll_visitor.cpp" />
+    <ClCompile Include="src\coopnet\sat\solving\dpll\visitor\dpll_visitor.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\solver.cpp" />
+    <ClCompile Include="src\coopnet\sat\solving\dpll\visitor\dpll_choose_node_visitor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\coopnet\graph\bgl_inc.h" />
@@ -178,14 +179,16 @@
     <ClInclude Include="src\coopnet\sat\problem\problem_factory.h" />
     <ClInclude Include="src\coopnet\sat\problem\problem_util.h" />
     <ClInclude Include="src\coopnet\sat\solving\dpll\dpll_node_chooser.h" />
+    <ClInclude Include="src\coopnet\sat\solving\dpll\dpll_prop_maps.h" />
     <ClInclude Include="src\coopnet\sat\solving\formula.h" />
     <ClInclude Include="src\coopnet\sat\solving\node_chooser.h" />
+    <ClInclude Include="src\coopnet\sat\solving\dpll\visitor\dpll_choose_node_visitor.h" />
     <ClInclude Include="src\sat\sat_defs.h" />
     <ClInclude Include="src\coopnet\sat\visitor\sat_visitor.h" />
     <ClInclude Include="src\coopnet\sat\solving\dpll\dpll_formula.h" />
     <ClInclude Include="src\coopnet\sat\solving\dpll\dpll_solver.h" />
     <ClInclude Include="src\coopnet\sat\solving\dpll\dpll_status.h" />
-    <ClInclude Include="src\coopnet\sat\solving\dpll\dpll_visitor.h" />
+    <ClInclude Include="src\coopnet\sat\solving\dpll\visitor\dpll_visitor.h" />
     <ClInclude Include="src\coopnet\sat\solving\dpll\prune_stack.h" />
     <ClInclude Include="src\coopnet\sat\visitor\satisfiability_visitor.h" />
     <ClInclude Include="src\coopnet\sat\solving\solver.h" />

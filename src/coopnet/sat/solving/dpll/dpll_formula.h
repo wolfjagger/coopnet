@@ -3,7 +3,7 @@
 #include <functional>
 #include "coopnet/graph/graph.h"
 #include "coopnet/sat/solving/formula.h"
-#include "dpll_visitor.h"
+#include "visitor/dpll_visitor.h"
 
 
 
@@ -54,6 +54,13 @@ namespace sat {
 		}
 		void set_contradicting(bool value) {
 			prune_visitor->is_contradicting = value;
+		}
+
+		dpll_prop_maps get_prop_maps() {
+			return prop_maps;
+		}
+		const dpll_prop_maps get_prop_maps() const {
+			return prop_maps;
 		}
 
 	};

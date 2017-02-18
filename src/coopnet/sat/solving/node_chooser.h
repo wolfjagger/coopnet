@@ -23,7 +23,8 @@ namespace sat {
 
 	protected:
 
-		virtual vertex_descriptor do_choose(const assignment_map& assign_map) = 0;
+		virtual vertex_descriptor do_choose(
+			const formula& form, const assignment_map& assign_map) = 0;
 
 	};
 
@@ -35,7 +36,8 @@ namespace sat {
 
 	protected:
 
-		vertex_descriptor do_choose(const assignment_map& assign_map) override;
+		vertex_descriptor do_choose(
+			const formula& form, const assignment_map& assign_map) override;
 
 	};
 
@@ -44,7 +46,8 @@ namespace sat {
 
 	protected:
 
-		vertex_descriptor do_choose(const assignment_map& assign_map) override;
+		vertex_descriptor do_choose(
+			const formula& form, const assignment_map& assign_map) override;
 
 	};
 
@@ -53,7 +56,8 @@ namespace sat {
 
 	protected:
 
-		vertex_descriptor do_choose(const assignment_map& assign_map) override;
+		vertex_descriptor do_choose(
+			const formula& form, const assignment_map& assign_map) override;
 
 	};
 

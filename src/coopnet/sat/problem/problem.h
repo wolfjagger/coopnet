@@ -69,6 +69,48 @@ namespace sat {
 
 
 
+		template<typename bfs_visitor>
+		void apply_visitor(bfs_visitor& visitor) {
+
+			auto sources = std::vector<size_t>();
+			for (auto source_vert : connected_component_vertices)
+				sources.push_back(boost::vertex(source_vert, prob_graph));
+
+			auto buffer = boost::queue<vertex_descriptor>();
+
+			using vec_color_type = std::vector<vertex_descriptor>;
+			auto vec_colors = vec_color_type(boost::num_vertices(prob_graph));
+			auto color_map = boost::make_iterator_property_map(
+				vec_colors.begin(), get(boost::vertex_index, prob_graph));
+
+			boost::breadth_first_search(
+				prob_graph, sources.cbegin(), sources.cend(), buffer,
+				visitor, color_map);
+
+		}
+
+		template<typename bfs_visitor>
+		void apply_visitor(const bfs_visitor& visitor) const {
+
+			auto sources = std::vector<size_t>();
+			for (auto source_vert : connected_component_vertices)
+				sources.push_back(boost::vertex(source_vert, prob_graph));
+
+			auto buffer = boost::queue<vertex_descriptor>();
+
+			using vec_color_type = std::vector<vertex_descriptor>;
+			auto vec_colors = vec_color_type(boost::num_vertices(prob_graph));
+			auto color_map = boost::make_iterator_property_map(
+				vec_colors.begin(), get(boost::vertex_index, prob_graph));
+
+			boost::breadth_first_search(
+				prob_graph, sources.cbegin(), sources.cend(), buffer,
+				visitor, color_map);
+
+		}
+
+
+
 		// Should test if shared_ptr costs us.
 		//  Would it be better to copy it in, or maybe just reference?
 		clause_satisfiability clause_satisfiability_for(

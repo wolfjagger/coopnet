@@ -2,56 +2,14 @@
 
 #include <queue>
 #include "boost/graph/breadth_first_search.hpp"
-#include "coopnet/graph/graph.h"
 #include "coopnet/sat/problem/assignment.h"
 #include "coopnet/sat/visitor/sat_visitor.h"
-#include "dpll_status.h"
-#include "prune_stack.h"
+#include "coopnet/sat/solving/dpll/dpll_prop_maps.h"
+#include "coopnet/sat/solving/dpll/prune_stack.h"
 
 
 
 namespace sat {
-
-	using incomplete_assignment_prop_map
-		= boost::associative_property_map<incomplete_assignment::map>;
-
-	using dpll_vert_status_map
-		= std::map<vertex_descriptor, dpll_vert_status>;
-	using dpll_vert_status_prop_map
-		= boost::associative_property_map<dpll_vert_status_map>;
-
-	using dpll_edge_status_map
-		= std::map<edge_descriptor, dpll_edge_status>;
-	using dpll_edge_status_prop_map
-		= boost::associative_property_map<dpll_edge_status_map>;
-
-	using dpll_color_map
-		= std::map<vertex_descriptor, default_color_type>;
-	using dpll_color_prop_map
-		= boost::associative_property_map<dpll_color_map>;
-
-	struct dpll_prop_maps {
-
-		incomplete_assignment_prop_map partial_assignment_map;
-		dpll_vert_status_prop_map vert_status_map;
-		dpll_edge_status_prop_map edge_status_map;
-		dpll_color_prop_map color_map;
-
-		dpll_prop_maps() = default;
-
-		dpll_prop_maps(
-			incomplete_assignment_prop_map init_partial_assignment_map,
-			dpll_vert_status_prop_map init_vert_status_map,
-			dpll_edge_status_prop_map init_edge_status_map,
-			dpll_color_prop_map init_color_map) :
-			partial_assignment_map(init_partial_assignment_map),
-			vert_status_map(init_vert_status_map),
-			edge_status_map(init_edge_status_map),
-			color_map(init_color_map) {}
-
-	};
-
-
 
 	// This visitor will decide if the vert should be removed:
 	//  either if it only has one edge (clause)
@@ -71,13 +29,10 @@ namespace sat {
 
 	public:
 
-		explicit dpll_begin_vert_visitor(
+		dpll_begin_vert_visitor(
 			prune_stack& prune_action_stack,
 			bool& is_contradicting,
-			dpll_prop_maps maps) :
-			prune_action_stack(prune_action_stack),
-			is_contradicting(is_contradicting),
-			maps(maps) {}
+			dpll_prop_maps maps);
 
 		void node_event(
 			const graph& g, vertex_descriptor node,
@@ -123,13 +78,10 @@ namespace sat {
 
 	public:
 
-		explicit dpll_edge_visitor(
+		dpll_edge_visitor(
 			prune_stack& prune_action_stack,
 			bool& is_contradicting,
-			dpll_prop_maps maps) :
-			prune_action_stack(prune_action_stack),
-			is_contradicting(is_contradicting),
-			maps(maps) {}
+			dpll_prop_maps maps);
 
 		void edge_event(
 			const graph& g, edge_descriptor edge,
@@ -161,13 +113,10 @@ namespace sat {
 
 	public:
 
-		explicit dpll_finish_vert_visitor(
+		dpll_finish_vert_visitor(
 			boost::queue<vertex_descriptor>& grey_buffer,
 			bool& is_contradicting,
-			dpll_prop_maps maps) :
-			grey_buffer(grey_buffer),
-			is_contradicting(is_contradicting),
-			maps(maps) {}
+			dpll_prop_maps maps);
 
 		template<class Vertex, class Graph>
 		void operator()(Vertex v, Graph& g) {

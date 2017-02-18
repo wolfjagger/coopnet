@@ -40,7 +40,23 @@ namespace sat {
 			return partial_assign;
 		}
 
+		const graph& get_prob_graph() const {
+			return prob_graph;
+		}
+
 		bool is_SAT() const;
+
+
+
+		template<typename visitor>
+		void visit_problem(visitor& v) {
+			//TODO: Visit prob, or acquire connected_components_verts.
+		}
+
+		template<typename visitor>
+		void visit_problem(const visitor& v) const {
+			//TODO: Visit prob, or acquire connected_components_verts.
+		}
 
 	};
 

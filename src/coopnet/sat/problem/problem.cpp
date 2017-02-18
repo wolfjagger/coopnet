@@ -57,27 +57,6 @@ namespace {
 
 	}
 
-	template<typename bfs_visitor>
-	void apply_visitor(bfs_visitor& visitor, const graph& g,
-		const std::vector<vertex_descriptor>& source_verts) {
-
-		auto sources = std::vector<size_t>();
-		for (auto source_vert : source_verts)
-			sources.push_back(boost::vertex(source_vert, g));
-
-		auto buffer = boost::queue<vertex_descriptor>();
-
-		using vec_color_type = std::vector<vertex_descriptor>;
-		auto vec_colors = vec_color_type(boost::num_vertices(g));
-		auto color_map = boost::make_iterator_property_map(
-			vec_colors.begin(), get(boost::vertex_index, g));
-
-		boost::breadth_first_search(
-			g, sources.cbegin(), sources.cend(), buffer,
-			visitor, color_map);
-
-	}
-
 }
 
 
@@ -89,7 +68,7 @@ clause_satisfiability problem::clause_satisfiability_for(
 		= collect_satisfiability_visitor(*this, assign);
 	auto bfs = boost::make_bfs_visitor(satisfiability_collector);
 
-	apply_visitor(bfs, prob_graph, connected_component_vertices);
+	apply_visitor(bfs);
 	
 	return *satisfiability_collector.satisfiability;
 	
