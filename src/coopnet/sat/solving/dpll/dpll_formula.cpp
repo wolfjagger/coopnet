@@ -21,8 +21,8 @@ dpll_formula::dpll_formula(const problem& prob) :
 	edge_status_map(),
 	color_map() {
 
-	auto vert_iter_pair = boost::vertices(prob_graph.get());
-	auto edge_iter_pair = boost::edges(prob_graph.get());
+	auto vert_iter_pair = boost::vertices(get_prob_graph());
+	auto edge_iter_pair = boost::edges(get_prob_graph());
 
 	for (auto vert_iter = vert_iter_pair.first;
 		vert_iter != vert_iter_pair.second; ++vert_iter) {
@@ -79,7 +79,7 @@ void dpll_formula::set_node(node n, bool value) {
 		" with vert " << vert_node << " to " << status << std::endl;
 
 	boost::breadth_first_visit(
-		prob_graph.get(), vert_node, grey_buffer,
+		get_prob_graph(), vert_node, grey_buffer,
 		*prune_visitor, prop_maps.color_map);
 
 }

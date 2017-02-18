@@ -1,6 +1,5 @@
 #include "formula.h"
 #include <iostream>
-#include "coopnet/sat/problem/problem.h"
 
 using namespace sat;
 
@@ -13,7 +12,7 @@ namespace {
 
 
 formula::formula(const problem& prob) :
-	prob_graph(std::cref(prob.get_graph())),
+	prob(std::cref(prob)),
 	partial_assign(prob) {
 
 }
@@ -23,6 +22,10 @@ formula::~formula() {
 }
 
 
+
+const graph& formula::get_prob_graph() const {
+	return prob.get().get_graph();
+}
 
 bool formula::is_SAT() const {
 

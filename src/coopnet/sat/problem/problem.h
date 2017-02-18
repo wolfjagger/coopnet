@@ -69,8 +69,10 @@ namespace sat {
 
 
 
-		template<typename bfs_visitor>
-		void apply_visitor(bfs_visitor& visitor) {
+		template<typename visitor>
+		void apply_visitor(visitor& v) {
+
+			auto bfv = boost::make_bfs_visitor(v);
 
 			auto sources = std::vector<size_t>();
 			for (auto source_vert : connected_component_vertices)
@@ -85,12 +87,14 @@ namespace sat {
 
 			boost::breadth_first_search(
 				prob_graph, sources.cbegin(), sources.cend(), buffer,
-				visitor, color_map);
+				bfv, color_map);
 
 		}
 
-		template<typename bfs_visitor>
-		void apply_visitor(const bfs_visitor& visitor) const {
+		template<typename visitor>
+		void apply_visitor(const visitor& v) const {
+
+			auto bfv = boost::make_bfs_visitor(v);
 
 			auto sources = std::vector<size_t>();
 			for (auto source_vert : connected_component_vertices)
@@ -105,7 +109,7 @@ namespace sat {
 
 			boost::breadth_first_search(
 				prob_graph, sources.cbegin(), sources.cend(), buffer,
-				visitor, color_map);
+				bfv, color_map);
 
 		}
 

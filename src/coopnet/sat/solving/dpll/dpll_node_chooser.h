@@ -8,9 +8,20 @@
 namespace sat {
 
 	enum class dpll_node_choice_mode {
-		Next, Last, Random
+		Next, Last, Random, MostClausesSat
 	};
 	
+
+
+	class dpll_node_chooser : public node_chooser {
+
+	protected:
+
+		vertex_descriptor do_choose(
+			const formula& form, const assignment_map& assign_map) override;
+
+	};
+
 
 
 	inline std::unique_ptr<node_chooser>
@@ -23,21 +34,12 @@ namespace sat {
 			return std::make_unique<last_node_chooser>();
 		case dpll_node_choice_mode::Random:
 			return std::make_unique<rand_node_chooser>();
+		case dpll_node_choice_mode::MostClausesSat:
+			return std::make_unique<dpll_node_chooser>();
 		default:
 			return std::unique_ptr<node_chooser>();
 		}
 
 	}
-
-
-
-	class dpll_node_chooser : public node_chooser {
-
-	protected:
-
-		vertex_descriptor do_choose(
-			const formula& form, const assignment_map& assign_map) override;
-
-	};
 
 }

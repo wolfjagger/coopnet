@@ -63,6 +63,13 @@ void dpll_choose_node_visitor::node_event(
 
 
 
+void dpll_choose_node_visitor::clause_event(
+	const graph& g, vertex_descriptor clause, const vert_prop& prop) {
+
+}
+
+
+
 void dpll_choose_node_visitor::reset() {
 
 	max_num_clauses_sat = 0;

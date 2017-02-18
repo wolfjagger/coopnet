@@ -61,15 +61,19 @@ namespace {
 		auto pair_last = solver_last.solve(prob);
 		auto solver_rand = sat::dpll_solver(dpll_node_choice_mode::Random);
 		auto pair_rand = solver_rand.solve(prob);
+		auto solver_most_sat = sat::dpll_solver(dpll_node_choice_mode::MostClausesSat);
+		auto pair_most_sat = solver_rand.solve(prob);
 
 		RC_ASSERT(pair_next.first == pair_last.first);
 		RC_ASSERT(pair_next.first == pair_rand.first);
+		RC_ASSERT(pair_next.first == pair_most_sat.first);
 
 		switch (pair_next.first) {
 		case sat::solution_status::Satisfied:
 			RC_ASSERT(prob.is_satisfied_by(pair_next.second));
 			RC_ASSERT(prob.is_satisfied_by(pair_last.second));
 			RC_ASSERT(prob.is_satisfied_by(pair_rand.second));
+			RC_ASSERT(prob.is_satisfied_by(pair_most_sat.second));
 			break;
 		case sat::solution_status::Unsatisfiable:
 			// Note this does not assure it is truly unsatisfiable

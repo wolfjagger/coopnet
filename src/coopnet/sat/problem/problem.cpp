@@ -66,9 +66,8 @@ clause_satisfiability problem::clause_satisfiability_for(
 
 	auto satisfiability_collector
 		= collect_satisfiability_visitor(*this, assign);
-	auto bfs = boost::make_bfs_visitor(satisfiability_collector);
-
-	apply_visitor(bfs);
+	
+	apply_visitor(satisfiability_collector);
 	
 	return *satisfiability_collector.satisfiability;
 	
