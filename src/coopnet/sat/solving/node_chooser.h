@@ -2,6 +2,7 @@
 
 #include "boost/optional.hpp"
 #include "coopnet/sat/problem/assignment.h"
+#include "node_choice.h"
 
 
 
@@ -20,7 +21,7 @@ namespace sat {
 
 	public:
 
-		boost::optional<std::pair<node, bool>> choose(const formula& form);
+		boost::optional<node_choice> choose(const formula& form);
 
 	protected:
 

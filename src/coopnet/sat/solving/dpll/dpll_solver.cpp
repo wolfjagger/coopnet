@@ -81,7 +81,7 @@ auto dpll_solver::do_solve(const problem& prob) -> solve_return {
 	}
 
 	formula = std::make_unique<dpll_formula>(prob);
-	choices = std::stack<std::tuple<node, bool, bool>>();
+	decisions = std::stack<node_decision>();
 
 	find_assignment();
 
@@ -110,7 +110,8 @@ void dpll_solver::find_assignment() {
 		// If no valid new node, formula is reduced
 		if (!new_choice.is_initialized()) break;
 
-		reduce_with_selection(new_choice->first, new_choice->second, true);
+		auto decision = node_decision{ new_choice.get(), true };
+		reduce_with_selection(decision);
 		
 		if (formula->is_contradicting()) {
 
@@ -132,20 +133,21 @@ bool dpll_solver::change_last_free_choice() {
 
 	if (DEBUG) std::cout << "Contradictory\n";
 
-	while(!choices.empty()) {
+	while(!decisions.empty()) {
 
-		auto choice = choices.top();
-		choices.pop();
+		auto decision = decisions.top();
+		decisions.pop();
 
-		auto n = std::get<0>(choice);
-		auto b = std::get<1>(choice);
-		formula->reverse_prune_to_assignment(n);
+		auto choice = decision.choice;
+		formula->reverse_prune_to_assignment(choice.n);
 		formula->set_contradicting(false);
 		DEBUG_print_assignment(*formula);
 
-		if (std::get<2>(choice) == true) {
+		if (decision.is_first_choice) {
 
-			reduce_with_selection(n, !b, false);
+			auto new_choice = node_choice{ choice.n, !choice.sgn };
+			auto new_decision = node_decision{ new_choice, false };
+			reduce_with_selection(new_decision);
 			if(!formula->is_contradicting()) return true;
 
 		}
@@ -157,16 +159,17 @@ bool dpll_solver::change_last_free_choice() {
 
 }
 
-void dpll_solver::reduce_with_selection(node n, bool choice, bool is_first_time) {
+void dpll_solver::reduce_with_selection(node_decision decision) {
 
 	if (DEBUG) {
-		std::cout << "Choose node " << std::to_string(n.id);
-		std::cout << " to be " << (choice ? "true" : "false");
-		std::cout << " for the " << (is_first_time ? "first" : "second") << " time."<< std::endl;
+		std::cout << "Choose node " << std::to_string(decision.choice.n.id);
+		std::cout << " to be " << (decision.choice.sgn ? "true" : "false");
+		std::cout << " for the " << (decision.is_first_choice ? "first" : "second");
+		std::cout << " time." << std::endl;
 	}
 
-	choices.push({ n, choice, is_first_time });
-	formula->set_node(n, choice);
+	decisions.push(decision);
+	formula->set_node(decision.choice);
 	DEBUG_print_assignment(*formula);
 
 }

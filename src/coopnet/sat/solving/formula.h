@@ -3,6 +3,7 @@
 #include <functional>
 #include "coopnet/graph/graph.h"
 #include "coopnet/sat/problem/assignment.h"
+#include "node_choice.h"
 
 
 

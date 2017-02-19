@@ -55,23 +55,23 @@ dpll_formula::dpll_formula(const problem& prob) :
 
 
 
-void dpll_formula::set_node(node n, bool value) {
+void dpll_formula::set_node(node_choice choice) {
 
 	// partial_assign set @ node_to_set=value
 	// partial_graph remove node_to_set and reduce (unit clauses
 	//  & pure literals), supplying the stack to append
 
-	auto vert_node = partial_assign.node_to_vertex_map->left.at(n);
+	auto vert_node = partial_assign.node_to_vertex_map->left.at(choice.n);
 
 	auto vert_prune_data
 		= std::make_pair(vert_node, dpll_vert_status::Active);
 	prune_action_stack.data.push(prune_action(vert_prune_data));
 
-	auto status = value ? 
+	auto status = choice.sgn ? 
 		dpll_vert_status::SetToTrue : dpll_vert_status::SetToFalse;
 	prop_maps.vert_status_map[vert_node] = status;
 
-	if (DEBUG) std::cout << "Assign node " << n.id <<
+	if (DEBUG) std::cout << "Assign node " << choice.n.id <<
 		" with vert " << vert_node << " to " << status << std::endl;
 
 	boost::breadth_first_visit(

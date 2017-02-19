@@ -45,7 +45,7 @@ namespace sat {
 
 
 
-		void set_node(node n, bool first_choice);
+		void set_node(node_choice choice);
 
 		void reverse_prune_to_assignment(node n);
 

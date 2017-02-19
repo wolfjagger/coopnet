@@ -181,6 +181,7 @@
     <ClInclude Include="src\coopnet\sat\solving\dpll\dpll_node_chooser.h" />
     <ClInclude Include="src\coopnet\sat\solving\dpll\dpll_prop_maps.h" />
     <ClInclude Include="src\coopnet\sat\solving\formula.h" />
+    <ClInclude Include="src\coopnet\sat\solving\node_choice.h" />
     <ClInclude Include="src\coopnet\sat\solving\node_chooser.h" />
     <ClInclude Include="src\coopnet\sat\solving\dpll\visitor\dpll_choose_node_visitor.h" />
     <ClInclude Include="src\sat\sat_defs.h" />
