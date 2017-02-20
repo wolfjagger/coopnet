@@ -7,37 +7,37 @@
 
 namespace sat {
 
-	enum class dpll_node_choice_mode {
+	enum class DPLLNodeChoiceMode {
 		Next, Last, Random, MostClausesSat
 	};
 	
 
 
-	class dpll_node_chooser : public node_chooser {
+	class DPLLNodeChooser : public NodeChooser {
 
 	protected:
 
-		vert_choice do_choose(
-			const formula& form, const assignment_map& assign_map) override;
+		VertChoice do_choose(
+			const Formula& form, const AssignmentMap& assign_map) override;
 
 	};
 
 
 
-	inline std::unique_ptr<node_chooser>
-		create_dpll_node_chooser(dpll_node_choice_mode mode) {
+	inline std::unique_ptr<NodeChooser>
+		create_dpll_node_chooser(DPLLNodeChoiceMode mode) {
 
 		switch (mode) {
-		case dpll_node_choice_mode::Next:
-			return std::make_unique<next_node_chooser>();
-		case dpll_node_choice_mode::Last:
-			return std::make_unique<last_node_chooser>();
-		case dpll_node_choice_mode::Random:
-			return std::make_unique<rand_node_chooser>();
-		case dpll_node_choice_mode::MostClausesSat:
-			return std::make_unique<dpll_node_chooser>();
+		case DPLLNodeChoiceMode::Next:
+			return std::make_unique<NextNodeChooser>();
+		case DPLLNodeChoiceMode::Last:
+			return std::make_unique<LastNodeChooser>();
+		case DPLLNodeChoiceMode::Random:
+			return std::make_unique<RandNodeChooser>();
+		case DPLLNodeChoiceMode::MostClausesSat:
+			return std::make_unique<DPLLNodeChooser>();
 		default:
-			return std::unique_ptr<node_chooser>();
+			return std::unique_ptr<NodeChooser>();
 		}
 
 	}

@@ -10,39 +10,39 @@
 
 namespace sat {
 
-	class dpll_formula;
+	class DPLLFormula;
 
-	class dpll_solver : public complete_solver {
+	class DPLLSolver : public CompleteSolver {
 
 	private:
 
-		std::unique_ptr<dpll_formula> formula;
+		std::unique_ptr<DPLLFormula> formula;
 
 		// Choice: node, sgn, first time chosen (out of two)
-		std::stack<node_decision> decisions;
+		std::stack<NodeDecision> decisions;
 
 	public:
 
-		dpll_solver(dpll_node_choice_mode mode);
+		DPLLSolver(DPLLNodeChoiceMode mode);
 
-		dpll_solver(const dpll_solver& other) = delete;
-		dpll_solver& operator=(const dpll_solver& other) = delete;
+		DPLLSolver(const DPLLSolver& other) = delete;
+		DPLLSolver& operator=(const DPLLSolver& other) = delete;
 
-		dpll_solver(dpll_solver&& other) = default;
-		dpll_solver& operator=(dpll_solver&& other) = default;
+		DPLLSolver(DPLLSolver&& other) = default;
+		DPLLSolver& operator=(DPLLSolver&& other) = default;
 
-		~dpll_solver();
+		~DPLLSolver();
 	
 	protected:
 		
-		virtual solve_return do_solve(const problem& prob) override;
+		virtual SolveReturn do_solve(const Problem& prob) override;
 
 	private:
 
 		void find_assignment();
 
 		bool change_last_free_choice();
-		void reduce_with_selection(node_decision decision);
+		void reduce_with_selection(NodeDecision decision);
 
 	};
 

@@ -14,33 +14,33 @@ using namespace sat;
 namespace {
 
 	boost::dynamic_properties generate_dyn_props(
-		graph& prob_graph) {
+		SatGraph& prob_graph) {
 
 		boost::dynamic_properties dyn_props;
 
 		// Generate dynamic_properties
-		auto name_map = get(&vert_prop::name, prob_graph);
+		auto name_map = get(&VertProp::name, prob_graph);
 		dyn_props.property("name", name_map);
-		auto kind_map = get(&vert_prop::kind, prob_graph);
+		auto kind_map = get(&VertProp::kind, prob_graph);
 		dyn_props.property("kind", kind_map);
-		auto sgn_map = get(&edge_prop::sgn, prob_graph);
+		auto sgn_map = get(&EdgeProp::sgn, prob_graph);
 		dyn_props.property("sign", sgn_map);
 
 		return dyn_props;
 
 	}
 
-	std::vector<vertex_descriptor>
-		calculate_connected_components(const graph& prob_graph) {
+	std::vector<VertDescriptor>
+		calculate_connected_components(const SatGraph& prob_graph) {
 
-		using conn_map_type = std::map<vertex_descriptor, size_t>;
+		using conn_map_type = std::map<VertDescriptor, size_t>;
 		auto connected_map = conn_map_type();
 		auto boost_conn_map =
 			boost::associative_property_map<conn_map_type>(connected_map);
 		auto num_connected_components
 			= boost::connected_components(prob_graph, boost_conn_map);
 
-		auto connected_component_vertices = std::vector<vertex_descriptor>();
+		auto connected_component_vertices = std::vector<VertDescriptor>();
 		connected_component_vertices.reserve(num_connected_components);
 		auto set_done_components = std::set<size_t>();
 		for (auto vert_pair = boost::vertices(prob_graph);
@@ -62,13 +62,13 @@ namespace {
 
 
 
-clause_satisfiability problem::clause_satisfiability_for(
-	std::shared_ptr<const assignment> assign) const {
+ClauseSatisfiability Problem::clause_satisfiability_for(
+	std::shared_ptr<const Assignment> assign) const {
 
 	auto satisfiability_collector
-		= collect_satisfiability_visitor(*this, assign);
+		= SatCollectionVisitor(*this, assign);
 
-	auto form = formula(*this);
+	auto form = Formula(*this);
 	
 	form.visit_problem(satisfiability_collector);
 	
@@ -78,16 +78,16 @@ clause_satisfiability problem::clause_satisfiability_for(
 
 
 
-std::shared_ptr<assignment> problem::create_same_sgn_assignment(bool sgn) const {
+std::shared_ptr<Assignment> Problem::create_same_sgn_assignment(bool sgn) const {
 
 	// Should be satisfied by an assignment of all true
-	auto map_assign = std::map<node, bool>();
+	auto map_assign = std::map<Node, bool>();
 	for(auto pair : map_node_to_vert->left) {
 		auto node = pair.first;
 		map_assign.emplace(node, sgn);
 	}
 
-	auto assign = std::make_shared<sat::assignment>();
+	auto assign = std::make_shared<sat::Assignment>();
 	assign->data = std::move(map_assign);
 	return assign;
 	
@@ -95,11 +95,11 @@ std::shared_ptr<assignment> problem::create_same_sgn_assignment(bool sgn) const 
 
 
 
-void problem::shuffle_nodes(const node_shuffler& shuffler) {
+void Problem::shuffle_nodes(const NodeShuffler& shuffler) {
 
 	// Change node_vert_map to re-point the nodes
 	// Need copy and swap because we can't have duplicates
-	auto map_cpy = node_vert_map();
+	auto map_cpy = NodeVertMap();
 	for (auto iter = map_node_to_vert->left.begin();
 		iter != map_node_to_vert->left.end(); ++iter) {
 
@@ -116,7 +116,7 @@ void problem::shuffle_nodes(const node_shuffler& shuffler) {
 
 }
 
-void problem::shuffle_sgns(const sgn_shuffler& shuffler) {
+void Problem::shuffle_sgns(const SgnShuffler& shuffler) {
 
 	// Now change edge sgns
 	for (auto iter = map_node_to_vert->left.begin();
@@ -127,7 +127,7 @@ void problem::shuffle_sgns(const sgn_shuffler& shuffler) {
 			auto vert = iter->second;
 
 			auto edge_pair = boost::out_edges(vert, prob_graph);
-			for_each(edge_pair.first, edge_pair.second, [this](edge_descriptor e) {
+			for_each(edge_pair.first, edge_pair.second, [this](EdgeDescriptor e) {
 				prob_graph[e].sgn = !prob_graph[e].sgn;
 			});
 
@@ -142,22 +142,22 @@ void problem::shuffle_sgns(const sgn_shuffler& shuffler) {
 
 
 
-void problem::build_graph(node_list&& nodes, clause_list&& clauses) {
+void Problem::build_graph(NodeList&& nodes, ClauseList&& clauses) {
 
 	num_nodes = nodes.size();
 	num_clauses = clauses.size();
 
-	prob_graph = graph();
+	prob_graph = SatGraph();
 
 	// Temp map to connect node-clause edges
-	map_node_to_vert = std::make_shared<node_vert_map>();
+	map_node_to_vert = std::make_shared<NodeVertMap>();
 
 	// Add all nodes in sequence to graph
 	for(auto node_to_add : nodes) {
 
 		// Add node as vertex to graph
 		auto node_vert = add_vertex(prob_graph, node_to_add);
-		map_node_to_vert->insert(node_vert_map::value_type(node_to_add, node_vert));
+		map_node_to_vert->insert(NodeVertMap::value_type(node_to_add, node_vert));
 
 	}
 
@@ -189,7 +189,7 @@ void problem::build_graph(node_list&& nodes, clause_list&& clauses) {
 
 
 
-std::ostream& sat::operator<<(std::ostream& os, const problem& prob) {
+std::ostream& sat::operator<<(std::ostream& os, const Problem& prob) {
 
 	os << "problem:" << std::endl;
 

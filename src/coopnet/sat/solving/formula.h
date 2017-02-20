@@ -9,30 +9,30 @@
 
 namespace sat {
 
-	class problem;
+	class Problem;
 
-	class formula {
+	class Formula {
 
 	private:
 
-		std::reference_wrapper<const problem> prob;
+		std::reference_wrapper<const Problem> prob;
 
 	protected:
 
 		// Assignment information, including "unassigned"
-		incomplete_assignment partial_assign;
+		IncompleteAssignment partial_assign;
 
 	public:
 
-		explicit formula(const problem& prob);
+		explicit Formula(const Problem& prob);
 
-		formula(const formula& other) = default;
-		formula& operator=(const formula& other) = default;
+		Formula(const Formula& other) = default;
+		Formula& operator=(const Formula& other) = default;
 
-		formula(formula&& other) = default;
-		formula& operator=(formula&& other) = default;
+		Formula(Formula&& other) = default;
+		Formula& operator=(Formula&& other) = default;
 
-		~formula() = default;
+		~Formula() = default;
 
 
 
@@ -45,9 +45,9 @@ namespace sat {
 			for (auto source_vert : get_prob_connected_component_entry_pts())
 				sources.push_back(boost::vertex(source_vert, get_prob_graph()));
 
-			auto buffer = boost::queue<vertex_descriptor>();
+			auto buffer = boost::queue<VertDescriptor>();
 
-			using vec_color_type = std::vector<vertex_descriptor>;
+			using vec_color_type = std::vector<VertDescriptor>;
 			auto vec_colors = vec_color_type(boost::num_vertices(get_prob_graph()));
 			auto color_map = boost::make_iterator_property_map(
 				vec_colors.begin(), get(boost::vertex_index, get_prob_graph()));
@@ -67,9 +67,9 @@ namespace sat {
 			for (auto source_vert : get_prob_connected_component_entry_pts())
 				sources.push_back(boost::vertex(source_vert, get_prob_graph()));
 
-			auto buffer = boost::queue<vertex_descriptor>();
+			auto buffer = boost::queue<VertDescriptor>();
 
-			using vec_color_type = std::vector<vertex_descriptor>;
+			using vec_color_type = std::vector<VertDescriptor>;
 			auto vec_colors = vec_color_type(boost::num_vertices(get_prob_graph()));
 			auto color_map = boost::make_iterator_property_map(
 				vec_colors.begin(), get(boost::vertex_index, get_prob_graph()));
@@ -82,10 +82,10 @@ namespace sat {
 
 		
 
-		const incomplete_assignment& get_incomplete_assignment() const {
+		const IncompleteAssignment& get_incomplete_assignment() const {
 			return partial_assign;
 		}
-		incomplete_assignment& get_incomplete_assignment() {
+		IncompleteAssignment& get_incomplete_assignment() {
 			return partial_assign;
 		}
 
@@ -95,9 +95,9 @@ namespace sat {
 
 	protected:
 
-		const graph& get_prob_graph() const;
+		const SatGraph& get_prob_graph() const;
 
-		const std::vector<vertex_descriptor>&
+		const std::vector<VertDescriptor>&
 			get_prob_connected_component_entry_pts() const;
 
 	};

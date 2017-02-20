@@ -10,14 +10,14 @@
 
 namespace sat {
 
-	struct node;
-	struct literal;
-	struct assignment;
-	class problem;
+	struct Node;
+	struct Literal;
+	struct Assignment;
+	class Problem;
 
 
 
-	class i_shuffler {
+	class IShuffler {
 
 	public:
 
@@ -27,27 +27,27 @@ namespace sat {
 		virtual bool is_trivial() const = 0;
 
 
-		virtual void apply_to_assignment(assignment& assign) const = 0;
+		virtual void apply_to_assignment(Assignment& assign) const = 0;
 
-		virtual void apply_to_problem(problem& prob) const = 0;
+		virtual void apply_to_problem(Problem& prob) const = 0;
 
 	};
 
 
 
-	class node_shuffler : public i_shuffler {
+	class NodeShuffler : public IShuffler {
 
 	private:
 
-		std::vector<node> nodes;
-		std::shared_ptr<const node_vert_map> map_node_to_vert;
+		std::vector<Node> nodes;
+		std::shared_ptr<const NodeVertMap> map_node_to_vert;
 
 	public:
 
 		// Note: shuffles on creation
-		node_shuffler(const problem& prob);
+		NodeShuffler(const Problem& prob);
 
-		node_shuffler(const problem& prob, std::vector<node> shuffle_nodes);
+		NodeShuffler(const Problem& prob, std::vector<Node> shuffle_nodes);
 
 
 
@@ -57,34 +57,34 @@ namespace sat {
 		bool is_trivial() const override;
 
 
-		node shuffled_node(node orig) const;
+		Node shuffled_node(Node orig) const;
 
 
-		void apply_to_assignment(assignment& assign) const override;
+		void apply_to_assignment(Assignment& assign) const override;
 
-		void apply_to_problem(problem& prob) const override;
+		void apply_to_problem(Problem& prob) const override;
 
 
 
-		friend void problem::shuffle_nodes(const node_shuffler&);
+		friend void Problem::shuffle_nodes(const NodeShuffler&);
 
 	};
 
 
 
-	class sgn_shuffler : public i_shuffler {
+	class SgnShuffler : public IShuffler {
 
 	private:
 
 		std::vector<bool> sgns;
-		std::shared_ptr<const node_vert_map> map_node_to_vert;
+		std::shared_ptr<const NodeVertMap> map_node_to_vert;
 
 	public:
 
 		// Note: shuffles on creation
-		sgn_shuffler(const problem& prob);
+		SgnShuffler(const Problem& prob);
 
-		sgn_shuffler(const problem& prob, std::vector<bool> shuffle_sgns);
+		SgnShuffler(const Problem& prob, std::vector<bool> shuffle_sgns);
 
 
 
@@ -94,35 +94,35 @@ namespace sat {
 		bool is_trivial() const override;
 
 
-		bool shuffled_sgn(node n) const;
+		bool shuffled_sgn(Node n) const;
 
 
-		void apply_to_assignment(assignment& assign) const override;
+		void apply_to_assignment(Assignment& assign) const override;
 
-		void apply_to_problem(problem& prob) const override;
+		void apply_to_problem(Problem& prob) const override;
 
 
 
-		friend void problem::shuffle_sgns(const sgn_shuffler&);
+		friend void Problem::shuffle_sgns(const SgnShuffler&);
 
 	};
 
 
 
-	class literal_shuffler : public i_shuffler {
+	class LiteralShuffler : public IShuffler {
 
 	private:
 
-		node_shuffler node_sh;
-		sgn_shuffler sgn_sh;
+		NodeShuffler node_sh;
+		SgnShuffler sgn_sh;
 
 	public:
 
 		// Note: shuffles on creation
-		literal_shuffler(const problem& prob);
+		LiteralShuffler(const Problem& prob);
 
-		literal_shuffler(
-			const problem& prob, const std::vector<literal>& lits);
+		LiteralShuffler(
+			const Problem& prob, const std::vector<Literal>& lits);
 
 
 
@@ -134,12 +134,12 @@ namespace sat {
 		bool flips_sgns() const;
 		
 
-		literal shuffled_literal(literal lit) const;
+		Literal shuffled_literal(Literal lit) const;
 
 
-		void apply_to_assignment(assignment& assign) const override;
+		void apply_to_assignment(Assignment& assign) const override;
 
-		void apply_to_problem(problem& prob) const override;
+		void apply_to_problem(Problem& prob) const override;
 
 	};
 

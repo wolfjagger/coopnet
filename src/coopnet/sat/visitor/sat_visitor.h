@@ -6,9 +6,9 @@
 
 namespace sat {
 
-	template<class impl_visitor>
-	struct sat_vert_visitor :
-		public boost::base_visitor<sat_vert_visitor<impl_visitor>> {
+	template<class ImplVisitor>
+	struct SatVertVisitor :
+		public boost::base_visitor<SatVertVisitor<ImplVisitor>> {
 	
 		// Vertex visitor, so make sure this is an vertex filter.
 
@@ -19,11 +19,11 @@ namespace sat {
 			// Split depending on whether vert is node or clause
 			auto& prop = g[v];
 			switch(prop.kind) {
-			case vert_prop::Node:
-				static_cast<impl_visitor*>(this)->node_event(g, v, prop);
+			case VertProp::Node:
+				static_cast<ImplVisitor*>(this)->node_event(g, v, prop);
 				break;
-			case vert_prop::Clause:
-				static_cast<impl_visitor*>(this)->clause_event(g, v, prop);
+			case VertProp::Clause:
+				static_cast<ImplVisitor*>(this)->clause_event(g, v, prop);
 				break;
 			}
 
@@ -33,9 +33,9 @@ namespace sat {
 
 
 
-	template<class impl_visitor>
-	struct sat_edge_visitor :
-		public boost::base_visitor<sat_edge_visitor<impl_visitor>> {
+	template<class ImplVisitor>
+	struct SatEdgeVisitor :
+		public boost::base_visitor<SatEdgeVisitor<ImplVisitor>> {
 	
 		// Edge visitor, so make sure this is an edge filter.
 
@@ -46,10 +46,10 @@ namespace sat {
 			// Find which vert is node and which is clause
 			auto vert_node = boost::source(e, g);
 			auto vert_clause = boost::target(e, g);
-			if (g[vert_node].kind == vert_prop::Clause)
+			if (g[vert_node].kind == VertProp::Clause)
 				std::swap(vert_node, vert_clause);
 
-			static_cast<impl_visitor*>(this)->edge_event(
+			static_cast<ImplVisitor*>(this)->edge_event(
 				g, e, g[e], vert_node, vert_clause);
 		
 		}

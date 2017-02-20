@@ -10,9 +10,9 @@ using namespace sat;
 
 
 // Note: shuffles on creation
-node_shuffler::node_shuffler(const problem& prob) {
+NodeShuffler::NodeShuffler(const Problem& prob) {
 
-	nodes = std::vector<node>();
+	nodes = std::vector<Node>();
 	auto num_nodes = prob.get_num_nodes();
 	nodes.reserve(num_nodes);
 	for (unsigned int i = 0; i < num_nodes; ++i) {
@@ -25,7 +25,7 @@ node_shuffler::node_shuffler(const problem& prob) {
 
 }
 
-node_shuffler::node_shuffler(const problem& prob, std::vector<node> shuffle_nodes) {
+NodeShuffler::NodeShuffler(const Problem& prob, std::vector<Node> shuffle_nodes) {
 
 	nodes = std::move(shuffle_nodes);
 	map_node_to_vert = prob.get_node_vert_map();
@@ -34,22 +34,22 @@ node_shuffler::node_shuffler(const problem& prob, std::vector<node> shuffle_node
 
 
 
-void node_shuffler::shuffle() {
+void NodeShuffler::shuffle() {
 	alphali::shuffle(nodes.begin(), nodes.end());
 }
 
 
-bool node_shuffler::is_trivial() const {
+bool NodeShuffler::is_trivial() const {
 	return std::is_sorted(nodes.begin(), nodes.end());
 }
 
 
-node node_shuffler::shuffled_node(node orig) const {
+Node NodeShuffler::shuffled_node(Node orig) const {
 	return nodes.at(orig.id);
 }
 
 
-void node_shuffler::apply_to_assignment(assignment& assign) const {
+void NodeShuffler::apply_to_assignment(Assignment& assign) const {
 
 	auto old_map = assign.data;
 	for(auto& n : nodes) {
@@ -58,13 +58,13 @@ void node_shuffler::apply_to_assignment(assignment& assign) const {
 
 }
 
-void node_shuffler::apply_to_problem(problem& prob) const {
+void NodeShuffler::apply_to_problem(Problem& prob) const {
 	prob.shuffle_nodes(*this);
 }
 
 
 
-sgn_shuffler::sgn_shuffler(const problem& prob) {
+SgnShuffler::SgnShuffler(const Problem& prob) {
 
 	sgns = std::vector<bool>();
 	auto num_nodes = prob.get_num_nodes();
@@ -79,7 +79,7 @@ sgn_shuffler::sgn_shuffler(const problem& prob) {
 
 }
 
-sgn_shuffler::sgn_shuffler(const problem& prob, std::vector<bool> shuffle_sgns) {
+SgnShuffler::SgnShuffler(const Problem& prob, std::vector<bool> shuffle_sgns) {
 
 	sgns = std::move(shuffle_sgns);
 	map_node_to_vert = prob.get_node_vert_map();
@@ -88,7 +88,7 @@ sgn_shuffler::sgn_shuffler(const problem& prob, std::vector<bool> shuffle_sgns) 
 
 
 
-void sgn_shuffler::shuffle() {
+void SgnShuffler::shuffle() {
 
 	for (auto& sgn : sgns) {
 		sgn = alphali::coin_flip();
@@ -97,57 +97,57 @@ void sgn_shuffler::shuffle() {
 }
 
 
-bool sgn_shuffler::is_trivial() const {
+bool SgnShuffler::is_trivial() const {
 	return std::all_of(sgns.begin(), sgns.end(),
 		[](bool b) { return b == true;});
 }
 
 
-bool sgn_shuffler::shuffled_sgn(node n) const {
+bool SgnShuffler::shuffled_sgn(Node n) const {
 	return sgns.at(n.id);
 }
 
 
-void sgn_shuffler::apply_to_assignment(assignment& assign) const {
+void SgnShuffler::apply_to_assignment(Assignment& assign) const {
 
 	for (unsigned int i = 0; i < sgns.size(); ++i) {
 		if (!sgns[i]) {
-			auto& sgn = assign.data.at(node(i));
+			auto& sgn = assign.data.at(Node(i));
 			sgn = !sgn;
 		}
 	}
 
 }
 
-void sgn_shuffler::apply_to_problem(problem& prob) const {
+void SgnShuffler::apply_to_problem(Problem& prob) const {
 	prob.shuffle_sgns(*this);
 }
 
 
 
-literal_shuffler::literal_shuffler(const problem& prob) :
+LiteralShuffler::LiteralShuffler(const Problem& prob) :
 	node_sh(prob),
 	sgn_sh(prob) {
 
 }
 
 namespace {
-	std::vector<node> nodes_from_lit(const std::vector<literal>& lits) {
-		auto nodes = std::vector<node>();
+	std::vector<Node> nodes_from_lit(const std::vector<Literal>& lits) {
+		auto nodes = std::vector<Node>();
 		std::for_each(lits.cbegin(), lits.cend(),
-			[&nodes](literal lit) { nodes.push_back(lit.n); });
+			[&nodes](Literal lit) { nodes.push_back(lit.n); });
 		return nodes;
 	}
-	std::vector<bool> sgns_from_lit(const std::vector<literal>& lits) {
+	std::vector<bool> sgns_from_lit(const std::vector<Literal>& lits) {
 		auto sgns = std::vector<bool>();
 		std::for_each(lits.cbegin(), lits.cend(),
-			[&sgns](literal lit) { sgns.push_back(lit.sgn); });
+			[&sgns](Literal lit) { sgns.push_back(lit.sgn); });
 		return sgns;
 	}
 }
 
-literal_shuffler::literal_shuffler(
-	const problem& prob, const std::vector<literal>& lits) :
+LiteralShuffler::LiteralShuffler(
+	const Problem& prob, const std::vector<Literal>& lits) :
 	node_sh(prob, nodes_from_lit(lits)),
 	sgn_sh(prob, sgns_from_lit(lits)) {
 
@@ -155,7 +155,7 @@ literal_shuffler::literal_shuffler(
 
 
 
-void literal_shuffler::shuffle() {
+void LiteralShuffler::shuffle() {
 
 	node_sh.shuffle();
 	sgn_sh.shuffle();
@@ -164,21 +164,21 @@ void literal_shuffler::shuffle() {
 
 
 
-bool literal_shuffler::is_trivial() const {
+bool LiteralShuffler::is_trivial() const {
 	return !(shuffles_nodes() || flips_sgns());
 }
 
-bool literal_shuffler::shuffles_nodes() const {
+bool LiteralShuffler::shuffles_nodes() const {
 	return !node_sh.is_trivial();
 }
 
-bool literal_shuffler::flips_sgns() const {
+bool LiteralShuffler::flips_sgns() const {
 	return !sgn_sh.is_trivial();
 }
 
 
 
-literal literal_shuffler::shuffled_literal(literal lit) const {
+Literal LiteralShuffler::shuffled_literal(Literal lit) const {
 
 	lit.n = node_sh.shuffled_node(lit.n);
 	lit.sgn = sgn_sh.shuffled_sgn(lit.n);
@@ -186,14 +186,14 @@ literal literal_shuffler::shuffled_literal(literal lit) const {
 
 }
 
-void literal_shuffler::apply_to_assignment(assignment& assign) const {
+void LiteralShuffler::apply_to_assignment(Assignment& assign) const {
 
 	node_sh.apply_to_assignment(assign);
 	sgn_sh.apply_to_assignment(assign);
 
 }
 
-void literal_shuffler::apply_to_problem(problem& prob) const {
+void LiteralShuffler::apply_to_problem(Problem& prob) const {
 
 	node_sh.apply_to_problem(prob);
 	sgn_sh.apply_to_problem(prob);

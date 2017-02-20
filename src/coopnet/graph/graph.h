@@ -8,9 +8,9 @@
 
 namespace sat {
 
-	struct vert_prop {
+	struct VertProp {
 
-		enum vert_kind { Node=0, Clause=1 };
+		enum VertKind { Node=0, Clause=1 };
 
 		std::string name;
 		// Unfortunately, can't use enum here, so int.
@@ -18,7 +18,7 @@ namespace sat {
 
 	};
 
-	struct edge_prop {
+	struct EdgeProp {
 		
 		bool sgn;
 
@@ -26,41 +26,41 @@ namespace sat {
 
 	
 	// E.g. vecS means std::vector, giving fast access and slow amendment
-	using graph = boost::adjacency_list <
+	using SatGraph = boost::adjacency_list <
 		boost::setS, boost::vecS, boost::undirectedS,
-		vert_prop, edge_prop>;
-	using vertex_descriptor = graph::vertex_descriptor;
-	using edge_descriptor = graph::edge_descriptor;
+		VertProp, EdgeProp>;
+	using VertDescriptor = SatGraph::vertex_descriptor;
+	using EdgeDescriptor = SatGraph::edge_descriptor;
 	using boost::default_color_type;
 
 
 
 	// Ease of use for adding node and property to graph
-	vertex_descriptor add_vertex(graph& g, node n);
+	VertDescriptor add_vertex(SatGraph& g, Node n);
 	// Ease of use for adding clause and property to graph
-	vertex_descriptor add_vertex(graph& g, const clause& c);
+	VertDescriptor add_vertex(SatGraph& g, const Clause& c);
 	// Ease of use for adding clause and property to graph
-	edge_descriptor add_edge(graph& g,
-		vertex_descriptor node_desc,
-		vertex_descriptor clause_desc,
+	EdgeDescriptor add_edge(SatGraph& g,
+		VertDescriptor node_desc,
+		VertDescriptor clause_desc,
 		bool sgn);
 
 
 
-	using node_vert_map = boost::bimap<node, vertex_descriptor>;
+	using NodeVertMap = boost::bimap<Node, VertDescriptor>;
 
 
 
 	void rename_verts(
-		graph& g, const node_vert_map& node_to_vertex_map);
+		SatGraph& g, const NodeVertMap& node_to_vertex_map);
 
-	void set_node_name(vert_prop& prop, node n);
-	void set_clause_name(vert_prop& prop, const clause& c);
-	void set_edge_sgn(edge_prop& prop, bool sgn);
+	void set_node_name(VertProp& prop, Node n);
+	void set_clause_name(VertProp& prop, const Clause& c);
+	void set_edge_sgn(EdgeProp& prop, bool sgn);
 
 
-	struct clause_satisfiability {
-		std::set<vertex_descriptor> clauses_satisfied;
+	struct ClauseSatisfiability {
+		std::set<VertDescriptor> clauses_satisfied;
 	};
 
 }

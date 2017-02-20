@@ -7,31 +7,31 @@
 
 namespace rc {
 
-	enum class clause_length_type {
+	enum class ClauseLengthType {
 		Fixed, LessThan
 	};
 
-	using minmax = std::pair<unsigned int, unsigned int>;
+	using MinMax = std::pair<unsigned int, unsigned int>;
 	
-	using Gen_prob = Gen<sat::problem>;
+	using GenProb = Gen<sat::Problem>;
 
 
 
 	template<>
-	struct Arbitrary<sat::problem> {
-		static Gen_prob arbitrary();
+	struct Arbitrary<sat::Problem> {
+		static GenProb arbitrary();
 	};
 
-	Gen_prob same_sgn_prob_gen(
-		minmax num_nodes, minmax num_clauses,
+	GenProb same_sgn_prob_gen(
+		MinMax num_nodes, MinMax num_clauses,
 		bool assignment_sgn);
 
-	Gen_prob same_sgn_disconnected_prob_gen(
-		minmax num_nodes1, minmax num_clauses1,
-		minmax num_nodes2, minmax num_clauses2,
+	GenProb same_sgn_disconnected_prob_gen(
+		MinMax num_nodes1, MinMax num_clauses1,
+		MinMax num_nodes2, MinMax num_clauses2,
 		bool assignment_sgn);
 		
-	Gen_prob random_prob_gen(
-		minmax num_nodes, minmax num_clauses);
+	GenProb random_prob_gen(
+		MinMax num_nodes, MinMax num_clauses);
 
 }

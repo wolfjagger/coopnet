@@ -5,7 +5,7 @@
 
 namespace coopgephi {
 
-	sat::problem random_problem(int num_nodes, int num_clauses) {
+	sat::Problem random_problem(int num_nodes, int num_clauses) {
 
 		return sat::generate_random_3sat_problem(num_nodes, num_clauses);
 

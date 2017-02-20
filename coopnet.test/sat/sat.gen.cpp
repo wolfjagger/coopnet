@@ -6,57 +6,57 @@
 using namespace rc;
 
 // Nodes
-Gen<sat::node> rc::node_gen_with_int_gen(Gen<unsigned int>& int_gen) {
-	return gen::construct<sat::node>(int_gen);
+Gen<sat::Node> rc::node_gen_with_int_gen(Gen<unsigned int>& int_gen) {
+	return gen::construct<sat::Node>(int_gen);
 }
 
-Gen<sat::node> Arbitrary<sat::node>::arbitrary() {
-	return gen::construct<sat::node>(gen::arbitrary<unsigned int>());
+Gen<sat::Node> Arbitrary<sat::Node>::arbitrary() {
+	return gen::construct<sat::Node>(gen::arbitrary<unsigned int>());
 }
 
 
 // Literals
-Gen<sat::literal> rc::lit_gen_with_nodes(Gen<sat::node>& node_gen) {
-	return gen::construct<sat::literal>(
+Gen<sat::Literal> rc::lit_gen_with_nodes(Gen<sat::Node>& node_gen) {
+	return gen::construct<sat::Literal>(
 		node_gen, gen::arbitrary<bool>());
 }
 
-Gen<sat::literal> Arbitrary<sat::literal>::arbitrary() {
-	return lit_gen_with_nodes(gen::arbitrary<sat::node>());
+Gen<sat::Literal> Arbitrary<sat::Literal>::arbitrary() {
+	return lit_gen_with_nodes(gen::arbitrary<sat::Node>());
 }
 
 
 // Clause
-Gen<sat::clause> rc::clause_gen_with_nodes(Gen<sat::node>& node_gen) {
+Gen<sat::Clause> rc::clause_gen_with_nodes(Gen<sat::Node>& node_gen) {
 
-	auto lit_list_gen = gen::container<sat::literal::lit_set>(
+	auto lit_list_gen = gen::container<sat::Literal::LitSet>(
 		lit_gen_with_nodes(node_gen));
 	
-	auto lam = [](sat::literal::lit_set& set) {
-		return sat::clause(set.begin(), set.end());
+	auto lam = [](sat::Literal::LitSet& set) {
+		return sat::Clause(set.begin(), set.end());
 	};
 
 	return gen::map(lit_list_gen, lam);
 	
 }
 
-Gen<sat::clause> rc::clause_gen_with_nodes(
-	size_t len, Gen<sat::node>& node_gen) {
+Gen<sat::Clause> rc::clause_gen_with_nodes(
+	size_t len, Gen<sat::Node>& node_gen) {
 
 	auto lit_list_gen
-		= gen::container<sat::literal::lit_set>(
+		= gen::container<sat::Literal::LitSet>(
 			len, lit_gen_with_nodes(node_gen));
 
-	auto lam = [](sat::literal::lit_set& set) {
-		return sat::clause(set.begin(), set.end());
+	auto lam = [](sat::Literal::LitSet& set) {
+		return sat::Clause(set.begin(), set.end());
 	};
 	
 	return gen::map(lit_list_gen, lam);
 
 }
 
-Gen<sat::clause> Arbitrary<sat::clause>::arbitrary() {
-	return clause_gen_with_nodes(gen::arbitrary<sat::node>());
+Gen<sat::Clause> Arbitrary<sat::Clause>::arbitrary() {
+	return clause_gen_with_nodes(gen::arbitrary<sat::Node>());
 }
 
 
@@ -77,18 +77,18 @@ Gen<boost::logic::tribool> Arbitrary<boost::logic::tribool>::arbitrary() {
 
 
 // Assignment
-Gen<sat::assignment> Arbitrary<sat::assignment>::arbitrary() {
-	return gen::build<sat::assignment>(
-		gen::set(&sat::assignment::data));
+Gen<sat::Assignment> Arbitrary<sat::Assignment>::arbitrary() {
+	return gen::build<sat::Assignment>(
+		gen::set(&sat::Assignment::data));
 }
 
-Gen<sat::incomplete_assignment>
-Arbitrary<sat::incomplete_assignment>::arbitrary() {
+Gen<sat::IncompleteAssignment>
+Arbitrary<sat::IncompleteAssignment>::arbitrary() {
 
-	return gen::build<sat::incomplete_assignment>(
-		gen::set(&sat::incomplete_assignment::data,
-			gen::container<sat::incomplete_assignment::map>(
-				gen::arbitrary<sat::vertex_descriptor>(),
+	return gen::build<sat::IncompleteAssignment>(
+		gen::set(&sat::IncompleteAssignment::data,
+			gen::container<sat::IncompleteAssignment::Map>(
+				gen::arbitrary<sat::VertDescriptor>(),
 				gen::arbitrary<boost::logic::tribool>())));
 	
 }

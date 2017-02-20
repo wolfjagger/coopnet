@@ -9,53 +9,53 @@
 
 namespace sat {
 
-	class problem;
-	struct incomplete_assignment;
+	class Problem;
+	struct IncompleteAssignment;
 
-	struct assignment {
+	struct Assignment {
 
-		using map = std::map<node, bool>;
-		using pair = std::pair<node, bool>;
+		using Map = std::map<Node, bool>;
+		using Pair = std::pair<Node, bool>;
 		
-		map data;
+		Map data;
 
-		assignment() = default;
-		assignment(const incomplete_assignment& incomplete_assign);
+		Assignment() = default;
+		Assignment(const IncompleteAssignment& incomplete_assign);
 
 	};
 
-	inline bool operator==(const assignment& assign1, const assignment& assign2) {
+	inline bool operator==(const Assignment& assign1, const Assignment& assign2) {
 		return assign1.data == assign2.data;
 	}
 
-	inline bool operator<(const assignment& assign1, const assignment& assign2) {
+	inline bool operator<(const Assignment& assign1, const Assignment& assign2) {
 		return assign1.data < assign2.data;
 	}
 
-	DEFINE_EXTRA_OPS(assignment);
+	DEFINE_EXTRA_OPS(Assignment);
 
 
 
-	struct incomplete_assignment {
+	struct IncompleteAssignment {
 
-		using map = std::map<vertex_descriptor, boost::tribool>;
-		using pair = std::pair<vertex_descriptor, boost::tribool>;
+		using Map = std::map<VertDescriptor, boost::tribool>;
+		using Pair = std::pair<VertDescriptor, boost::tribool>;
 
-		map data;
-		std::shared_ptr<const node_vert_map> node_to_vertex_map;
+		Map data;
+		std::shared_ptr<const NodeVertMap> node_to_vertex_map;
 
-		explicit incomplete_assignment(const problem& prob);
-		incomplete_assignment() = default;
+		explicit IncompleteAssignment(const Problem& prob);
+		IncompleteAssignment() = default;
 
 		bool is_indeterminate() const;
 
 	};
 
-	inline bool is_ind_assignment(const incomplete_assignment& assign) {
+	inline bool is_ind_assignment(const IncompleteAssignment& assign) {
 		return assign.is_indeterminate();
 	}
 
-	inline bool is_ind_pair(const incomplete_assignment::pair& pair) {
+	inline bool is_ind_pair(const IncompleteAssignment::Pair& pair) {
 		return boost::indeterminate(pair.second);
 	}
 

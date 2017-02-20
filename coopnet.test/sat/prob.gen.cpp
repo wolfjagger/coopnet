@@ -9,11 +9,11 @@ using namespace rc;
 
 namespace {
 
-	using clause_list = std::set<sat::clause>;
+	using ClauseList = std::set<sat::Clause>;
 
 
 
-	struct prob_generation_stats {
+	struct ProbGenerationStats {
 		unsigned int min_num_nodes = 3;
 		unsigned int max_num_nodes = 10;
 		unsigned int min_clause_size = 3;
@@ -24,8 +24,8 @@ namespace {
 
 
 
-	Gen<sat::clause> create_clause_gen(
-		const prob_generation_stats& stats,
+	Gen<sat::Clause> create_clause_gen(
+		const ProbGenerationStats& stats,
 		unsigned int num_nodes) {
 
 		auto clause_len_gen
@@ -45,8 +45,8 @@ namespace {
 
 
 
-	Gen<clause_list> create_clause_list_gen(
-		const prob_generation_stats& stats,	unsigned int num_nodes) {
+	Gen<ClauseList> create_clause_list_gen(
+		const ProbGenerationStats& stats,	unsigned int num_nodes) {
 
 		// Assume all same length
 		auto min_num_clauses = stats.min_num_clauses;
@@ -75,7 +75,7 @@ namespace {
 
 			auto clause_gen = create_clause_gen(stats, num_nodes);
 
-			return gen::container<clause_list>(num_clauses, clause_gen);
+			return gen::container<ClauseList>(num_clauses, clause_gen);
 
 		});
 
@@ -83,23 +83,23 @@ namespace {
 
 
 
-	Gen_prob create_problem_with_num_nodes(
-		const prob_generation_stats& stats, unsigned int num_nodes) {
+	GenProb create_problem_with_num_nodes(
+		const ProbGenerationStats& stats, unsigned int num_nodes) {
 
 		// Map the result of clause_max generator to clause generator
 		auto clause_list_gen = create_clause_list_gen(stats, num_nodes);
 
 		// Map clause generator to problem generator
 		return gen::map(clause_list_gen,
-			[num_nodes](std::set<sat::clause>& set) {
+			[num_nodes](std::set<sat::Clause>& set) {
 
-			return sat::problem(num_nodes, set.cbegin(), set.cend());
+			return sat::Problem(num_nodes, set.cbegin(), set.cend());
 
 		});
 
 	}
 			
-	Gen_prob create_problem(const prob_generation_stats stats) {
+	GenProb create_problem(const ProbGenerationStats stats) {
 
 		// Generator for number of nodes
 		auto int_gen = gen::inRange(stats.min_num_nodes, stats.max_num_nodes+1);
@@ -119,17 +119,17 @@ namespace {
 
 namespace rc {
 
-	Gen_prob Arbitrary<sat::problem>::arbitrary() {
+	GenProb Arbitrary<sat::Problem>::arbitrary() {
 
-		prob_generation_stats stats;
+		ProbGenerationStats stats;
 		return create_problem(stats);
 
 	}
 
 
 
-	Gen<sat::problem> same_sgn_prob_gen(
-		minmax num_nodes, minmax num_clauses,
+	Gen<sat::Problem> same_sgn_prob_gen(
+		MinMax num_nodes, MinMax num_clauses,
 		bool assignment_sgn) {
 	
 		auto num_nodes_gen = rc::gen::inRange<unsigned int>(
@@ -152,9 +152,9 @@ namespace rc {
 	}
 
 
-	Gen_prob same_sgn_disconnected_prob_gen(
-		minmax num_nodes1, minmax num_clauses1,
-		minmax num_nodes2, minmax num_clauses2,
+	GenProb same_sgn_disconnected_prob_gen(
+		MinMax num_nodes1, MinMax num_clauses1,
+		MinMax num_nodes2, MinMax num_clauses2,
 		bool assignment_sgn) {
 
 		auto num_nodes_gen1 = rc::gen::inRange<unsigned int>(
@@ -175,8 +175,8 @@ namespace rc {
 	}
 		
 	
-	Gen_prob random_prob_gen(
-		minmax num_nodes, minmax num_clauses) {
+	GenProb random_prob_gen(
+		MinMax num_nodes, MinMax num_clauses) {
 
 		auto num_nodes_gen = rc::gen::inRange<unsigned int>(
 			num_nodes.first, num_nodes.second+1);

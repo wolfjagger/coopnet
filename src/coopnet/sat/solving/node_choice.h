@@ -6,13 +6,13 @@
 
 namespace sat {
 
-	struct node_choice {
-		node n;
+	struct NodeChoice {
+		Node n;
 		bool sgn;
 	};
 
-	struct node_decision {
-		node_choice choice;
+	struct NodeDecision {
+		NodeChoice choice;
 		bool is_first_choice;
 	};
 

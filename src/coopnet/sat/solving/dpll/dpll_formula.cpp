@@ -12,8 +12,8 @@ namespace {
 
 
 
-dpll_formula::dpll_formula(const problem& prob) :
-	formula(prob),
+DPLLFormula::DPLLFormula(const Problem& prob) :
+	Formula(prob),
 	contradicting(false),
 	prune_action_stack(),
 	grey_buffer(),
@@ -28,7 +28,7 @@ dpll_formula::dpll_formula(const problem& prob) :
 		vert_iter != vert_iter_pair.second; ++vert_iter) {
 
 		// Initialize all verts to Active
-		vert_status_map.emplace(*vert_iter, dpll_vert_status::Active);
+		vert_status_map.emplace(*vert_iter, DPLLVertStatus::Active);
 
 		// Initialize all colors to black, since visitors will expand
 		//  where they need to and breadth_first_visit will set sources
@@ -41,21 +41,21 @@ dpll_formula::dpll_formula(const problem& prob) :
 		edge_iter != edge_iter_pair.second; ++edge_iter) {
 
 		// Initialize all edges to Active
-		edge_status_map.emplace(*edge_iter, dpll_edge_status::Active);
+		edge_status_map.emplace(*edge_iter, DPLLEdgeStatus::Active);
 
 	}
 
-	prop_maps = dpll_prop_maps(
+	prop_maps = DPLLPropMaps(
 		partial_assign.data,
 		vert_status_map, edge_status_map, color_map);
-	prune_visitor = std::make_unique<dpll_visitor>(
+	prune_visitor = std::make_unique<DPLLVisitor>(
 		prune_action_stack, grey_buffer, prop_maps);
 
 }
 
 
 
-void dpll_formula::set_node(node_choice choice) {
+void DPLLFormula::set_node(NodeChoice choice) {
 
 	// partial_assign set @ node_to_set=value
 	// partial_graph remove node_to_set and reduce (unit clauses
@@ -64,11 +64,11 @@ void dpll_formula::set_node(node_choice choice) {
 	auto vert_node = partial_assign.node_to_vertex_map->left.at(choice.n);
 
 	auto vert_prune_data
-		= std::make_pair(vert_node, dpll_vert_status::Active);
-	prune_action_stack.data.push(prune_action(vert_prune_data));
+		= std::make_pair(vert_node, DPLLVertStatus::Active);
+	prune_action_stack.data.push(PruneAction(vert_prune_data));
 
 	auto status = choice.sgn ? 
-		dpll_vert_status::SetToTrue : dpll_vert_status::SetToFalse;
+		DPLLVertStatus::SetToTrue : DPLLVertStatus::SetToFalse;
 	prop_maps.vert_status_map[vert_node] = status;
 
 	if (DEBUG) std::cout << "Assign node " << choice.n.id <<
@@ -80,7 +80,7 @@ void dpll_formula::set_node(node_choice choice) {
 
 }
 
-void dpll_formula::reverse_prune_to_assignment(node n) {
+void DPLLFormula::reverse_prune_to_assignment(Node n) {
 
 	if(DEBUG) std::cout << "Pruning\n";
 
@@ -92,11 +92,11 @@ void dpll_formula::reverse_prune_to_assignment(node n) {
 		auto action = prune_action_stack.data.top();
 		prune_action_stack.data.pop();
 
-		using prune_object = prune_action::prune_object;
+		using prune_object = PruneAction::PruneObject;
 		switch (action.type) {
 		case prune_object::Assignment: {
 			auto& incomplete_assignment_data =
-				boost::get<incomplete_assignment_prune_data>(
+				boost::get<IncompleteAssignmentPruneData>(
 					action.supp_data);
 			auto vert = incomplete_assignment_data.first;
 			if(DEBUG) std::cout << "Prune assign " << vert << "\n";
@@ -107,7 +107,7 @@ void dpll_formula::reverse_prune_to_assignment(node n) {
 		case prune_object::Vertex: {
 
 			auto& vertex_data =
-				boost::get<vertex_prune_data>(action.supp_data);
+				boost::get<VertPruneData>(action.supp_data);
 			auto vert = vertex_data.first;
 			auto status = vertex_data.second;
 
@@ -117,7 +117,7 @@ void dpll_formula::reverse_prune_to_assignment(node n) {
 			prop_maps.vert_status_map[vert] = status;
 
 			// If vert is prune-to vert, set to done (status is set first, not assignment)
-			if (vert == vert_node && status == dpll_vert_status::Active) done = true;
+			if (vert == vert_node && status == DPLLVertStatus::Active) done = true;
 
 			break;
 
@@ -125,7 +125,7 @@ void dpll_formula::reverse_prune_to_assignment(node n) {
 		case prune_object::Edge: {
 
 			auto& edge_data =
-				boost::get<edge_prune_data>(action.supp_data);
+				boost::get<EdgePruneData>(action.supp_data);
 			auto edge = edge_data.first;
 			auto status = edge_data.second;
 

@@ -9,21 +9,21 @@ using namespace sat;
 
 
 
-boost::optional<node_choice> node_chooser::choose(const formula& form) {
+boost::optional<NodeChoice> NodeChooser::choose(const Formula& form) {
 
 	auto& assign = form.get_incomplete_assignment();
 	auto& assign_map = assign.data;
 
 	// If none, return no node
 	if (std::none_of(assign_map.cbegin(), assign_map.cend(), is_ind_pair)) {
-		return boost::optional<node_choice>();
+		return boost::optional<NodeChoice>();
 	} else {
 
 		auto choice = do_choose(form, assign_map);
 
 		auto n = assign.node_to_vertex_map->right.at(choice.first);
 
-		return node_choice{ n, choice.second };
+		return NodeChoice{ n, choice.second };
 
 	}
 
@@ -33,9 +33,9 @@ boost::optional<node_choice> node_chooser::choose(const formula& form) {
 
 
 
-auto next_node_chooser::do_choose(
-	const formula& form, const assignment_map& assign_map)
-	-> vert_choice {
+auto NextNodeChooser::do_choose(
+	const Formula& form, const AssignmentMap& assign_map)
+	-> VertChoice {
 
 	auto iter = std::find_if(
 		assign_map.cbegin(), assign_map.cend(), is_ind_pair);
@@ -43,9 +43,9 @@ auto next_node_chooser::do_choose(
 
 }
 
-auto last_node_chooser::do_choose(
-	const formula& form, const assignment_map& assign_map)
-	-> vert_choice {
+auto LastNodeChooser::do_choose(
+	const Formula& form, const AssignmentMap& assign_map)
+	-> VertChoice {
 
 	auto iter = std::find_if(
 		assign_map.crbegin(), assign_map.crend(), is_ind_pair);
@@ -60,9 +60,9 @@ namespace {
 }
 
 
-auto rand_node_chooser::do_choose(
-	const formula& form, const assignment_map& assign_map)
-	-> vert_choice {
+auto RandNodeChooser::do_choose(
+	const Formula& form, const AssignmentMap& assign_map)
+	-> VertChoice {
 
 	auto iter = alphali::random_find_if(
 		assign_map.cbegin(), assign_map.cend(), is_ind_pair, rand_engine);

@@ -7,8 +7,8 @@
 
 namespace coopplot {
 
-	plotfile::plotfile(
-		string init_relative_location, string init_filename, const plot_string_factory& factory) :
+	PlotFile::PlotFile(
+		string init_relative_location, string init_filename, const PlotStringFactory& factory) :
 		relative_location(init_relative_location),
 		filename(init_filename) {
 
@@ -20,8 +20,8 @@ namespace coopplot {
 
 	}
 
-	plotfile::plotfile(string init_relative_location, string init_filename) :
-		plotfile(init_relative_location, init_filename, trivial_string_factory()) {
+	PlotFile::PlotFile(string init_relative_location, string init_filename) :
+		PlotFile(init_relative_location, init_filename, TrivialStringFactory()) {
 
 	}
 
@@ -48,10 +48,10 @@ namespace coopplot {
 
 
 
-	void plotfile::mv(string new_relative_location, string new_filename) {
+	void PlotFile::mv(string new_relative_location, string new_filename) {
 
-		auto new_plotfile = plotfile(
-			new_relative_location, new_filename, trivial_string_factory());
+		auto new_plotfile = PlotFile(
+			new_relative_location, new_filename, TrivialStringFactory());
 
 		std::swap(new_plotfile.out_file, out_file);
 		out_file.close();
@@ -62,7 +62,7 @@ namespace coopplot {
 
 	}
 
-	void plotfile::mv(string new_relative_location) {
+	void PlotFile::mv(string new_relative_location) {
 
 		mv(new_relative_location, filename);
 
@@ -70,7 +70,7 @@ namespace coopplot {
 
 
 
-	void plotfile::rm() {
+	void PlotFile::rm() {
 
 		out_file.close();
 
@@ -85,7 +85,7 @@ namespace coopplot {
 
 	}
 
-	void plotfile::change_data(const plot_string_factory& factory) {
+	void PlotFile::change_data(const PlotStringFactory& factory) {
 
 		rm();
 
@@ -100,7 +100,7 @@ namespace coopplot {
 
 
 
-	std::string plotfile::get_file_str() {
+	std::string PlotFile::get_file_str() {
 
 		out_file.open(full_path(), std::ios_base::in);
 
@@ -125,7 +125,7 @@ namespace coopplot {
 
 
 
-	std::string plotfile::full_path() const {
+	std::string PlotFile::full_path() const {
 
 		return string(out_dir) + "/" + relative_location +  "/" + filename;
 

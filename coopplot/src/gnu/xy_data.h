@@ -7,35 +7,35 @@
 
 namespace coopplot {
 
-	template<class data_type>
-	using range_data = std::array<data_type, 2>;
+	template<class DataType>
+	using RangeData = std::array<DataType, 2>;
 
-	template<typename x_type, typename y_type>
-	using fixed_x = std::pair<range_data<x_type>, std::vector<y_type>>;
+	template<typename XType, typename YType>
+	using FixedX = std::pair<RangeData<XType>, std::vector<YType>>;
 
-	template<typename x_type, typename y_type>
-	using fixed_x_multi_y
-		= std::pair<range_data<x_type>, std::vector<std::vector<y_type>>>;
+	template<typename XType, typename YType>
+	using FixedXMultiY
+		= std::pair<RangeData<XType>, std::vector<std::vector<YType>>>;
 
-	template<typename x_type, typename y_type>
-	using varied_x = std::vector<std::pair<x_type, y_type>>;
+	template<typename XType, typename YType>
+	using VariedX = std::vector<std::pair<XType, YType>>;
 
-	template<typename x_type, typename y_type>
-	using varied_x_multi_y = std::vector<std::pair<x_type, std::vector<y_type>>>;
+	template<typename XType, typename YType>
+	using VariedXMultiY = std::vector<std::pair<XType, std::vector<YType>>>;
 
 
 
-	template<typename x_type, typename y_type>
-	struct xy_data {
+	template<typename XType, typename YType>
+	struct XYData {
 
 		boost::variant<
-			fixed_x<x_type, y_type>,
-			fixed_x_multi_y<x_type, y_type>,
-			varied_x<x_type, y_type>,
-			varied_x_multi_y<x_type, y_type>> payload;
+			FixedX<XType, YType>,
+			FixedXMultiY<XType, YType>,
+			VariedX<XType, YType>,
+			VariedXMultiY<XType, YType>> payload;
 
-		template<typename specific_type>
-		xy_data(specific_type init_payload) :
+		template<typename SpecificType>
+		XYData(SpecificType init_payload) :
 			payload(init_payload) {
 
 		}

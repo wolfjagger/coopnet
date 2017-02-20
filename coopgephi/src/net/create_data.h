@@ -6,6 +6,6 @@
 
 namespace coopgephi {
 
-	sat::problem random_problem(int num_nodes, int num_clauses);
+	sat::Problem random_problem(int num_nodes, int num_clauses);
 
 }

@@ -7,7 +7,7 @@
 
 namespace coopgephi {
 
-	void print_graph(const sat::graph& g, const boost::dynamic_properties& dp) {
+	void print_graph(const sat::SatGraph& g, const boost::dynamic_properties& dp) {
 
 		// If file exists, choose other file
 		std::string dirname = "../../out/";

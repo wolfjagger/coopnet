@@ -4,7 +4,7 @@
 
 namespace sat {
 
-	enum class dpll_vert_status {
+	enum class DPLLVertStatus {
 		// Indicates vert is still relevant and not in transition
 		Active,
 		// Vert is irrelevant
@@ -17,24 +17,24 @@ namespace sat {
 		Remove
 	};
 
-	inline std::ostream& operator<<(std::ostream& os, dpll_vert_status status) {
+	inline std::ostream& operator<<(std::ostream& os, DPLLVertStatus status) {
 		switch (status) {
-		case dpll_vert_status::Active:
+		case DPLLVertStatus::Active:
 			return os << "Active";
-		case dpll_vert_status::Inactive:
+		case DPLLVertStatus::Inactive:
 			return os << "Inactive";
-		case dpll_vert_status::SetToTrue:
+		case DPLLVertStatus::SetToTrue:
 			return os << "SetToTrue";
-		case dpll_vert_status::SetToFalse:
+		case DPLLVertStatus::SetToFalse:
 			return os << "SetToFalse";
-		case dpll_vert_status::Remove:
+		case DPLLVertStatus::Remove:
 			return os << "Remove";
 		default:
 			return os;
 		}
 	}
 
-	enum class dpll_edge_status {
+	enum class DPLLEdgeStatus {
 		// Indicates edge is still relevant, but shouldn't be traversed
 		Active,
 		// Edge is irrelevant
@@ -47,17 +47,17 @@ namespace sat {
 		Remove
 	};
 
-	inline std::ostream& operator<<(std::ostream& os, dpll_edge_status status) {
+	inline std::ostream& operator<<(std::ostream& os, DPLLEdgeStatus status) {
 		switch (status) {
-		case dpll_edge_status::Active:
+		case DPLLEdgeStatus::Active:
 			return os << "Active";
-		case dpll_edge_status::Inactive:
+		case DPLLEdgeStatus::Inactive:
 			return os << "Inactive";
-		case dpll_edge_status::SatisfyClause:
+		case DPLLEdgeStatus::SatisfyClause:
 			return os << "SatisfyClause";
-		case dpll_edge_status::ConstrainNode:
+		case DPLLEdgeStatus::ConstrainNode:
 			return os << "ConstrainNode";
-		case dpll_edge_status::Remove:
+		case DPLLEdgeStatus::Remove:
 			return os << "Remove";
 		default:
 			return os;

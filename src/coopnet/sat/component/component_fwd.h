@@ -7,11 +7,11 @@
 
 namespace sat {
 	
-	struct node;
-	using node_list = std::deque<node>;
-	struct literal;
+	struct Node;
+	using NodeList = std::deque<Node>;
+	struct Literal;
 	
-	struct clause;
-	using clause_list = std::set<clause>;
+	struct Clause;
+	using ClauseList = std::set<Clause>;
 
 }

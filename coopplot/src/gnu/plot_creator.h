@@ -8,9 +8,9 @@
 
 namespace coopplot {
 
-	class plot_string_factory;
+	class PlotStringFactory;
 
-	class plotfile {
+	class PlotFile {
 
 	protected:
 
@@ -26,9 +26,9 @@ namespace coopplot {
 
 	public:
 
-		plotfile(string initrelative_location, string init_filename,
-			const plot_string_factory& factory);
-		plotfile(string init_relative_location, string initfilename);
+		PlotFile(string initrelative_location, string init_filename,
+			const PlotStringFactory& factory);
+		PlotFile(string init_relative_location, string initfilename);
 
 		//TODO: Copy ctor for plotfile
 		//plotfile(const plotfile& other, string new_location, string new_filename);
@@ -40,7 +40,7 @@ namespace coopplot {
 		// Throws! And puts class into inconsistent state.
 		void rm();
 
-		void change_data(const plot_string_factory& factory);
+		void change_data(const PlotStringFactory& factory);
 
 		string get_file_str();
 
@@ -50,7 +50,7 @@ namespace coopplot {
 
 
 
-	class plot_string_factory {
+	class PlotStringFactory {
 
 	protected:
 
@@ -66,7 +66,7 @@ namespace coopplot {
 
 
 
-	class trivial_string_factory : public plot_string_factory {
+	class TrivialStringFactory : public PlotStringFactory {
 
 	public:
 
@@ -78,26 +78,26 @@ namespace coopplot {
 
 
 
-	template<typename x_type, typename y_type>
-	class gnudat_string_factory : public plot_string_factory {
+	template<typename XType, typename YType>
+	class GNUDatStringFactory : public PlotStringFactory {
 
-		xy_data<x_type, y_type> data;
+		XYData<XType, YType> data;
 
 		size_t num_y_cols;
 
 	public:
 
-		gnudat_string_factory(xy_data<x_type, y_type> init_data) :
+		GNUDatStringFactory(XYData<XType, YType> init_data) :
 			data(init_data),
 			num_y_cols(boost::apply_visitor(
-				calc_num_y_cols<x_type, y_type>(), data.payload)) {
+				CalcNumYCols<XType, YType>(), data.payload)) {
 
 		}
 
 		string produce_file_str() const override {
 
 			return boost::apply_visitor(
-				create_dat<x_type, y_type>(),
+				CreateDat<XType, YType>(),
 				data.payload);
 
 		}
@@ -110,8 +110,8 @@ namespace coopplot {
 
 
 
-	template<typename x_type, typename y_type>
-	class gnuscript_string_factory : public plot_string_factory {
+	template<typename XType, typename YType>
+	class GNUScriptStringFactory : public PlotStringFactory {
 
 	private:
 
@@ -133,10 +133,10 @@ namespace coopplot {
 
 	public:
 
-		gnuscript_string_factory() = default;
+		GNUScriptStringFactory() = default;
 
-		gnuscript_string_factory(string dat_path,
-			range_data<x_type> x_range, range_data<y_type> y_range,
+		GNUScriptStringFactory(string dat_path,
+			RangeData<XType> x_range, RangeData<YType> y_range,
 			size_t init_num_y_cols) :
 			gnudat_path(dat_path),
 			num_y_cols(init_num_y_cols) {
@@ -172,14 +172,14 @@ namespace coopplot {
 		}
 
 		// Set min and max x; default chosen by gnuplot
-		void set_x_range(range_data<x_type> x_range) {
+		void set_x_range(RangeData<XType> x_range) {
 			x_range_str = "[" + std::to_string(x_range[0]);
 			x_range_str += " to ";
 			x_range_str += std::to_string(x_range[1]) + "]";
 		}
 
 		// Set min and max y; default chosen by gnuplot
-		void set_y_range(range_data<y_type> y_range) {
+		void set_y_range(RangeData<YType> y_range) {
 			y_range_str = "[" + std::to_string(y_range[0]);
 			y_range_str += " to ";
 			y_range_str += std::to_string(y_range[1]) + "]";

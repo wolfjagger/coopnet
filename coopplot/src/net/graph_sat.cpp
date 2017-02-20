@@ -18,7 +18,7 @@ namespace coopplot {
 		auto num_ratios = 21;
 		auto num_average = 20;
 		auto node_choice_mode
-			= sat::dpll_node_choice_mode::MostClausesSat;
+			= sat::DPLLNodeChoiceMode::MostClausesSat;
 
 
 		auto timer = alphali::timer();
@@ -39,8 +39,8 @@ namespace coopplot {
 		title += std::to_string(num_nodes);
 		title += " nodes";
 
-		range_data<double> x_range = { 2.0, 6.0 };
-		range_data<double> y_range = { 0.0, 1.0 };
+		RangeData<double> x_range = { 2.0, 6.0 };
+		RangeData<double> y_range = { 0.0, 1.0 };
 
 
 		save_and_plot_sat_xy(x_range, y_range, data,
@@ -56,14 +56,14 @@ namespace coopplot {
 		using namespace coopplot;
 
 		auto start_num_nodes = 20;
-		auto end_num_nodes = 80;
-		auto num_plots = 4;
+		auto end_num_nodes = 120;
+		auto num_plots = 6;
 		auto start_ratio = 3.5;
 		auto end_ratio = 5.5;
 		auto num_ratios = 21;
 		auto num_average = 100;
 		auto node_choice_mode
-			= sat::dpll_node_choice_mode::MostClausesSat;
+			= sat::DPLLNodeChoiceMode::MostClausesSat;
 
 
 		auto timer = alphali::timer();
@@ -92,8 +92,8 @@ namespace coopplot {
 			plot_titles.push_back(std::move(str));
 		}
 
-		range_data<double> x_range = { 3.0, 6.0 };
-		range_data<double> y_range = { 0.0, 1.0 };
+		RangeData<double> x_range = { 3.0, 6.0 };
+		RangeData<double> y_range = { 0.0, 1.0 };
 
 
 		save_and_plot_sat_xy(x_range, y_range, data,

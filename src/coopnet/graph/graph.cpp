@@ -6,10 +6,10 @@ using namespace sat;
 
 
 
-vertex_descriptor sat::add_vertex(graph& g, node n) {
+VertDescriptor sat::add_vertex(SatGraph& g, Node n) {
 	
-	auto prop = graph::vertex_property_type();
-	prop.kind = vert_prop::Node;
+	auto prop = SatGraph::vertex_property_type();
+	prop.kind = VertProp::Node;
 
 	auto vert = boost::add_vertex(prop, g);
 
@@ -19,10 +19,10 @@ vertex_descriptor sat::add_vertex(graph& g, node n) {
 
 }
 
-vertex_descriptor sat::add_vertex(graph& g, const clause& c) {
+VertDescriptor sat::add_vertex(SatGraph& g, const Clause& c) {
 
-	auto prop = graph::vertex_property_type();
-	prop.kind = vert_prop::Clause;
+	auto prop = SatGraph::vertex_property_type();
+	prop.kind = VertProp::Clause;
 
 	auto vert = boost::add_vertex(prop, g);
 
@@ -34,12 +34,12 @@ vertex_descriptor sat::add_vertex(graph& g, const clause& c) {
 
 
 
-edge_descriptor sat::add_edge(graph& g,
-	vertex_descriptor node_desc,
-	vertex_descriptor clause_desc,
+EdgeDescriptor sat::add_edge(SatGraph& g,
+	VertDescriptor node_desc,
+	VertDescriptor clause_desc,
 	bool sgn) {
 
-	auto prop = graph::edge_property_type();
+	auto prop = SatGraph::edge_property_type();
 	
 	auto desc_pair = add_edge(node_desc, clause_desc, prop, g);
 	if (!desc_pair.second) std::exception("Failed to add edge to graph!");
@@ -53,7 +53,7 @@ edge_descriptor sat::add_edge(graph& g,
 
 
 
-void sat::rename_verts(graph& g, const node_vert_map& node_to_vertex_map) {
+void sat::rename_verts(SatGraph& g, const NodeVertMap& node_to_vertex_map) {
 	
 	auto vert_pair = boost::vertices(g);
 	for (auto vert_iter = vert_pair.first;
@@ -62,7 +62,7 @@ void sat::rename_verts(graph& g, const node_vert_map& node_to_vertex_map) {
 		auto vert = *vert_iter;
 
 		switch(g[vert].kind) {
-		case vert_prop::Node: {
+		case VertProp::Node: {
 
 			auto n = node_to_vertex_map.right.at(vert);
 			set_node_name(g[vert], n);
@@ -70,9 +70,9 @@ void sat::rename_verts(graph& g, const node_vert_map& node_to_vertex_map) {
 			break;
 
 		}
-		case vert_prop::Clause: {
+		case VertProp::Clause: {
 
-			auto lits = clause::lit_storage();
+			auto lits = Clause::LitStorage();
 			auto edge_pair = boost::out_edges(vert, g);
 			for (auto edge_iter = edge_pair.first;
 				edge_iter != edge_pair.second; ++edge_iter) {
@@ -83,7 +83,7 @@ void sat::rename_verts(graph& g, const node_vert_map& node_to_vertex_map) {
 
 			}
 
-			auto c = clause(lits);
+			auto c = Clause(lits);
 			set_clause_name(g[vert], c);
 
 			break;
@@ -97,7 +97,7 @@ void sat::rename_verts(graph& g, const node_vert_map& node_to_vertex_map) {
 
 
 void sat::set_node_name(
-	vert_prop& prop, node n) {
+	VertProp& prop, Node n) {
 
 	auto name = std::string("n");
 	name += std::to_string(n.id);
@@ -106,7 +106,7 @@ void sat::set_node_name(
 }
 
 void sat::set_clause_name(
-	vert_prop& prop, const clause& c) {
+	VertProp& prop, const Clause& c) {
 
 	auto name = std::string("c");
 	for (auto lit : c.literals()) {
@@ -118,7 +118,7 @@ void sat::set_clause_name(
 }
 
 void sat::set_edge_sgn(
-	edge_prop& prop, bool sgn) {
+	EdgeProp& prop, bool sgn) {
 
 	prop.sgn = sgn;
 

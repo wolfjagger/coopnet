@@ -7,38 +7,38 @@
 
 namespace sat {
 
-	using incomplete_assignment_prop_map
-		= boost::associative_property_map<incomplete_assignment::map>;
+	using IncompleteAssignmentPropMap
+		= boost::associative_property_map<IncompleteAssignment::Map>;
 
-	using dpll_vert_status_map
-		= std::map<vertex_descriptor, dpll_vert_status>;
-	using dpll_vert_status_prop_map
-		= boost::associative_property_map<dpll_vert_status_map>;
+	using DPLLVertStatusMap
+		= std::map<VertDescriptor, DPLLVertStatus>;
+	using DPLLVertStatusPropMap
+		= boost::associative_property_map<DPLLVertStatusMap>;
 
-	using dpll_edge_status_map
-		= std::map<edge_descriptor, dpll_edge_status>;
-	using dpll_edge_status_prop_map
-		= boost::associative_property_map<dpll_edge_status_map>;
+	using DPLLEdgeStatusMap
+		= std::map<EdgeDescriptor, DPLLEdgeStatus>;
+	using DPLLEdgeStatusPropMap
+		= boost::associative_property_map<DPLLEdgeStatusMap>;
 
-	using dpll_color_map
-		= std::map<vertex_descriptor, default_color_type>;
-	using dpll_color_prop_map
-		= boost::associative_property_map<dpll_color_map>;
+	using DPLLColorMap
+		= std::map<VertDescriptor, default_color_type>;
+	using DPLLColorPropMap
+		= boost::associative_property_map<DPLLColorMap>;
 
-	struct dpll_prop_maps {
+	struct DPLLPropMaps {
 
-		incomplete_assignment_prop_map partial_assignment_map;
-		dpll_vert_status_prop_map vert_status_map;
-		dpll_edge_status_prop_map edge_status_map;
-		dpll_color_prop_map color_map;
+		IncompleteAssignmentPropMap partial_assignment_map;
+		DPLLVertStatusPropMap vert_status_map;
+		DPLLEdgeStatusPropMap edge_status_map;
+		DPLLColorPropMap color_map;
 
-		dpll_prop_maps() = default;
+		DPLLPropMaps() = default;
 
-		dpll_prop_maps(
-			incomplete_assignment_prop_map init_partial_assignment_map,
-			dpll_vert_status_prop_map init_vert_status_map,
-			dpll_edge_status_prop_map init_edge_status_map,
-			dpll_color_prop_map init_color_map) :
+		DPLLPropMaps(
+			IncompleteAssignmentPropMap init_partial_assignment_map,
+			DPLLVertStatusPropMap init_vert_status_map,
+			DPLLEdgeStatusPropMap init_edge_status_map,
+			DPLLColorPropMap init_color_map) :
 			partial_assignment_map(init_partial_assignment_map),
 			vert_status_map(init_vert_status_map),
 			edge_status_map(init_edge_status_map),

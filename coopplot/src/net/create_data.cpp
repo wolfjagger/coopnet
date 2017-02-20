@@ -30,7 +30,7 @@ namespace coopplot {
 		}
 
 		double frac_satisfiable(
-			dpll_solver& solver,
+			DPLLSolver& solver,
 			int num_nodes, int num_clauses, int num_average) {
 			
 			auto num_satisfiable = 0;
@@ -44,7 +44,7 @@ namespace coopplot {
 					auto problem
 						= generate_random_3sat_problem(num_nodes, num_clauses);
 					auto solution_pair = solver.solve(problem);
-					if (solution_pair.first == solution_status::Satisfied)
+					if (solution_pair.first == SolutionStatus::Satisfied)
 						++num_satisfiable;
 
 					timer.stop();
@@ -55,7 +55,7 @@ namespace coopplot {
 					auto problem
 						= generate_random_3sat_problem(num_nodes, num_clauses);
 					auto solution_pair = solver.solve(problem);
-					if (solution_pair.first == solution_status::Satisfied)
+					if (solution_pair.first == SolutionStatus::Satisfied)
 						++num_satisfiable;
 
 				}
@@ -70,16 +70,16 @@ namespace coopplot {
 
 
 
-	xy_data<double, double> create_sat_data(
+	XYData<double, double> create_sat_data(
 		int num_nodes,
 		double start_ratio_clause_node, double end_ratio_clause_node,
 		int num_ratios, int num_average,
-		dpll_node_choice_mode node_choice_mode) {
+		DPLLNodeChoiceMode node_choice_mode) {
 
 		auto x_domain = create_x_domain(
 			start_ratio_clause_node, end_ratio_clause_node, num_ratios);
 
-		auto solver = dpll_solver(node_choice_mode);
+		auto solver = DPLLSolver(node_choice_mode);
 
 		auto vec_y = std::vector<double>();
 		vec_y.reserve(num_ratios);
@@ -101,24 +101,24 @@ namespace coopplot {
 
 		}
 
-		return xy_data<double, double>(
+		return XYData<double, double>(
 			std::make_pair(x_domain, vec_y));
 
 	}
 
 
-	xy_data<double, double> create_multiple_sat_data(
+	XYData<double, double> create_multiple_sat_data(
 		int start_num_nodes, int end_num_nodes, int num_plots,
 		double start_ratio_clause_node, double end_ratio_clause_node,
 		int num_ratios, int num_average,
-		dpll_node_choice_mode node_choice_mode) {
+		DPLLNodeChoiceMode node_choice_mode) {
 
 		auto x_domain = create_x_domain(
 			start_ratio_clause_node, end_ratio_clause_node, num_ratios);
 
 		auto diff_num_nodes = (end_num_nodes - start_num_nodes) / (num_plots-1);
 
-		auto solver = dpll_solver(node_choice_mode);
+		auto solver = DPLLSolver(node_choice_mode);
 
 		auto vec_ys = std::vector<std::vector<double>>();
 		vec_ys.reserve(num_ratios);
@@ -153,7 +153,7 @@ namespace coopplot {
 
 		}
 
-		return xy_data<double, double>(
+		return XYData<double, double>(
 			std::make_pair(x_domain, vec_ys));
 
 	}

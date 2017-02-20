@@ -10,33 +10,33 @@
 namespace sat {
 
 	// Clause main class
-	struct clause {
+	struct Clause {
 
 	public:
-		using lit_storage = boost::container::flat_map<node, bool>;
+		using LitStorage = boost::container::flat_map<Node, bool>;
 
 	private:
-		lit_storage lits;
+		LitStorage lits;
 
 	public:
 
 		// Constructor
-		explicit clause(lit_storage init) :
+		explicit Clause(LitStorage init) :
 			lits(init) { }
 
-		template<typename iterator>
-		clause(iterator first, iterator last) {
+		template<typename Iterator>
+		Clause(Iterator first, Iterator last) {
 			for (auto iter = first; iter != last; ++iter) {
 				lits.emplace(iter->n, iter->sgn);
 			}
 		}
 
-		clause(std::initializer_list<literal> init) :
-			clause(init.begin(), init.end()) { }
+		Clause(std::initializer_list<Literal> init) :
+			Clause(init.begin(), init.end()) { }
 
 
 
-		const lit_storage& literals() const {
+		const LitStorage& literals() const {
 			return lits;
 		}
 
@@ -49,13 +49,13 @@ namespace sat {
 
 	// Comparison operator for clauses;
 	//  needed for storage in ordered containers, e.g. set, map
-	inline bool operator<(const clause& clause1, const clause& clause2) {
+	inline bool operator<(const Clause& clause1, const Clause& clause2) {
 		return clause1.literals() < clause2.literals();
 	}
 	// Equality operator
-	inline bool operator==(const clause& clause1, const clause& clause2) {
+	inline bool operator==(const Clause& clause1, const Clause& clause2) {
 		return clause1.literals() == clause2.literals();
 	}
-	DEFINE_EXTRA_OPS(clause);
+	DEFINE_EXTRA_OPS(Clause);
 
 }

@@ -12,7 +12,7 @@ namespace {
 
 
 
-formula::formula(const problem& prob) :
+Formula::Formula(const Problem& prob) :
 	prob(std::cref(prob)),
 	partial_assign(prob) {
 
@@ -20,7 +20,7 @@ formula::formula(const problem& prob) :
 
 
 
-bool formula::is_SAT() const {
+bool Formula::is_SAT() const {
 
 	return std::none_of(
 		partial_assign.data.cbegin(), partial_assign.data.cend(),
@@ -28,11 +28,11 @@ bool formula::is_SAT() const {
 
 }
 
-const graph& formula::get_prob_graph() const {
+const SatGraph& Formula::get_prob_graph() const {
 	return prob.get().get_graph();
 }
 
-const std::vector<vertex_descriptor>&
-formula::get_prob_connected_component_entry_pts() const {
+const std::vector<VertDescriptor>&
+Formula::get_prob_connected_component_entry_pts() const {
 	return prob.get().connected_component_entry_pts();
 }

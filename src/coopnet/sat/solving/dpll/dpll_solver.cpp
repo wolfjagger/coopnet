@@ -14,10 +14,10 @@ namespace {
 
 	constexpr bool DEBUG = false;
 
-	void DEBUG_print_assignment(const dpll_formula& formula) {
+	void DEBUG_print_assignment(const DPLLFormula& formula) {
 		if(DEBUG) {
 			auto tmp_pred =
-				[](incomplete_assignment::pair pair) {
+				[](IncompleteAssignment::Pair pair) {
 				if (pair.second) {
 					std::cout << "T";
 				} else if (!pair.second) {
@@ -38,12 +38,12 @@ namespace {
 
 
 
-dpll_solver::dpll_solver(dpll_node_choice_mode mode) :
-	complete_solver(std::move(create_dpll_node_chooser(mode))) {
+DPLLSolver::DPLLSolver(DPLLNodeChoiceMode mode) :
+	CompleteSolver(std::move(create_dpll_node_chooser(mode))) {
 
 }
 
-dpll_solver::~dpll_solver() {
+DPLLSolver::~DPLLSolver() {
 
 }
 
@@ -73,26 +73,26 @@ dpll_solver::~dpll_solver() {
 *  end
 */
 
-auto dpll_solver::do_solve(const problem& prob) -> solve_return {
+auto DPLLSolver::do_solve(const Problem& prob) -> SolveReturn {
 	
 	if (DEBUG) {
 		std::cout << "Solving problem:\n";
 		std::cout << prob;
 	}
 
-	formula = std::make_unique<dpll_formula>(prob);
-	decisions = std::stack<node_decision>();
+	formula = std::make_unique<DPLLFormula>(prob);
+	decisions = std::stack<NodeDecision>();
 
 	find_assignment();
 
 	if (formula->is_SAT()) {
-		auto assign = assignment(formula->get_incomplete_assignment());
+		auto assign = Assignment(formula->get_incomplete_assignment());
 		return std::make_pair(
-			solution_status::Satisfied,
-			std::make_shared<sat::assignment>(std::move(assign)));
+			SolutionStatus::Satisfied,
+			std::make_shared<sat::Assignment>(std::move(assign)));
 	} else {
 		return std::make_pair(
-			solution_status::Unsatisfiable, std::shared_ptr<sat::assignment>());
+			SolutionStatus::Unsatisfiable, std::shared_ptr<sat::Assignment>());
 	}
 
 	formula = nullptr;
@@ -101,7 +101,7 @@ auto dpll_solver::do_solve(const problem& prob) -> solve_return {
 
 
 
-void dpll_solver::find_assignment() {
+void DPLLSolver::find_assignment() {
 
 	while (true) {
 
@@ -110,7 +110,7 @@ void dpll_solver::find_assignment() {
 		// If no valid new node, formula is reduced
 		if (!new_choice.is_initialized()) break;
 
-		auto decision = node_decision{ new_choice.get(), true };
+		auto decision = NodeDecision{ new_choice.get(), true };
 		reduce_with_selection(decision);
 		
 		if (formula->is_contradicting()) {
@@ -129,7 +129,7 @@ void dpll_solver::find_assignment() {
 
 
 
-bool dpll_solver::change_last_free_choice() {
+bool DPLLSolver::change_last_free_choice() {
 
 	if (DEBUG) std::cout << "Contradictory\n";
 
@@ -145,8 +145,8 @@ bool dpll_solver::change_last_free_choice() {
 
 		if (decision.is_first_choice) {
 
-			auto new_choice = node_choice{ choice.n, !choice.sgn };
-			auto new_decision = node_decision{ new_choice, false };
+			auto new_choice = NodeChoice{ choice.n, !choice.sgn };
+			auto new_decision = NodeDecision{ new_choice, false };
 			reduce_with_selection(new_decision);
 			if(!formula->is_contradicting()) return true;
 
@@ -159,7 +159,7 @@ bool dpll_solver::change_last_free_choice() {
 
 }
 
-void dpll_solver::reduce_with_selection(node_decision decision) {
+void DPLLSolver::reduce_with_selection(NodeDecision decision) {
 
 	if (DEBUG) {
 		std::cout << "Choose node " << std::to_string(decision.choice.n.id);

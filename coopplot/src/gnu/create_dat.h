@@ -10,17 +10,17 @@
 namespace coopplot {
 
 	// Visitor to create dat file depending on value of variant "payload"
-	template<typename x_type, typename y_type>
-	struct create_dat : public boost::static_visitor<std::string> {
+	template<typename XType, typename YType>
+	struct CreateDat : public boost::static_visitor<std::string> {
 
-		template<typename payload_type>
+		template<typename PayloadType>
 		std::string operator()(
-			payload_type payload) const;
+			PayloadType payload) const;
 		
 		template<>
 		std::string operator()
-			<fixed_x<x_type, y_type>>
-			(fixed_x<x_type, y_type> payload) const {
+			<FixedX<XType, YType>>
+			(FixedX<XType, YType> payload) const {
 
 			auto stream = std::stringstream();
 			stream << "#x y" << std::endl;
@@ -38,8 +38,8 @@ namespace coopplot {
 
 		template<>
 		std::string operator()
-			< fixed_x_multi_y<x_type, y_type> >
-			(fixed_x_multi_y<x_type, y_type> payload) const {
+			< FixedXMultiY<XType, YType> >
+			(FixedXMultiY<XType, YType> payload) const {
 
 			auto stream = std::stringstream();
 			stream << "#x y" << std::endl;
@@ -58,8 +58,8 @@ namespace coopplot {
 
 		template<>
 		std::string operator()
-			<varied_x<x_type, y_type>>
-			(varied_x<x_type, y_type> payload) const {
+			<VariedX<XType, YType>>
+			(VariedX<XType, YType> payload) const {
 
 			auto stream = std::stringstream();
 			stream << "#x y" << std::endl;
@@ -74,8 +74,8 @@ namespace coopplot {
 
 		template<>
 		std::string operator()
-			< varied_x_multi_y<x_type, y_type> >
-			(varied_x_multi_y<x_type, y_type> payload) const {
+			< VariedXMultiY<XType, YType> >
+			(VariedXMultiY<XType, YType> payload) const {
 
 			auto stream = std::stringstream();
 			stream << "#x y" << std::endl;
@@ -91,11 +91,11 @@ namespace coopplot {
 
 	private:
 
-		static void print_x_y(std::stringstream& stream, x_type x, y_type y) {
+		static void print_x_y(std::stringstream& stream, XType x, YType y) {
 			stream << x << "   " << y << std::endl;
 		}
 
-		static void print_x_y(std::stringstream& stream, x_type x, std::vector<y_type> vec_y) {
+		static void print_x_y(std::stringstream& stream, XType x, std::vector<YType> vec_y) {
 			stream << x;
 			for (auto y : vec_y) stream << "   " << y;
 			stream << std::endl;
@@ -105,38 +105,38 @@ namespace coopplot {
 
 
 
-	template<typename x_type, typename y_type>
-	struct calc_num_y_cols : public boost::static_visitor<size_t> {
+	template<typename XType, typename YType>
+	struct CalcNumYCols : public boost::static_visitor<size_t> {
 
-		template<typename payload_type>
+		template<typename PayloadType>
 		size_t operator()(
-			payload_type payload) const;
+			PayloadType payload) const;
 
 		template<>
 		size_t operator()
-			< fixed_x<x_type, y_type> >
-			(fixed_x<x_type, y_type> payload) const {
+			< FixedX<XType, YType> >
+			(FixedX<XType, YType> payload) const {
 			return 1;
 		}
 
 		template<>
 		size_t operator()
-			< fixed_x_multi_y<x_type, y_type> >
-			(fixed_x_multi_y<x_type, y_type> payload) const {
+			< FixedXMultiY<XType, YType> >
+			(FixedXMultiY<XType, YType> payload) const {
 			return payload.second.at(0).size();
 		}
 
 		template<>
 		size_t operator()
-			< varied_x<x_type, y_type> >
-			(varied_x<x_type, y_type> payload) const {
+			< VariedX<XType, YType> >
+			(VariedX<XType, YType> payload) const {
 			return 1;
 		}
 
 		template<>
 		size_t operator()
-			< varied_x_multi_y<x_type, y_type> >
-			(varied_x_multi_y<x_type, y_type> payload) const {
+			< VariedXMultiY<XType, YType> >
+			(VariedXMultiY<XType, YType> payload) const {
 			return payload.at(0).second.size();
 		}
 

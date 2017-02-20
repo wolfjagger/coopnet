@@ -8,44 +8,44 @@
 
 namespace sat {
 
-	struct node {
+	struct Node {
 
 		unsigned int id;
 
-		node(unsigned int init);
+		Node(unsigned int init);
 
 	};
 
-	bool operator<(const node& node1, const node& node2);
-	bool operator==(const node& node1, const node& node2);
-	DEFINE_EXTRA_OPS(node);
+	bool operator<(const Node& node1, const Node& node2);
+	bool operator==(const Node& node1, const Node& node2);
+	DEFINE_EXTRA_OPS(Node);
 
-	node_list create_nodes(size_t num_nodes);
+	NodeList create_nodes(size_t num_nodes);
 
 
-	struct literal {
+	struct Literal {
 
 	private:
 
 		struct compare_lits {
-			bool operator()(const literal& lit1, const literal& lit2) const {
+			bool operator()(const Literal& lit1, const Literal& lit2) const {
 				return lit1.n < lit2.n;
 			}
 		};
 
 	public:
 
-		using lit_set = std::set<literal, compare_lits>;
+		using LitSet = std::set<Literal, compare_lits>;
 
-		node n;
+		Node n;
 		bool sgn;
 
-		literal(node n_init, bool sgn_init);
+		Literal(Node n_init, bool sgn_init);
 
 	};
 
-	bool operator<(const literal& lit1, const literal& lit2);
-	bool operator==(const literal& lit1, const literal& lit2);
-	DEFINE_EXTRA_OPS(literal);
+	bool operator<(const Literal& lit1, const Literal& lit2);
+	bool operator==(const Literal& lit1, const Literal& lit2);
+	DEFINE_EXTRA_OPS(Literal);
 
 }

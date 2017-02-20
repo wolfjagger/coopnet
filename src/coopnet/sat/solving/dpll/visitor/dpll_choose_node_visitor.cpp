@@ -11,7 +11,7 @@ namespace {
 
 
 
-dpll_choose_node_visitor::dpll_choose_node_visitor(dpll_prop_maps init_maps) :
+DPLLChooseNodeVisitor::DPLLChooseNodeVisitor(DPLLPropMaps init_maps) :
 	maps(init_maps) {
 
 	reset();
@@ -20,10 +20,10 @@ dpll_choose_node_visitor::dpll_choose_node_visitor(dpll_prop_maps init_maps) :
 
 
 
-void dpll_choose_node_visitor::node_event(
-	const graph& g, vertex_descriptor node, const vert_prop& prop) {
+void DPLLChooseNodeVisitor::node_event(
+	const SatGraph& g, VertDescriptor node, const VertProp& prop) {
 
-	if(maps.vert_status_map[node] == dpll_vert_status::Active) {
+	if(maps.vert_status_map[node] == DPLLVertStatus::Active) {
 
 		if (DEBUG) std::cout << "node " << node << " Active" << std::endl;
 
@@ -34,7 +34,7 @@ void dpll_choose_node_visitor::node_event(
 		for (auto edge_iter = edge_pair.first;
 			edge_iter != edge_pair.second; ++edge_iter) {
 
-			if (maps.edge_status_map[*edge_iter] == dpll_edge_status::Active) {
+			if (maps.edge_status_map[*edge_iter] == DPLLEdgeStatus::Active) {
 
 				if (g[*edge_iter].sgn) {
 					++num_pos_edges;
@@ -85,23 +85,23 @@ void dpll_choose_node_visitor::node_event(
 
 
 
-void dpll_choose_node_visitor::clause_event(
-	const graph& g, vertex_descriptor clause, const vert_prop& prop) {
+void DPLLChooseNodeVisitor::clause_event(
+	const SatGraph& g, VertDescriptor clause, const VertProp& prop) {
 
 }
 
 
 
-void dpll_choose_node_visitor::reset() {
+void DPLLChooseNodeVisitor::reset() {
 
 	max_num_clauses_sat = -1;
-	chosen_node = std::make_shared<vertex_descriptor>();
+	chosen_node = std::make_shared<VertDescriptor>();
 	sgn_sat = std::make_shared<bool>(false);
 
 }
 
 
 
-std::pair<vertex_descriptor, bool> dpll_choose_node_visitor::retreive_choice() const {
+std::pair<VertDescriptor, bool> DPLLChooseNodeVisitor::retreive_choice() const {
 	return std::make_pair(*chosen_node, *sgn_sat);
 }

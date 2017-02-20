@@ -9,39 +9,39 @@
 
 namespace sat {
 
-	using incomplete_assignment_prune_data
-		= std::pair<vertex_descriptor, boost::tribool>;
-	using vertex_prune_data = std::pair<vertex_descriptor, dpll_vert_status>;
-	using edge_prune_data = std::pair<edge_descriptor, dpll_edge_status>;
+	using IncompleteAssignmentPruneData
+		= std::pair<VertDescriptor, boost::tribool>;
+	using VertPruneData = std::pair<VertDescriptor, DPLLVertStatus>;
+	using EdgePruneData = std::pair<EdgeDescriptor, DPLLEdgeStatus>;
 
-	struct prune_action {
+	struct PruneAction {
 
-		enum class prune_object { Assignment, Vertex, Edge };
+		enum class PruneObject { Assignment, Vertex, Edge };
 
-		prune_object type;
-		boost::variant<incomplete_assignment_prune_data,
-			vertex_prune_data, edge_prune_data> supp_data;
+		PruneObject type;
+		boost::variant<IncompleteAssignmentPruneData,
+			VertPruneData, EdgePruneData> supp_data;
 
-		explicit prune_action(incomplete_assignment_prune_data prune_data) {
-			type = prune_object::Assignment;
+		explicit PruneAction(IncompleteAssignmentPruneData prune_data) {
+			type = PruneObject::Assignment;
 			supp_data = prune_data;
 		}
 
-		explicit prune_action(vertex_prune_data prune_data) {
-			type = prune_object::Vertex;
+		explicit PruneAction(VertPruneData prune_data) {
+			type = PruneObject::Vertex;
 			supp_data = prune_data;
 		}
 
-		explicit prune_action(edge_prune_data prune_data) {
-			type = prune_object::Edge;
+		explicit PruneAction(EdgePruneData prune_data) {
+			type = PruneObject::Edge;
 			supp_data = prune_data;
 		}
 
 	};
 
-	struct prune_stack {
+	struct PruneStack {
 
-		std::stack<prune_action> data;
+		std::stack<PruneAction> data;
 
 	};
 

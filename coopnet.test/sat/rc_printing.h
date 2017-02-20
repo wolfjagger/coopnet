@@ -13,19 +13,19 @@
 namespace rc { namespace detail {
 		
 	inline std::ostream& operator<<(
-		std::ostream& os, const sat::node& n) {
+		std::ostream& os, const sat::Node& n) {
 		return os << n.id;
 	}
 
 	inline std::ostream& operator<<(
-		std::ostream& os, const sat::literal& lit) {
+		std::ostream& os, const sat::Literal& lit) {
 		os << (lit.sgn ? "p" : "n");
 		os << lit.n;
 		return os;
 	}
 
 	inline std::ostream& operator<<(
-		std::ostream& os, const sat::clause& c) {
+		std::ostream& os, const sat::Clause& c) {
 		for (auto lit : c.literals()) {
 			os << (lit.second ? "p" : "n");
 			os << lit.first << " ";
@@ -48,7 +48,7 @@ namespace rc { namespace detail {
 
 
 	inline std::ostream& operator<<(
-		std::ostream& os, const sat::assignment& assign) {
+		std::ostream& os, const sat::Assignment& assign) {
 		os << "assignment:" << std::endl;
 		for (auto iter = assign.data.cbegin();
 			iter != assign.data.cend(); ++iter) {
@@ -58,7 +58,7 @@ namespace rc { namespace detail {
 	}
 		
 	inline std::ostream& operator<<(
-		std::ostream& os, const sat::incomplete_assignment& assign) {
+		std::ostream& os, const sat::IncompleteAssignment& assign) {
 		os << "incomplete_assignment:" << std::endl;
 		for (auto iter = assign.data.cbegin();
 			iter != assign.data.cend(); ++iter) {
@@ -70,16 +70,16 @@ namespace rc { namespace detail {
 
 
 	inline std::ostream& operator<<(
-		std::ostream& os, sat::solution_status status) {
+		std::ostream& os, sat::SolutionStatus status) {
 
 		switch (status) {
-		case sat::solution_status::Satisfied:
+		case sat::SolutionStatus::Satisfied:
 			os << "Satisfied";
 			break;
-		case sat::solution_status::Unsatisfiable:
+		case sat::SolutionStatus::Unsatisfiable:
 			os << "Unsatisfiable";
 			break;
-		case sat::solution_status::Undetermined:
+		case sat::SolutionStatus::Undetermined:
 			os << "Undetermined";
 			break;
 		}

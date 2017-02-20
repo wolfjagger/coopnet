@@ -6,7 +6,7 @@ using namespace sat;
 
 
 
-assignment::assignment(const incomplete_assignment& incomplete_assign) {
+Assignment::Assignment(const IncompleteAssignment& incomplete_assign) {
 
 	if (incomplete_assign.is_indeterminate()) {
 		throw std::exception("Incomplete assignment cannot be transformed.");
@@ -25,7 +25,7 @@ assignment::assignment(const incomplete_assignment& incomplete_assign) {
 
 
 
-incomplete_assignment::incomplete_assignment(const problem& prob) {
+IncompleteAssignment::IncompleteAssignment(const Problem& prob) {
 
 	node_to_vertex_map = prob.get_node_vert_map();
 	std::for_each(node_to_vertex_map->left.begin(), node_to_vertex_map->left.end(),
@@ -33,7 +33,7 @@ incomplete_assignment::incomplete_assignment(const problem& prob) {
 
 }
 
-bool incomplete_assignment::is_indeterminate() const {
+bool IncompleteAssignment::is_indeterminate() const {
 
 	return std::any_of(data.cbegin(), data.cend(), is_ind_pair);
 

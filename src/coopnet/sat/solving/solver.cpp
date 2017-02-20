@@ -5,32 +5,32 @@ using namespace sat;
 
 
 
-solver::solver(std::unique_ptr<node_chooser> chooser) :
+Solver::Solver(std::unique_ptr<NodeChooser> chooser) :
 	n_chooser(std::move(chooser)) {
 
 }
 
-solver::~solver() {
+Solver::~Solver() {
 
 }
 
 
 
-complete_solver::complete_solver(std::unique_ptr<node_chooser> chooser) :
-	solver(std::move(chooser)) {
+CompleteSolver::CompleteSolver(std::unique_ptr<NodeChooser> chooser) :
+	Solver(std::move(chooser)) {
 
 }
 
-complete_solver::~complete_solver() {
+CompleteSolver::~CompleteSolver() {
 
 }
 
 
-auto complete_solver::solve(const problem& prob) -> solve_return {
+auto CompleteSolver::solve(const Problem& prob) -> SolveReturn {
 	
 	auto solution = do_solve(prob);
 
-	if (solution.first == solution_status::Undetermined)
+	if (solution.first == SolutionStatus::Undetermined)
 		throw std::exception("Complete solver has undetermined solution.");
 
 	return solution;
@@ -39,25 +39,25 @@ auto complete_solver::solve(const problem& prob) -> solve_return {
 
 
 
-incomplete_solver::incomplete_solver(std::unique_ptr<node_chooser> chooser) :
-	solver(std::move(chooser)) {
+IncompleteSolver::IncompleteSolver(std::unique_ptr<NodeChooser> chooser) :
+	Solver(std::move(chooser)) {
 
 }
 
-incomplete_solver::~incomplete_solver() {
+IncompleteSolver::~IncompleteSolver() {
 
 }
 
 
-auto incomplete_solver::solve(const problem& prob) -> solve_return {
+auto IncompleteSolver::solve(const Problem& prob) -> SolveReturn {
 			
 	for (unsigned int i = 0; i < retry_count(); ++i) {
 		auto possible_solution = try_single_solve(prob);
-		if (possible_solution.first != solution_status::Undetermined) {
+		if (possible_solution.first != SolutionStatus::Undetermined) {
 			return possible_solution;
 		}
 	}
 
-	return std::make_pair(solution_status::Undetermined, nullptr);
+	return std::make_pair(SolutionStatus::Undetermined, nullptr);
 
 }

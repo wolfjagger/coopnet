@@ -7,80 +7,80 @@
 
 namespace sat {
 
-	struct assignment;
-	class problem;
-	class node_chooser;
+	struct Assignment;
+	class Problem;
+	class NodeChooser;
 
-	enum class solution_status {
+	enum class SolutionStatus {
 		Satisfied, Unsatisfiable, Undetermined
 	};
 
 
 	// Interface for SAT solvers
-	class solver {
+	class Solver {
 
 	protected:
 
-		std::unique_ptr<node_chooser> n_chooser;
+		std::unique_ptr<NodeChooser> n_chooser;
 
 	public:
 
-		using solve_return = std::pair<solution_status, std::shared_ptr<assignment>>;
+		using SolveReturn = std::pair<SolutionStatus, std::shared_ptr<Assignment>>;
 
 	public:
 
-		solver(std::unique_ptr<node_chooser> chooser);
+		Solver(std::unique_ptr<NodeChooser> chooser);
 
-		solver(const solver& other) = delete;
-		solver& operator=(const solver& other) = delete;
-		solver(solver&& other) = default;
-		solver& operator=(solver&& other) = default;
+		Solver(const Solver& other) = delete;
+		Solver& operator=(const Solver& other) = delete;
+		Solver(Solver&& other) = default;
+		Solver& operator=(Solver&& other) = default;
 
-		~solver();
+		~Solver();
 
-		virtual solve_return solve(const problem& prob) = 0;
+		virtual SolveReturn solve(const Problem& prob) = 0;
 
 	};
 
 
 
-	class complete_solver : public solver {
+	class CompleteSolver : public Solver {
 
 	public:
 
-		complete_solver(std::unique_ptr<node_chooser> chooser);
+		CompleteSolver(std::unique_ptr<NodeChooser> chooser);
 
-		complete_solver(complete_solver&& other) = default;
-		complete_solver& operator=(complete_solver&& other) = default;
+		CompleteSolver(CompleteSolver&& other) = default;
+		CompleteSolver& operator=(CompleteSolver&& other) = default;
 
-		~complete_solver();
+		~CompleteSolver();
 
-		solve_return solve(const problem& prob) override;
+		SolveReturn solve(const Problem& prob) override;
 
 	protected:
 
-		virtual solve_return do_solve(const problem& prob) = 0;
+		virtual SolveReturn do_solve(const Problem& prob) = 0;
 
 	};
 
 
 
-	class incomplete_solver : public solver {
+	class IncompleteSolver : public Solver {
 
 	public:
 
-		incomplete_solver(std::unique_ptr<node_chooser> chooser);
+		IncompleteSolver(std::unique_ptr<NodeChooser> chooser);
 
-		incomplete_solver(incomplete_solver&& other) = default;
-		incomplete_solver& operator=(incomplete_solver&& other) = default;
+		IncompleteSolver(IncompleteSolver&& other) = default;
+		IncompleteSolver& operator=(IncompleteSolver&& other) = default;
 
-		~incomplete_solver();
+		~IncompleteSolver();
 
-		solve_return solve(const problem& prob) override;
+		SolveReturn solve(const Problem& prob) override;
 
 	protected:
 		
-		virtual solve_return try_single_solve(const problem& prob) = 0;
+		virtual SolveReturn try_single_solve(const Problem& prob) = 0;
 
 		virtual unsigned int retry_count() const = 0;
 

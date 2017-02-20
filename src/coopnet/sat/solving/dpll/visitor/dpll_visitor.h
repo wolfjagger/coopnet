@@ -16,43 +16,43 @@ namespace sat {
 	//  or if it has all edges with same sign (node).
 	// It also needs to color the surrounding edges if they
 	//  should be (re)visited (i.e. if vert is to be removed).
-	class dpll_begin_vert_visitor :
-		public sat_vert_visitor<dpll_begin_vert_visitor> {
+	class DPLLBeginVertVisitor :
+		public SatVertVisitor<DPLLBeginVertVisitor> {
 	
 	public:
 		using event_filter = boost::on_examine_vertex;
 
 	private:
-		prune_stack& prune_action_stack;
+		PruneStack& prune_action_stack;
 		bool& is_contradicting;
-		dpll_prop_maps maps;
+		DPLLPropMaps maps;
 
 	public:
 
-		dpll_begin_vert_visitor(
-			prune_stack& prune_action_stack,
+		DPLLBeginVertVisitor(
+			PruneStack& prune_action_stack,
 			bool& is_contradicting,
-			dpll_prop_maps maps);
+			DPLLPropMaps maps);
 
 		void node_event(
-			const graph& g, vertex_descriptor node,
-			const vert_prop& prop);
+			const SatGraph& g, VertDescriptor node,
+			const VertProp& prop);
 
 		void clause_event(
-			const graph& g, vertex_descriptor clause,
-			const vert_prop& prop);
+			const SatGraph& g, VertDescriptor clause,
+			const VertProp& prop);
 
 	private:
 
-		void select_node(const graph& g, vertex_descriptor node, bool sgn);
-		void satisfy_clause(const graph& g, vertex_descriptor clause);
+		void select_node(const SatGraph& g, VertDescriptor node, bool sgn);
+		void satisfy_clause(const SatGraph& g, VertDescriptor clause);
 
 		void change_assignment(
-			vertex_descriptor node, boost::logic::tribool value);
+			VertDescriptor node, boost::logic::tribool value);
 		void change_vert_status(
-			vertex_descriptor vert, dpll_vert_status new_status);
+			VertDescriptor vert, DPLLVertStatus new_status);
 		void change_edge_status(
-			edge_descriptor edge, dpll_edge_status new_status);
+			EdgeDescriptor edge, DPLLEdgeStatus new_status);
 
 	};
 
@@ -65,58 +65,58 @@ namespace sat {
 	//  (a) node = a => remove clause iff sgn(edge) == a
 	//  (b) clause => set node = sgn(edge) iff clause.num_edges == 1
 	// (3) remove edge
-	class dpll_edge_visitor :
-		public sat_edge_visitor<dpll_edge_visitor> {
+	class DPLLEdgeVisitor :
+		public SatEdgeVisitor<DPLLEdgeVisitor> {
 	
 	public:
 		using event_filter = boost::on_examine_edge;
 
 	private:
-		prune_stack& prune_action_stack;
+		PruneStack& prune_action_stack;
 		bool& is_contradicting;
-		dpll_prop_maps maps;
+		DPLLPropMaps maps;
 
 	public:
 
-		dpll_edge_visitor(
-			prune_stack& prune_action_stack,
+		DPLLEdgeVisitor(
+			PruneStack& prune_action_stack,
 			bool& is_contradicting,
-			dpll_prop_maps maps);
+			DPLLPropMaps maps);
 
 		void edge_event(
-			const graph& g, edge_descriptor edge,
-			const edge_prop& prop,
-			vertex_descriptor node, vertex_descriptor clause);
+			const SatGraph& g, EdgeDescriptor edge,
+			const EdgeProp& prop,
+			VertDescriptor node, VertDescriptor clause);
 
 	private:
 
 		void change_vert_status(
-			vertex_descriptor vert, dpll_vert_status new_status);
+			VertDescriptor vert, DPLLVertStatus new_status);
 		void change_edge_status(
-			edge_descriptor edge, dpll_edge_status new_status);
+			EdgeDescriptor edge, DPLLEdgeStatus new_status);
 
 	};
 
 
 	// This visitor colors remaining verts grey and in the
 	//  queue to black and pops the queue.
-	class dpll_finish_vert_visitor :
-		public boost::base_visitor<dpll_finish_vert_visitor> {
+	class DPLLFinishVertVisitor :
+		public boost::base_visitor<DPLLFinishVertVisitor> {
 	
 	public:
 		using event_filter = boost::on_finish_vertex;
 
 	private:
-		boost::queue<vertex_descriptor>& grey_buffer;
+		boost::queue<VertDescriptor>& grey_buffer;
 		bool& is_contradicting;
-		dpll_prop_maps maps;
+		DPLLPropMaps maps;
 
 	public:
 
-		dpll_finish_vert_visitor(
-			boost::queue<vertex_descriptor>& grey_buffer,
+		DPLLFinishVertVisitor(
+			boost::queue<VertDescriptor>& grey_buffer,
 			bool& is_contradicting,
-			dpll_prop_maps maps);
+			DPLLPropMaps maps);
 
 		template<class Vertex, class Graph>
 		void operator()(Vertex v, Graph& g) {
@@ -135,24 +135,24 @@ namespace sat {
 
 
 
-	using dpll_visitor_tuple = 
-		std::pair<dpll_begin_vert_visitor,
-		std::pair<dpll_edge_visitor, dpll_finish_vert_visitor>>;
+	using DPLLVisitorTuple = 
+		std::pair<DPLLBeginVertVisitor,
+		std::pair<DPLLEdgeVisitor, DPLLFinishVertVisitor>>;
 
 
 
-	class dpll_visitor :
-		public boost::bfs_visitor<dpll_visitor_tuple> {
+	class DPLLVisitor :
+		public boost::bfs_visitor<DPLLVisitorTuple> {
 
 	public:
 		bool is_contradicting;
 
 	public:
 
-		dpll_visitor(
-			prune_stack& prune_action_stack,
-			boost::queue<vertex_descriptor>& grey_queue,
-			dpll_prop_maps init_maps);
+		DPLLVisitor(
+			PruneStack& prune_action_stack,
+			boost::queue<VertDescriptor>& grey_queue,
+			DPLLPropMaps init_maps);
 
 	};
 	

@@ -1,24 +1,24 @@
 #pragma once
 
-#include "coopnet/sat/sat_visitor.h"
-#include "coopnet/sat/graph.h"
+#include "coopnet/sat/visitor/sat_visitor.h"
+#include "coopnet/graph/graph.h"
 
 
 
 namespace sat::test {
 
-	struct mock_sat_vert_visitor
-		: public sat_vert_visitor<mock_sat_vert_visitor> {
+	struct MockSatVertVisitor
+		: public SatVertVisitor<MockSatVertVisitor> {
 
 		void node_event(
-			const graph& g, vertex_descriptor node,
-			const vert_prop& prop) {
+			const SatGraph& g, VertDescriptor node,
+			const VertProp& prop) {
 
 		}
 
 		void clause_event(
-			const graph& g, vertex_descriptor clause,
-			const vert_prop& prop) {
+			const SatGraph& g, VertDescriptor clause,
+			const VertProp& prop) {
 
 		}
 
@@ -26,13 +26,13 @@ namespace sat::test {
 
 
 
-	class mock_sat_edge_visitor
-		: public sat_edge_visitor<mock_sat_edge_visitor> {
+	class MockSatEdgeVisitor
+		: public SatEdgeVisitor<MockSatEdgeVisitor> {
 
 		void edge_event(
-			const graph& g, edge_descriptor edge,
-			const edge_prop& prop,
-			vertex_descriptor node, vertex_descriptor clause) {
+			const SatGraph& g, EdgeDescriptor edge,
+			const EdgeProp& prop,
+			VertDescriptor node, VertDescriptor clause) {
 
 		}
 

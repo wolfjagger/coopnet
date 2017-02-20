@@ -8,25 +8,25 @@
 
 namespace sat {
 
-	class formula;
+	class Formula;
 
 	// Note: Will include sort by largest connection,
 	//  watched literals or clauses, most clauses solved, etc.
-	class node_chooser {
+	class NodeChooser {
 
 	protected:
 
-		using assignment_map = incomplete_assignment::map;
-		using vert_choice = std::pair<vertex_descriptor, bool>;
+		using AssignmentMap = IncompleteAssignment::Map;
+		using VertChoice = std::pair<VertDescriptor, bool>;
 
 	public:
 
-		boost::optional<node_choice> choose(const formula& form);
+		boost::optional<NodeChoice> choose(const Formula& form);
 
 	protected:
 
-		virtual vert_choice do_choose(
-			const formula& form, const assignment_map& assign_map) = 0;
+		virtual VertChoice do_choose(
+			const Formula& form, const AssignmentMap& assign_map) = 0;
 
 	};
 
@@ -34,32 +34,32 @@ namespace sat {
 
 
 
-	class next_node_chooser : public node_chooser {
+	class NextNodeChooser : public NodeChooser {
 
 	protected:
 
-		vert_choice do_choose(
-			const formula& form, const assignment_map& assign_map) override;
+		VertChoice do_choose(
+			const Formula& form, const AssignmentMap& assign_map) override;
 
 	};
 
 
-	class last_node_chooser : public node_chooser {
+	class LastNodeChooser : public NodeChooser {
 
 	protected:
 
-		vert_choice do_choose(
-			const formula& form, const assignment_map& assign_map) override;
+		VertChoice do_choose(
+			const Formula& form, const AssignmentMap& assign_map) override;
 
 	};
 
 
-	class rand_node_chooser : public node_chooser {
+	class RandNodeChooser : public NodeChooser {
 
 	protected:
 
-		vert_choice do_choose(
-			const formula& form, const assignment_map& assign_map) override;
+		VertChoice do_choose(
+			const Formula& form, const AssignmentMap& assign_map) override;
 
 	};
 
