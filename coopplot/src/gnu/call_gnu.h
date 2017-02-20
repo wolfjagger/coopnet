@@ -23,14 +23,14 @@ namespace coopplot {
 		//TODO: create folder
 
 		auto gnudat_factory
-			= GNUDatStringFactory<XType, YType>(data);
+			= GNUDatStringFactory(data);
 		auto filename = datname + ".dat";
 		auto datfile = PlotFile(foldername, filename, gnudat_factory);
 
 		auto num_y_cols = gnudat_factory.get_num_y_cols();
 
 		auto gnuscript_factory
-			= GNUScriptStringFactory<XType, YType>(
+			= GNUScriptStringFactory(
 				datfile.full_path(), x_range, y_range, num_y_cols);
 
 		if (!title.empty()) gnuscript_factory.set_title(title);
