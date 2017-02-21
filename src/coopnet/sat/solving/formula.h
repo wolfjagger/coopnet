@@ -1,7 +1,7 @@
 #pragma once
 
 #include <functional>
-#include "coopnet/graph/graph.h"
+#include "coopnet/sat/visitor/visit.h"
 #include "coopnet/sat/problem/assignment.h"
 #include "node_choice.h"
 
@@ -36,47 +36,14 @@ namespace sat {
 
 
 
-		template<typename visitor>
-		void visit_problem(visitor& v) {
-
-			auto bfv = boost::make_bfs_visitor(v);
+		template<typename Visitor>
+		void visit_problem(const Visitor& v) const {
 
 			auto sources = std::vector<size_t>();
 			for (auto source_vert : get_prob_connected_component_entry_pts())
 				sources.push_back(boost::vertex(source_vert, get_prob_graph()));
 
-			auto buffer = boost::queue<VertDescriptor>();
-
-			using vec_color_type = std::vector<VertDescriptor>;
-			auto vec_colors = vec_color_type(boost::num_vertices(get_prob_graph()));
-			auto color_map = boost::make_iterator_property_map(
-				vec_colors.begin(), get(boost::vertex_index, get_prob_graph()));
-
-			boost::breadth_first_search(
-				get_prob_graph(), sources.cbegin(), sources.cend(), buffer,
-				bfv, color_map);
-
-		}
-
-		template<typename visitor>
-		void visit_problem(const visitor& v) const {
-
-			auto bfv = boost::make_bfs_visitor(v);
-
-			auto sources = std::vector<size_t>();
-			for (auto source_vert : get_prob_connected_component_entry_pts())
-				sources.push_back(boost::vertex(source_vert, get_prob_graph()));
-
-			auto buffer = boost::queue<VertDescriptor>();
-
-			using vec_color_type = std::vector<VertDescriptor>;
-			auto vec_colors = vec_color_type(boost::num_vertices(get_prob_graph()));
-			auto color_map = boost::make_iterator_property_map(
-				vec_colors.begin(), get(boost::vertex_index, get_prob_graph()));
-
-			boost::breadth_first_search(
-				get_prob_graph(), sources.cbegin(), sources.cend(), buffer,
-				bfv, color_map);
+			visit_sat_graph(v, get_prob_graph(), sources.cbegin(), sources.cend());
 
 		}
 

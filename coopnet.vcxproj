@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\coopnet\graph\prunable_graph.cpp" />
     <ClCompile Include="src\coopnet\sat\problem\assignment.cpp" />
     <ClCompile Include="src\coopnet\sat\component\node.cpp" />
     <ClCompile Include="src\coopnet\graph\graph.cpp" />
@@ -169,6 +170,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\coopnet\graph\bgl_inc.h" />
+    <ClInclude Include="src\coopnet\graph\prunable_graph.h" />
     <ClInclude Include="src\coopnet\sat\problem\assignment.h" />
     <ClInclude Include="src\coopnet\sat\component\clause.h" />
     <ClInclude Include="src\coopnet\sat\component\component_fwd.h" />
@@ -184,6 +186,8 @@
     <ClInclude Include="src\coopnet\sat\solving\node_choice.h" />
     <ClInclude Include="src\coopnet\sat\solving\node_chooser.h" />
     <ClInclude Include="src\coopnet\sat\solving\dpll\visitor\dpll_choose_node_visitor.h" />
+    <ClInclude Include="src\coopnet\sat\visitor\pruned_sat_visitor.h" />
+    <ClInclude Include="src\coopnet\sat\visitor\visit.h" />
     <ClInclude Include="src\sat\sat_defs.h" />
     <ClInclude Include="src\coopnet\sat\visitor\sat_visitor.h" />
     <ClInclude Include="src\coopnet\sat\solving\dpll\dpll_formula.h" />

@@ -37,7 +37,7 @@ namespace sat {
 
 	// Ease of use for adding node and property to graph
 	VertDescriptor add_vertex(SatGraph& g, Node n);
-	// Ease of use for adding clause and property to graph
+	// Ease of use for adding clause and property to graph (does not add edges)
 	VertDescriptor add_vertex(SatGraph& g, const Clause& c);
 	// Ease of use for adding clause and property to graph
 	EdgeDescriptor add_edge(SatGraph& g,

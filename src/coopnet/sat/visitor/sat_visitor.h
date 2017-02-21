@@ -13,8 +13,7 @@ namespace sat {
 		// Vertex visitor, so make sure this is an vertex filter.
 
 		// Triggered when vertex is encountered
-		template<class Vertex, class Graph>
-		void operator()(Vertex v, Graph& g) {
+		void operator()(VertDescriptor v, const SatGraph& g) {
 
 			// Split depending on whether vert is node or clause
 			auto& prop = g[v];
@@ -40,8 +39,7 @@ namespace sat {
 		// Edge visitor, so make sure this is an edge filter.
 
 		// Triggered when edge is encountered
-		template<class Edge, class Graph>
-		void operator()(Edge e, Graph& g) {
+		void operator()(EdgeDescriptor e, const SatGraph& g) {
 
 			// Find which vert is node and which is clause
 			auto vert_node = boost::source(e, g);
