@@ -63,4 +63,9 @@ namespace sat {
 		std::set<VertDescriptor> clauses_satisfied;
 	};
 
+
+
+	std::vector<VertDescriptor>
+		calculate_connected_components(const SatGraph& prob_graph);
+
 }

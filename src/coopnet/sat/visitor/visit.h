@@ -24,16 +24,4 @@ namespace sat {
 
 	}
 
-
-
-	template<typename PruneVisitor, typename SourceIter>
-	void visit_prunable_sat_graph(PruneVisitor& v,
-		const PrunableSatGraph& g, SourceIter sourceBegin, SourceIter sourceEnd) {
-
-		v.activityMaps = g.prop_maps();
-
-		visit_sat_graph(v, g.base, sourceBegin, sourceEnd);
-
-	}
-
 }

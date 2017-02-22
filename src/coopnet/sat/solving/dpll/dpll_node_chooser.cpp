@@ -8,14 +8,13 @@ using namespace sat;
 
 
 
-auto DPLLNodeChooser::do_choose(
-	const Formula& form, const AssignmentMap& assign_map)
+auto DPLLNodeChooser::do_choose(const Formula& form)
 	-> VertChoice {
 
 	auto& dpll_form = static_cast<const DPLLFormula&>(form);
-	DPLLChooseNodeVisitor visitor(dpll_form.get_prop_maps());
+	auto visitor = DPLLChooseNodeVisitor(form.prune_graph().prune_info());
 
-	form.visit_problem(visitor);
+	form.visit_active_graph(visitor);
 
 	return visitor.retreive_choice();
 

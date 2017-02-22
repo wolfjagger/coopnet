@@ -3,9 +3,8 @@
 #include <queue>
 #include "boost/graph/breadth_first_search.hpp"
 #include "coopnet/sat/problem/assignment.h"
-#include "coopnet/sat/visitor/sat_visitor.h"
+#include "coopnet/sat/visitor/pruned_sat_visitor.h"
 #include "coopnet/sat/solving/dpll/dpll_prop_maps.h"
-#include "coopnet/sat/solving/dpll/prune_stack.h"
 
 
 
@@ -17,22 +16,22 @@ namespace sat {
 	// It also needs to color the surrounding edges if they
 	//  should be (re)visited (i.e. if vert is to be removed).
 	class DPLLBeginVertVisitor :
-		public SatVertVisitor<DPLLBeginVertVisitor> {
+		public PruneSatVertVisitor<DPLLBeginVertVisitor, PruneInfo> {
 	
 	public:
 		using event_filter = boost::on_examine_vertex;
-
+		
 	private:
-		PruneStack& prune_action_stack;
-		bool& is_contradicting;
+
+		bool& isContradicting;
 		DPLLPropMaps maps;
 
 	public:
 
 		DPLLBeginVertVisitor(
-			PruneStack& prune_action_stack,
-			bool& is_contradicting,
-			DPLLPropMaps maps);
+			PruneInfo& initPruneInfo,
+			bool& initIsContradicting,
+			DPLLPropMaps initMaps);
 
 		void node_event(
 			const SatGraph& g, VertDescriptor node,
@@ -47,8 +46,6 @@ namespace sat {
 		void select_node(const SatGraph& g, VertDescriptor node, bool sgn);
 		void satisfy_clause(const SatGraph& g, VertDescriptor clause);
 
-		void change_assignment(
-			VertDescriptor node, boost::logic::tribool value);
 		void change_vert_status(
 			VertDescriptor vert, DPLLVertStatus new_status);
 		void change_edge_status(
@@ -66,22 +63,22 @@ namespace sat {
 	//  (b) clause => set node = sgn(edge) iff clause.num_edges == 1
 	// (3) remove edge
 	class DPLLEdgeVisitor :
-		public SatEdgeVisitor<DPLLEdgeVisitor> {
+		public PruneSatEdgeVisitor<DPLLEdgeVisitor, PruneInfo> {
 	
 	public:
 		using event_filter = boost::on_examine_edge;
 
 	private:
-		PruneStack& prune_action_stack;
-		bool& is_contradicting;
+
+		bool& isContradicting;
 		DPLLPropMaps maps;
 
 	public:
 
 		DPLLEdgeVisitor(
-			PruneStack& prune_action_stack,
-			bool& is_contradicting,
-			DPLLPropMaps maps);
+			PruneInfo& initPruneInfo,
+			bool& initIsContradicting,
+			DPLLPropMaps initMaps);
 
 		void edge_event(
 			const SatGraph& g, EdgeDescriptor edge,
@@ -107,25 +104,25 @@ namespace sat {
 		using event_filter = boost::on_finish_vertex;
 
 	private:
-		boost::queue<VertDescriptor>& grey_buffer;
-		bool& is_contradicting;
+		boost::queue<VertDescriptor>& greyBuffer;
+		bool& isContradicting;
 		DPLLPropMaps maps;
 
 	public:
 
 		DPLLFinishVertVisitor(
-			boost::queue<VertDescriptor>& grey_buffer,
-			bool& is_contradicting,
-			DPLLPropMaps maps);
+			boost::queue<VertDescriptor>& initGreyBuffer,
+			bool& initIsContradicting,
+			DPLLPropMaps initMaps);
 
 		template<class Vertex, class Graph>
 		void operator()(Vertex v, Graph& g) {
 
-			if (is_contradicting) {
-				while (!grey_buffer.empty()) {
-					auto vert = grey_buffer.front();
-					maps.color_map[vert] = default_color_type::black_color;
-					grey_buffer.pop();
+			if (isContradicting) {
+				while (!greyBuffer.empty()) {
+					auto vert = greyBuffer.front();
+					maps.colorMap[vert] = default_color_type::black_color;
+					greyBuffer.pop();
 				}
 			}
 
@@ -145,14 +142,14 @@ namespace sat {
 		public boost::bfs_visitor<DPLLVisitorTuple> {
 
 	public:
-		bool is_contradicting;
+		bool isContradicting;
 
 	public:
 
 		DPLLVisitor(
-			PruneStack& prune_action_stack,
-			boost::queue<VertDescriptor>& grey_queue,
-			DPLLPropMaps init_maps);
+			PruneInfo& initPruneInfo,
+			boost::queue<VertDescriptor>& greyQueue,
+			DPLLPropMaps initMaps);
 
 	};
 	

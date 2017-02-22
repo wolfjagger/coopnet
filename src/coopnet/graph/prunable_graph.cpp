@@ -4,46 +4,29 @@ using namespace sat;
 
 
 
-PrunableSatGraph::PrunableSatGraph() :
-	base(),
-	vertStatus(),
-	edgeStatus() {
-
-}
-
 PrunableSatGraph::PrunableSatGraph(const SatGraph& original) :
 	base(original),
-	vertStatus(),
-	edgeStatus() {
+	pruneInfo(base.get()) {
 
-	emplace_all_active();
-
-}
-
-PrunableSatGraph::PrunableSatGraph(SatGraph&& original) :
-	base(std::move(original)),
-	vertStatus(),
-	edgeStatus() {
-
-	emplace_all_active();
+	connectedComponentEntryPts = calculate_connected_components(original);
+	numConnectedComponents = connectedComponentEntryPts.size();
 
 }
 
 
 
-void PrunableSatGraph::emplace_all_active() {
+void PrunableSatGraph::reset_prune() {
 
-	vertStatus = VertStatusMap();
-	edgeStatus = EdgeStatusMap();
+	pruneInfo.reset_prune();
 
-	auto vertPair = boost::vertices(base);
-	std::for_each(vertPair.first, vertPair.second, [this](VertDescriptor v) {
-		vertStatus.emplace(v, true);
-	});
+}
 
-	auto edgePair = boost::edges(base);
-	std::for_each(edgePair.first, edgePair.second, [this](EdgeDescriptor v) {
-		edgeStatus.emplace(v, true);
-	});
 
+
+size_t PrunableSatGraph::num_connected_components() const {
+	return numConnectedComponents;
+}
+const std::vector<VertDescriptor>&
+PrunableSatGraph::connected_component_entry_pts() const {
+	return connectedComponentEntryPts;
 }

@@ -152,6 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\coopnet\graph\prunable_graph.cpp" />
+    <ClCompile Include="src\coopnet\graph\prune_info.cpp" />
     <ClCompile Include="src\coopnet\sat\problem\assignment.cpp" />
     <ClCompile Include="src\coopnet\sat\component\node.cpp" />
     <ClCompile Include="src\coopnet\graph\graph.cpp" />
@@ -171,6 +172,7 @@
   <ItemGroup>
     <ClInclude Include="src\coopnet\graph\bgl_inc.h" />
     <ClInclude Include="src\coopnet\graph\prunable_graph.h" />
+    <ClInclude Include="src\coopnet\graph\prune_info.h" />
     <ClInclude Include="src\coopnet\sat\problem\assignment.h" />
     <ClInclude Include="src\coopnet\sat\component\clause.h" />
     <ClInclude Include="src\coopnet\sat\component\component_fwd.h" />
@@ -194,7 +196,6 @@
     <ClInclude Include="src\coopnet\sat\solving\dpll\dpll_solver.h" />
     <ClInclude Include="src\coopnet\sat\solving\dpll\dpll_status.h" />
     <ClInclude Include="src\coopnet\sat\solving\dpll\visitor\dpll_visitor.h" />
-    <ClInclude Include="src\coopnet\sat\solving\dpll\prune_stack.h" />
     <ClInclude Include="src\coopnet\sat\visitor\satisfiability_visitor.h" />
     <ClInclude Include="src\coopnet\sat\solving\solver.h" />
   </ItemGroup>

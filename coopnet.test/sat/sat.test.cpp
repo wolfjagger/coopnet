@@ -71,7 +71,7 @@ TEST_CASE("Clause", "[sat]") {
 
 
 
-TEST_CASE("Assignment", "[sat]") {
+/*TEST_CASE("Assignment", "[sat]") {
 
 	SECTION("Assignment throws if initialized from incomplete_assignment with indeterminate value.") {
 
@@ -90,4 +90,4 @@ TEST_CASE("Assignment", "[sat]") {
 
 	}
 
-}
+}*/

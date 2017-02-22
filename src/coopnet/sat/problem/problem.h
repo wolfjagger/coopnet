@@ -34,10 +34,6 @@ namespace sat {
 		// Map node with id to vertex_descriptor
 		std::shared_ptr<NodeVertMap> map_node_to_vert;
 
-		// Connected components members
-		size_t num_connected_components;
-		std::vector<VertDescriptor> connected_component_vertices;
-
 	public:
 
 		template<typename Iterator>
@@ -94,14 +90,6 @@ namespace sat {
 
 		std::shared_ptr<const NodeVertMap> get_node_vert_map() const {
 			return map_node_to_vert;
-		}
-
-		size_t get_num_connected_components() const {
-			return num_connected_components;
-		}
-		const std::vector<VertDescriptor>&
-			connected_component_entry_pts() const {
-			return connected_component_vertices;
 		}
 
 		auto get_num_nodes() const { return num_nodes; }

@@ -1,6 +1,8 @@
 #pragma once
 
+#include "boost/logic/tribool.hpp"
 #include "boost/optional.hpp"
+#include "coopnet/graph/graph.h"
 #include "coopnet/sat/problem/assignment.h"
 #include "node_choice.h"
 
@@ -16,7 +18,6 @@ namespace sat {
 
 	protected:
 
-		using AssignmentMap = IncompleteAssignment::Map;
 		using VertChoice = std::pair<VertDescriptor, bool>;
 
 	public:
@@ -25,8 +26,9 @@ namespace sat {
 
 	protected:
 
-		virtual VertChoice do_choose(
-			const Formula& form, const AssignmentMap& assign_map) = 0;
+		virtual VertChoice do_choose(const Formula& form) = 0;
+
+		static bool is_ind_pair(std::pair<VertDescriptor, boost::tribool> pair);
 
 	};
 
@@ -38,8 +40,7 @@ namespace sat {
 
 	protected:
 
-		VertChoice do_choose(
-			const Formula& form, const AssignmentMap& assign_map) override;
+		VertChoice do_choose(const Formula& form) override;
 
 	};
 
@@ -48,8 +49,7 @@ namespace sat {
 
 	protected:
 
-		VertChoice do_choose(
-			const Formula& form, const AssignmentMap& assign_map) override;
+		VertChoice do_choose(const Formula& form) override;
 
 	};
 
@@ -58,8 +58,7 @@ namespace sat {
 
 	protected:
 
-		VertChoice do_choose(
-			const Formula& form, const AssignmentMap& assign_map) override;
+		VertChoice do_choose(const Formula& form) override;
 
 	};
 

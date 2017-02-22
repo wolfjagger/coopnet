@@ -1,7 +1,6 @@
 #include "problem.h"
 #include <queue>
 #include "boost/graph/breadth_first_search.hpp"
-#include "boost/graph/connected_components.hpp"
 #include "coopnet/sat/solving/formula.h"
 #include "coopnet/sat/visitor/satisfiability_visitor.h"
 #include "assignment.h"
@@ -30,34 +29,6 @@ namespace {
 
 	}
 
-	std::vector<VertDescriptor>
-		calculate_connected_components(const SatGraph& prob_graph) {
-
-		using conn_map_type = std::map<VertDescriptor, size_t>;
-		auto connected_map = conn_map_type();
-		auto boost_conn_map =
-			boost::associative_property_map<conn_map_type>(connected_map);
-		auto num_connected_components
-			= boost::connected_components(prob_graph, boost_conn_map);
-
-		auto connected_component_vertices = std::vector<VertDescriptor>();
-		connected_component_vertices.reserve(num_connected_components);
-		auto set_done_components = std::set<size_t>();
-		for (auto vert_pair = boost::vertices(prob_graph);
-			vert_pair.first != vert_pair.second; ++vert_pair.first) {
-
-			auto component_idx = connected_map[*vert_pair.first];
-			if (set_done_components.count(component_idx) == 0) {
-				set_done_components.insert(component_idx);
-				connected_component_vertices.emplace_back(*vert_pair.first);
-			}
-
-		}
-
-		return std::move(connected_component_vertices);
-
-	}
-
 }
 
 
@@ -70,7 +41,9 @@ ClauseSatisfiability Problem::clause_satisfiability_for(
 
 	auto form = Formula(*this);
 	
-	form.visit_problem(satisfiability_collector);
+	auto& g = form.prob_graph();
+	auto components = calculate_connected_components(g);
+	visit_sat_graph(satisfiability_collector, g, components.cbegin(), components.cend());
 	
 	return *satisfiability_collector.satisfiability;
 	
@@ -180,9 +153,7 @@ void Problem::build_graph(NodeList&& nodes, ClauseList&& clauses) {
 
 
 	dyn_props = generate_dyn_props(prob_graph);
-	connected_component_vertices = calculate_connected_components(prob_graph);
-	num_connected_components = connected_component_vertices.size();
-	
+
 }
 
 

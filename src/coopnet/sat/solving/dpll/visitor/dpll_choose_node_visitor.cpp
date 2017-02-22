@@ -11,8 +11,8 @@ namespace {
 
 
 
-DPLLChooseNodeVisitor::DPLLChooseNodeVisitor(DPLLPropMaps init_maps) :
-	maps(init_maps) {
+DPLLChooseNodeVisitor::DPLLChooseNodeVisitor(const PruneInfo& initPruneInfo) :
+	PruneSatVertVisitor(initPruneInfo) {
 
 	reset();
 
@@ -23,62 +23,55 @@ DPLLChooseNodeVisitor::DPLLChooseNodeVisitor(DPLLPropMaps init_maps) :
 void DPLLChooseNodeVisitor::node_event(
 	const SatGraph& g, VertDescriptor node, const VertProp& prop) {
 
-	if(maps.vert_status_map[node] == DPLLVertStatus::Active) {
+	if (DEBUG) std::cout << "node " << node << std::endl;
 
-		if (DEBUG) std::cout << "node " << node << " Active" << std::endl;
+	int num_pos_edges = 0;
+	int num_neg_edges = 0;
 
-		int num_pos_edges = 0;
-		int num_neg_edges = 0;
 
-		auto edge_pair = boost::out_edges(node, g);
-		for (auto edge_iter = edge_pair.first;
-			edge_iter != edge_pair.second; ++edge_iter) {
-
-			if (maps.edge_status_map[*edge_iter] == DPLLEdgeStatus::Active) {
-
-				if (g[*edge_iter].sgn) {
-					++num_pos_edges;
-				} else {
-					++num_neg_edges;
-				}
-
-			}
-
-		}
-
-		if (DEBUG) {
-			std::cout << "num_pos_edges: " << std::to_string(num_pos_edges) << std::endl;
-			std::cout << "num_neg_edges: " << std::to_string(num_neg_edges) << std::endl;
-		}
-
-		if (num_pos_edges >= num_neg_edges) {
-			if(num_pos_edges > max_num_clauses_sat) {
-
-				if (DEBUG) {
-					std::cout << "Max num clauses sat: " << std::to_string(num_pos_edges);
-					std::cout << " with sgn true." << std::endl;
-				}
-
-				max_num_clauses_sat = num_pos_edges;
-				*chosen_node = node;
-				*sgn_sat = true;
-
-			}
+	auto count_fcn = [&g, &num_pos_edges, &num_neg_edges](EdgeDescriptor e) {
+		if (g[e].sgn) {
+			++num_pos_edges;
 		} else {
-			if (num_neg_edges > max_num_clauses_sat) {
-
-				if(DEBUG) {
-					std::cout << "Max num clauses sat: " << std::to_string(num_neg_edges);
-					std::cout << " with sgn false." << std::endl;
-				}
-
-				max_num_clauses_sat = num_neg_edges;
-				*chosen_node = node;
-				*sgn_sat = false;
-
-			}
+			++num_neg_edges;
 		}
+	};
 
+	auto edge_pair = boost::out_edges(node, g);
+	for_each_active_edge(node, g, count_fcn);
+
+
+	if (DEBUG) {
+		std::cout << "num_pos_edges: " << std::to_string(num_pos_edges) << std::endl;
+		std::cout << "num_neg_edges: " << std::to_string(num_neg_edges) << std::endl;
+	}
+
+	if (num_pos_edges >= num_neg_edges) {
+		if (num_pos_edges > max_num_clauses_sat) {
+
+			if (DEBUG) {
+				std::cout << "Max num clauses sat: " << std::to_string(num_pos_edges);
+				std::cout << " with sgn true." << std::endl;
+			}
+
+			max_num_clauses_sat = num_pos_edges;
+			*chosen_node = node;
+			*sgn_sat = true;
+
+		}
+	} else {
+		if (num_neg_edges > max_num_clauses_sat) {
+
+			if (DEBUG) {
+				std::cout << "Max num clauses sat: " << std::to_string(num_neg_edges);
+				std::cout << " with sgn false." << std::endl;
+			}
+
+			max_num_clauses_sat = num_neg_edges;
+			*chosen_node = node;
+			*sgn_sat = false;
+
+		}
 	}
 
 }

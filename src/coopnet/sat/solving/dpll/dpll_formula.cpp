@@ -14,42 +14,40 @@ namespace {
 
 DPLLFormula::DPLLFormula(const Problem& prob) :
 	Formula(prob),
-	contradicting(false),
-	prune_action_stack(),
-	grey_buffer(),
-	vert_status_map(),
-	edge_status_map(),
-	color_map() {
+	isContradicting(false),
+	greyBuffer(),
+	vertStatusMap(),
+	edgeStatusMap(),
+	colorMap() {
 
-	auto vert_iter_pair = boost::vertices(get_prob_graph());
-	auto edge_iter_pair = boost::edges(get_prob_graph());
+	auto vert_iter_pair = boost::vertices(prob_graph());
+	auto edge_iter_pair = boost::edges(prob_graph());
 
 	for (auto vert_iter = vert_iter_pair.first;
 		vert_iter != vert_iter_pair.second; ++vert_iter) {
 
-		// Initialize all verts to Active
-		vert_status_map.emplace(*vert_iter, DPLLVertStatus::Active);
+		// Initialize all verts to Default
+		vertStatusMap.emplace(*vert_iter, DPLLVertStatus::Default);
 
 		// Initialize all colors to black, since visitors will expand
 		//  where they need to and breadth_first_visit will set sources
 		//  to gray
-		color_map.emplace(*vert_iter, default_color_type::black_color);
+		colorMap.emplace(*vert_iter, default_color_type::black_color);
 
 	}
 
 	for (auto edge_iter = edge_iter_pair.first;
 		edge_iter != edge_iter_pair.second; ++edge_iter) {
 
-		// Initialize all edges to Active
-		edge_status_map.emplace(*edge_iter, DPLLEdgeStatus::Active);
+		// Initialize all edges to Default
+		edgeStatusMap.emplace(*edge_iter, DPLLEdgeStatus::Default);
 
 	}
 
-	prop_maps = DPLLPropMaps(
-		partial_assign.data,
-		vert_status_map, edge_status_map, color_map);
-	prune_visitor = std::make_unique<DPLLVisitor>(
-		prune_action_stack, grey_buffer, prop_maps);
+	propMaps = DPLLPropMaps(
+		vertStatusMap, edgeStatusMap, colorMap);
+	pruneVisitor = std::make_unique<DPLLVisitor>(
+		pruneGraph.prune_info(), greyBuffer, propMaps);
 
 }
 
@@ -61,82 +59,17 @@ void DPLLFormula::set_node(NodeChoice choice) {
 	// partial_graph remove node_to_set and reduce (unit clauses
 	//  & pure literals), supplying the stack to append
 
-	auto vert_node = partial_assign.node_to_vertex_map->left.at(choice.n);
-
-	auto vert_prune_data
-		= std::make_pair(vert_node, DPLLVertStatus::Active);
-	prune_action_stack.data.push(PruneAction(vert_prune_data));
+	auto vert_node = node_vert_map().left.at(choice.n);
 
 	auto status = choice.sgn ? 
 		DPLLVertStatus::SetToTrue : DPLLVertStatus::SetToFalse;
-	prop_maps.vert_status_map[vert_node] = status;
+	propMaps.vertStatusMap[vert_node] = status;
 
 	if (DEBUG) std::cout << "Assign node " << choice.n.id <<
 		" with vert " << vert_node << " to " << status << std::endl;
 
 	boost::breadth_first_visit(
-		get_prob_graph(), vert_node, grey_buffer,
-		*prune_visitor, prop_maps.color_map);
-
-}
-
-void DPLLFormula::reverse_prune_to_assignment(Node n) {
-
-	if(DEBUG) std::cout << "Pruning\n";
-
-	auto vert_node = partial_assign.node_to_vertex_map->left.at(n);
-
-	auto done = false;
-	while (!done && !prune_action_stack.data.empty()) {
-
-		auto action = prune_action_stack.data.top();
-		prune_action_stack.data.pop();
-
-		using prune_object = PruneAction::PruneObject;
-		switch (action.type) {
-		case prune_object::Assignment: {
-			auto& incomplete_assignment_data =
-				boost::get<IncompleteAssignmentPruneData>(
-					action.supp_data);
-			auto vert = incomplete_assignment_data.first;
-			if(DEBUG) std::cout << "Prune assign " << vert << "\n";
-			prop_maps.partial_assignment_map[vert]
-				= incomplete_assignment_data.second;
-			break;
-		}
-		case prune_object::Vertex: {
-
-			auto& vertex_data =
-				boost::get<VertPruneData>(action.supp_data);
-			auto vert = vertex_data.first;
-			auto status = vertex_data.second;
-
-			if(DEBUG)
-				std::cout << "Prune vert status " << vert << " " << status << "\n";
-
-			prop_maps.vert_status_map[vert] = status;
-
-			// If vert is prune-to vert, set to done (status is set first, not assignment)
-			if (vert == vert_node && status == DPLLVertStatus::Active) done = true;
-
-			break;
-
-		}
-		case prune_object::Edge: {
-
-			auto& edge_data =
-				boost::get<EdgePruneData>(action.supp_data);
-			auto edge = edge_data.first;
-			auto status = edge_data.second;
-
-			if(DEBUG)
-				std::cout << "Prune edge status " << edge << " " << status << "\n";
-
-			prop_maps.edge_status_map[edge] = status;
-			break;
-
-		}}
-
-	}
+		prob_graph(), vert_node, greyBuffer,
+		*pruneVisitor, propMaps.colorMap);
 
 }
