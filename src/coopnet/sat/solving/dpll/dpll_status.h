@@ -18,15 +18,16 @@ namespace sat {
 	inline std::ostream& operator<<(std::ostream& os, DPLLVertStatus status) {
 		switch (status) {
 		case DPLLVertStatus::Default:
-			os << "Default";
+			return os << "Default";
 		case DPLLVertStatus::SetToTrue:
-			os << "SetToTrue";
+			return os << "SetToTrue";
 		case DPLLVertStatus::SetToFalse:
-			os << "SetToFalse";
+			return os << "SetToFalse";
 		case DPLLVertStatus::Remove:
-			os << "Remove";
+			return os << "Remove";
+		default:
+			return os;
 		}
-		return os;
 	}
 
 	enum class DPLLEdgeStatus {
@@ -43,15 +44,16 @@ namespace sat {
 	inline std::ostream& operator<<(std::ostream& os, DPLLEdgeStatus status) {
 		switch (status) {
 		case DPLLEdgeStatus::Default:
-			os << "Default";
+			return os << "Default";
 		case DPLLEdgeStatus::SatisfyClause:
-			os << "SatisfyClause";
+			return os << "SatisfyClause";
 		case DPLLEdgeStatus::ConstrainNode:
-			os << "ConstrainNode";
+			return os << "ConstrainNode";
 		case DPLLEdgeStatus::Remove:
-			os << "Remove";
+			return os << "Remove";
+		default:
+			return os;
 		}
-		return os;
 	}
 
 }

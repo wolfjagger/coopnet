@@ -39,8 +39,12 @@ void PruneInfo::set_vert_status(VertDescriptor v, PruneStatus newStatus) {
 
 	auto& oldStatus = vertStatus.at(v);
 	if (oldStatus != newStatus) {
+
+		if(DEBUG) std::cout << "Set status for vert " << v << " to " << newStatus << "\n";
+
 		pruneStack.emplace(std::make_pair(v, oldStatus));
 		oldStatus = newStatus;
+
 	}
 
 }
@@ -52,8 +56,12 @@ void PruneInfo::set_edge_status(EdgeDescriptor e, PruneStatus newStatus) {
 
 	auto& oldStatus = edgeStatus.at(e);
 	if (oldStatus != newStatus) {
+
+		if(DEBUG) std::cout << "Set status for edge " << e << " to " << newStatus << "\n";
+
 		pruneStack.emplace(std::make_pair(e, oldStatus));
 		oldStatus = newStatus;
+
 	}
 
 }
@@ -70,9 +78,15 @@ boost::tribool PruneInfo::get_assignment(VertDescriptor v) const {
 void PruneInfo::set_assignment(VertDescriptor v, boost::tribool newValue) {
 
 	auto& oldValue = assignment.at(v);
-	if (oldValue != newValue) {
+	if (oldValue != newValue ||
+		(!boost::indeterminate(oldValue) && boost::indeterminate(newValue)) ||
+		(boost::indeterminate(oldValue) && !boost::indeterminate(newValue))) {
+
+		if(DEBUG) std::cout << "Set assignment for vert " << v << " to " << newValue << "\n";
+
 		pruneStack.emplace(std::make_pair(v, oldValue));
 		oldValue = newValue;
+
 	}
 
 }
@@ -133,7 +147,7 @@ void PruneInfo::reverse_to_vert(VertDescriptor v) {
 			auto vert = incompleteAssignmentData.first;
 			auto value = incompleteAssignmentData.second;
 
-			if (DEBUG)
+			if(DEBUG)
 				std::cout << "Prune assignment " << vert << " " << value << "\n";
 
 			assignment[vert] = value;

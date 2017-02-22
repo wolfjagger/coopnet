@@ -45,6 +45,8 @@ namespace sat {
 
 		void select_node(const SatGraph& g, VertDescriptor node, bool sgn);
 		void satisfy_clause(const SatGraph& g, VertDescriptor clause);
+		void deactivate_vert(VertDescriptor vert);
+		void deactivate_edge(EdgeDescriptor edge);
 
 		void change_vert_status(
 			VertDescriptor vert, DPLLVertStatus new_status);
@@ -87,6 +89,8 @@ namespace sat {
 
 	private:
 
+		void deactivate_edge(EdgeDescriptor edge);
+
 		void change_vert_status(
 			VertDescriptor vert, DPLLVertStatus new_status);
 		void change_edge_status(
@@ -118,13 +122,13 @@ namespace sat {
 		template<class Vertex, class Graph>
 		void operator()(Vertex v, Graph& g) {
 
-			if (isContradicting) {
+			/*if (isContradicting) {
 				while (!greyBuffer.empty()) {
 					auto vert = greyBuffer.front();
 					maps.colorMap[vert] = default_color_type::black_color;
 					greyBuffer.pop();
 				}
-			}
+			}*/
 
 		}
 

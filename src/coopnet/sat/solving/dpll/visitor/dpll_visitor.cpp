@@ -129,8 +129,7 @@ void DPLLBeginVertVisitor::clause_event(
 		//  (satisfy_clause will check for multiple conflicting constraints)
 		if (satisfying_edge != edges_pair.second) {
 
-			prune_info().set_edge_status(*satisfying_edge, PruneStatus::Inactive);
-			change_edge_status(*satisfying_edge, DPLLEdgeStatus::Default);
+			deactivate_edge(*satisfying_edge);
 			satisfy_clause(g, clause);
 
 		} else {
@@ -184,8 +183,7 @@ void DPLLBeginVertVisitor::select_node(
 		case DPLLEdgeStatus::ConstrainNode:
 			// If already set to constrain node, set inactive or contradict
 			if (g[edge].sgn == sgn) {
-				change_edge_status(edge, DPLLEdgeStatus::Default);
-				prune_info().set_edge_status(edge, PruneStatus::Inactive);
+				deactivate_edge(edge);
 			} else {
 				if(DEBUG) std::cout << "Contradict: opposite constraints on node.\n";
 				isContradicting = true;
@@ -197,8 +195,7 @@ void DPLLBeginVertVisitor::select_node(
 
 	for_each_active_edge(node, g, prop_to_edges_fcn);
 
-	change_vert_status(node, DPLLVertStatus::Default);
-	prune_info().set_vert_status(node, PruneStatus::Inactive);
+	deactivate_vert(node);
 
 }
 
@@ -222,10 +219,22 @@ void DPLLBeginVertVisitor::satisfy_clause(
 
 	for_each_active_edge(clause, g, remove_edges_fcn);
 
-	change_vert_status(clause, DPLLVertStatus::Default);
-	prune_info().set_vert_status(clause, PruneStatus::Inactive);
+	deactivate_vert(clause);
 
 }
+
+
+
+void DPLLBeginVertVisitor::deactivate_vert(VertDescriptor vert) {
+	change_vert_status(vert, DPLLVertStatus::Default);
+	prune_info().set_vert_status(vert, PruneStatus::Inactive);
+}
+
+void DPLLBeginVertVisitor::deactivate_edge(EdgeDescriptor edge) {
+	change_edge_status(edge, DPLLEdgeStatus::Default);
+	prune_info().set_edge_status(edge, PruneStatus::Inactive);
+}
+
 
 
 
@@ -337,9 +346,18 @@ void DPLLEdgeVisitor::edge_event(
 
 	}}
 	
-	prune_info().set_edge_status(edge, PruneStatus::Inactive);
+	deactivate_edge(edge);
 
 }
+
+
+
+void DPLLEdgeVisitor::deactivate_edge(EdgeDescriptor edge) {
+	change_edge_status(edge, DPLLEdgeStatus::Default);
+	prune_info().set_edge_status(edge, PruneStatus::Inactive);
+}
+
+
 
 //TODO: Undo replication here and redundancy btwn the three unique methods
 void DPLLEdgeVisitor::change_vert_status(
