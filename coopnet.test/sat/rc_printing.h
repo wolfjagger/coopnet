@@ -57,7 +57,7 @@ namespace rc { namespace detail {
 		return os << std::endl;
 	}
 		
-	inline std::ostream& operator<<(
+	/*inline std::ostream& operator<<(
 		std::ostream& os, const sat::IncompleteAssignment& assign) {
 		os << "incomplete_assignment:" << std::endl;
 		for (auto iter = assign.data.cbegin();
@@ -65,7 +65,7 @@ namespace rc { namespace detail {
 			os << " k" << iter->first << " v" << iter->second;
 		}
 		return os << std::endl;
-	}
+	}*/
 
 
 

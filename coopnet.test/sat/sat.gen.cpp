@@ -82,7 +82,7 @@ Gen<sat::Assignment> Arbitrary<sat::Assignment>::arbitrary() {
 		gen::set(&sat::Assignment::data));
 }
 
-Gen<sat::IncompleteAssignment>
+/*Gen<sat::IncompleteAssignment>
 Arbitrary<sat::IncompleteAssignment>::arbitrary() {
 
 	return gen::build<sat::IncompleteAssignment>(
@@ -91,4 +91,4 @@ Arbitrary<sat::IncompleteAssignment>::arbitrary() {
 				gen::arbitrary<sat::VertDescriptor>(),
 				gen::arbitrary<boost::logic::tribool>())));
 	
-}
+}*/

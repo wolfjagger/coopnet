@@ -5,10 +5,8 @@
 namespace sat {
 
 	enum class DPLLVertStatus {
-		// Indicates vert is still relevant and not in transition
-		Active,
-		// Vert is irrelevant
-		Inactive,
+		// Nothing
+		Default,
 		// Node should be set to true when visited
 		SetToTrue,
 		// Node should be set to true when visited
@@ -19,10 +17,8 @@ namespace sat {
 
 	inline std::ostream& operator<<(std::ostream& os, DPLLVertStatus status) {
 		switch (status) {
-		case DPLLVertStatus::Active:
-			return os << "Active";
-		case DPLLVertStatus::Inactive:
-			return os << "Inactive";
+		case DPLLVertStatus::Default:
+			return os << "Default";
 		case DPLLVertStatus::SetToTrue:
 			return os << "SetToTrue";
 		case DPLLVertStatus::SetToFalse:
@@ -35,10 +31,8 @@ namespace sat {
 	}
 
 	enum class DPLLEdgeStatus {
-		// Indicates edge is still relevant, but shouldn't be traversed
-		Active,
-		// Edge is irrelevant
-		Inactive,
+		//Nothing
+		Default,
 		// Node has been set and satisfies clause
 		SatisfyClause,
 		// Clause can only be satisfied by constraining this edge's node
@@ -49,10 +43,8 @@ namespace sat {
 
 	inline std::ostream& operator<<(std::ostream& os, DPLLEdgeStatus status) {
 		switch (status) {
-		case DPLLEdgeStatus::Active:
-			return os << "Active";
-		case DPLLEdgeStatus::Inactive:
-			return os << "Inactive";
+		case DPLLEdgeStatus::Default:
+			return os << "Default";
 		case DPLLEdgeStatus::SatisfyClause:
 			return os << "SatisfyClause";
 		case DPLLEdgeStatus::ConstrainNode:

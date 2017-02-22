@@ -15,21 +15,19 @@ namespace sat {
 
 	private:
 
-		bool contradicting;
-		// Could also put this in dpll_solver or in local function scope
-		PruneStack prune_action_stack;
+		bool isContradicting;
 		// Queue for remaining grey nodes to color black
-		boost::queue<VertDescriptor> grey_buffer;
+		boost::queue<VertDescriptor> greyBuffer;
 
 		// For property maps associated with vert/edge statuses
-		DPLLVertStatusMap vert_status_map;
-		DPLLEdgeStatusMap edge_status_map;
+		DPLLVertStatusMap vertStatusMap;
+		DPLLEdgeStatusMap edgeStatusMap;
 		// Vert color map primarily controlled dynamically by visitor
-		DPLLColorMap color_map;
+		DPLLColorMap colorMap;
 
-		DPLLPropMaps prop_maps;
+		DPLLPropMaps propMaps;
 
-		std::unique_ptr<DPLLVisitor> prune_visitor;
+		std::unique_ptr<DPLLVisitor> pruneVisitor;
 
 	public:
 
@@ -47,20 +45,18 @@ namespace sat {
 
 		void set_node(NodeChoice choice);
 
-		void reverse_prune_to_assignment(Node n);
-
 		bool is_contradicting() const {
-			return prune_visitor->is_contradicting;
+			return pruneVisitor->isContradicting;
 		}
 		void set_contradicting(bool value) {
-			prune_visitor->is_contradicting = value;
+			pruneVisitor->isContradicting = value;
 		}
 
 		DPLLPropMaps get_prop_maps() {
-			return prop_maps;
+			return propMaps;
 		}
 		const DPLLPropMaps get_prop_maps() const {
-			return prop_maps;
+			return propMaps;
 		}
 
 	};

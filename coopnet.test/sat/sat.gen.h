@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rapidcheck.h"
+#include "boost/logic/tribool.hpp"
 #include "coopnet/sat/component/node.h"
 #include "coopnet/sat/component/clause.h"
 #include "coopnet/sat/problem/assignment.h"
@@ -51,9 +52,9 @@ namespace rc {
 		static Gen<sat::Assignment> arbitrary();
 	};
 
-	template<>
+/*	template<>
 	struct Arbitrary<sat::IncompleteAssignment> {
 		static Gen<sat::IncompleteAssignment> arbitrary();
-	};
+	};*/
 
 }

@@ -17,8 +17,7 @@ namespace sat {
 
 	protected:
 
-		VertChoice do_choose(
-			const Formula& form, const AssignmentMap& assign_map) override;
+		VertChoice do_choose(const Formula& form) override;
 
 	};
 

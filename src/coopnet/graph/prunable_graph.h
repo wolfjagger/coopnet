@@ -1,75 +1,70 @@
 #pragma once
 
-#include "graph.h"
+#include "prune_info.h"
 
 
 
 namespace sat {
 
-	using VertStatusMap
-		= std::map<VertDescriptor, bool>;
-	using VertStatusPropMap
-		= boost::associative_property_map<VertStatusMap>;
-
-	using EdgeStatusMap
-		= std::map<EdgeDescriptor, bool>;
-	using EdgeStatusPropMap
-		= boost::associative_property_map<EdgeStatusMap>;
-
-
-
-	struct PrunablePropMaps {
-
-		VertStatusPropMap vertStatus;
-		EdgeStatusPropMap edgeStatus;
-
-		PrunablePropMaps() = default;
-
-		PrunablePropMaps(
-			VertStatusPropMap initVertStatus,
-			EdgeStatusPropMap initEdgeStatus) :
-			vertStatus(initVertStatus),
-			edgeStatus(initEdgeStatus) {}
-
-	};
-
-
-
 	class PrunableSatGraph {
 
 	private:
 
-		SatGraph base;
-		VertStatusMap vertStatus;
-		EdgeStatusMap edgeStatus;
+		std::reference_wrapper<const SatGraph> base;
+		PruneInfo pruneInfo;
+
+		// Connected components members
+		size_t numConnectedComponents;
+		std::vector<VertDescriptor> connectedComponentEntryPts;
 
 	public:
 
-		PrunableSatGraph();
+		PrunableSatGraph() = default;
 
 		PrunableSatGraph(const SatGraph& original);
-		PrunableSatGraph(SatGraph&& original);
 
 
 
-		SatGraph& graph() {
-			return base;
-		}
 		const SatGraph& graph() const {
 			return base;
 		}
 
-
-
-		PrunablePropMaps prop_maps() {
-			return PrunablePropMaps(vertStatus, edgeStatus);
+		PruneInfo& prune_info() {
+			return pruneInfo;
+		}
+		const PruneInfo& prune_info() const {
+			return pruneInfo;
 		}
 
+		void reset_prune();
 
 
-	private:
 
-		void emplace_all_active();
+		size_t num_connected_components() const;
+		const std::vector<VertDescriptor>&
+			connected_component_entry_pts() const;
+
+
+
+		template<typename PruneVisitor>
+		void visit(PruneVisitor& v) {
+
+			v.set_prune_info(pruneInfo);
+
+			visit_sat_graph(v, base,
+				connectedComponentEntryPts.begin(), connectedComponentEntryPts.end());
+
+		}
+
+		template<typename PruneVisitor>
+		void visit(PruneVisitor& v) const {
+
+			v.set_prune_info(pruneInfo);
+
+			visit_sat_graph(v, base,
+				connectedComponentEntryPts.begin(), connectedComponentEntryPts.end());
+
+		}
 		
 	};
 

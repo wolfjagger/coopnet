@@ -11,17 +11,16 @@ using namespace sat;
 
 boost::optional<NodeChoice> NodeChooser::choose(const Formula& form) {
 
-	auto& assign = form.get_incomplete_assignment();
-	auto& assign_map = assign.data;
+	auto& pruneGraph = form.prune_graph();
 
 	// If none, return no node
-	if (std::none_of(assign_map.cbegin(), assign_map.cend(), is_ind_pair)) {
+	if(!pruneGraph.prune_info().is_indeterminate()) {
 		return boost::optional<NodeChoice>();
 	} else {
 
-		auto choice = do_choose(form, assign_map);
+		auto choice = do_choose(form);
 
-		auto n = assign.node_to_vertex_map->right.at(choice.first);
+		auto n = form.node_vert_map().right.at(choice.first);
 
 		return NodeChoice{ n, choice.second };
 
@@ -29,13 +28,19 @@ boost::optional<NodeChoice> NodeChooser::choose(const Formula& form) {
 
 }
 
+bool NodeChooser::is_ind_pair(std::pair<VertDescriptor, boost::tribool> pair) {
+	return boost::indeterminate(pair.second);
+}
 
 
 
 
-auto NextNodeChooser::do_choose(
-	const Formula& form, const AssignmentMap& assign_map)
+
+auto NextNodeChooser::do_choose(const Formula& form)
 	-> VertChoice {
+
+	auto& pruneGraph = form.prune_graph();
+	auto& assign_map = pruneGraph.prune_info().get_assignment_map();
 
 	auto iter = std::find_if(
 		assign_map.cbegin(), assign_map.cend(), is_ind_pair);
@@ -43,9 +48,11 @@ auto NextNodeChooser::do_choose(
 
 }
 
-auto LastNodeChooser::do_choose(
-	const Formula& form, const AssignmentMap& assign_map)
+auto LastNodeChooser::do_choose(const Formula& form)
 	-> VertChoice {
+
+	auto& pruneGraph = form.prune_graph();
+	auto& assign_map = pruneGraph.prune_info().get_assignment_map();
 
 	auto iter = std::find_if(
 		assign_map.crbegin(), assign_map.crend(), is_ind_pair);
@@ -60,9 +67,11 @@ namespace {
 }
 
 
-auto RandNodeChooser::do_choose(
-	const Formula& form, const AssignmentMap& assign_map)
+auto RandNodeChooser::do_choose(const Formula& form)
 	-> VertChoice {
+
+	auto& pruneGraph = form.prune_graph();
+	auto& assign_map = pruneGraph.prune_info().get_assignment_map();
 
 	auto iter = alphali::random_find_if(
 		assign_map.cbegin(), assign_map.cend(), is_ind_pair, rand_engine);

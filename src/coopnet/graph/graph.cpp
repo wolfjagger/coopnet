@@ -1,6 +1,7 @@
 #include "graph.h"
 #include "coopnet/sat/component/node.h"
 #include "coopnet/sat/component/clause.h"
+#include "boost/graph/connected_components.hpp"
 
 using namespace sat;
 
@@ -121,5 +122,35 @@ void sat::set_edge_sgn(
 	EdgeProp& prop, bool sgn) {
 
 	prop.sgn = sgn;
+
+}
+
+
+
+std::vector<VertDescriptor>
+sat::calculate_connected_components(const SatGraph& prob_graph) {
+
+	using conn_map_type = std::map<VertDescriptor, size_t>;
+	auto connected_map = conn_map_type();
+	auto boost_conn_map =
+		boost::associative_property_map<conn_map_type>(connected_map);
+	auto num_connected_components
+		= boost::connected_components(prob_graph, boost_conn_map);
+
+	auto connected_component_vertices = std::vector<VertDescriptor>();
+	connected_component_vertices.reserve(num_connected_components);
+	auto set_done_components = std::set<size_t>();
+	for (auto vert_pair = boost::vertices(prob_graph);
+		vert_pair.first != vert_pair.second; ++vert_pair.first) {
+
+		auto component_idx = connected_map[*vert_pair.first];
+		if (set_done_components.count(component_idx) == 0) {
+			set_done_components.insert(component_idx);
+			connected_component_vertices.emplace_back(*vert_pair.first);
+		}
+
+	}
+
+	return std::move(connected_component_vertices);
 
 }

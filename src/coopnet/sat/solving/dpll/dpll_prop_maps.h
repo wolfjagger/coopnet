@@ -7,9 +7,6 @@
 
 namespace sat {
 
-	using IncompleteAssignmentPropMap
-		= boost::associative_property_map<IncompleteAssignment::Map>;
-
 	using DPLLVertStatusMap
 		= std::map<VertDescriptor, DPLLVertStatus>;
 	using DPLLVertStatusPropMap
@@ -27,22 +24,19 @@ namespace sat {
 
 	struct DPLLPropMaps {
 
-		IncompleteAssignmentPropMap partial_assignment_map;
-		DPLLVertStatusPropMap vert_status_map;
-		DPLLEdgeStatusPropMap edge_status_map;
-		DPLLColorPropMap color_map;
+		DPLLVertStatusPropMap vertStatusMap;
+		DPLLEdgeStatusPropMap edgeStatusMap;
+		DPLLColorPropMap colorMap;
 
 		DPLLPropMaps() = default;
 
 		DPLLPropMaps(
-			IncompleteAssignmentPropMap init_partial_assignment_map,
-			DPLLVertStatusPropMap init_vert_status_map,
-			DPLLEdgeStatusPropMap init_edge_status_map,
-			DPLLColorPropMap init_color_map) :
-			partial_assignment_map(init_partial_assignment_map),
-			vert_status_map(init_vert_status_map),
-			edge_status_map(init_edge_status_map),
-			color_map(init_color_map) {}
+			DPLLVertStatusPropMap initVertStatusMap,
+			DPLLEdgeStatusPropMap initEdgeStatusMap,
+			DPLLColorPropMap initColorMap) :
+			vertStatusMap(initVertStatusMap),
+			edgeStatusMap(initEdgeStatusMap),
+			colorMap(initColorMap) {}
 
 	};
 

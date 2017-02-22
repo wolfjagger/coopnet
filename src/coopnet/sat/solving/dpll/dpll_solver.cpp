@@ -16,8 +16,8 @@ namespace {
 
 	void DEBUG_print_assignment(const DPLLFormula& formula) {
 		if(DEBUG) {
-			auto tmp_pred =
-				[](IncompleteAssignment::Pair pair) {
+			auto print_pred =
+				[](IncompleteAssignmentMap::value_type pair) {
 				if (pair.second) {
 					std::cout << "T";
 				} else if (!pair.second) {
@@ -28,8 +28,8 @@ namespace {
 					std::cout << "O";
 				}
 			};
-			auto& assign = formula.get_incomplete_assignment();
-			std::for_each(assign.data.cbegin(), assign.data.cend(), tmp_pred);
+			auto& assign = formula.prune_graph().prune_info().get_assignment_map();
+			std::for_each(assign.cbegin(), assign.cend(), print_pred);
 			std::cout << "\n";
 		}
 	}
@@ -86,7 +86,7 @@ auto DPLLSolver::do_solve(const Problem& prob) -> SolveReturn {
 	find_assignment();
 
 	if (formula->is_SAT()) {
-		auto assign = Assignment(formula->get_incomplete_assignment());
+		auto assign = Assignment(formula->create_assignment());
 		return std::make_pair(
 			SolutionStatus::Satisfied,
 			std::make_shared<sat::Assignment>(std::move(assign)));
