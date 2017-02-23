@@ -8,7 +8,7 @@
 namespace sat {
 
 	enum class DPLLNodeChoiceMode {
-		Next, Last, Random, MostClausesSat
+		Next, Random, MostClausesSat
 	};
 	
 
@@ -29,8 +29,6 @@ namespace sat {
 		switch (mode) {
 		case DPLLNodeChoiceMode::Next:
 			return std::make_unique<NextNodeChooser>();
-		case DPLLNodeChoiceMode::Last:
-			return std::make_unique<LastNodeChooser>();
 		case DPLLNodeChoiceMode::Random:
 			return std::make_unique<RandNodeChooser>();
 		case DPLLNodeChoiceMode::MostClausesSat:

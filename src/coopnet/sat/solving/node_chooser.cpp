@@ -48,18 +48,6 @@ auto NextNodeChooser::do_choose(const Formula& form)
 
 }
 
-auto LastNodeChooser::do_choose(const Formula& form)
-	-> VertChoice {
-
-	auto& pruneGraph = form.prune_graph();
-	auto& assign_map = pruneGraph.prune_info().get_assignment_map();
-
-	auto iter = std::find_if(
-		assign_map.crbegin(), assign_map.crend(), is_ind_pair);
-	return std::make_pair(iter->first, false);
-
-}
-
 
 
 namespace {

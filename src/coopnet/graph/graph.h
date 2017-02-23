@@ -1,5 +1,6 @@
 #pragma once
 
+#include <unordered_map>
 #include "boost/bimap.hpp"
 #include "coopnet/sat/component/component_fwd.h"
 #include "bgl_inc.h"
@@ -32,6 +33,10 @@ namespace sat {
 	using VertDescriptor = SatGraph::vertex_descriptor;
 	using EdgeDescriptor = SatGraph::edge_descriptor;
 	using boost::default_color_type;
+
+	template<typename Value>
+	using EdgeDescUnordMap
+		= std::unordered_map<EdgeDescriptor, Value, boost::hash<EdgeDescriptor>>;
 
 
 

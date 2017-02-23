@@ -17,15 +17,14 @@ namespace sat {
 
 
 	using VertStatusMap
-		= std::map<VertDescriptor, PruneStatus>;
+		= std::unordered_map<VertDescriptor, PruneStatus>;
 	using VertStatusData = VertStatusMap::value_type;
 
-	using EdgeStatusMap
-		= std::map<EdgeDescriptor, PruneStatus>;
+	using EdgeStatusMap = EdgeDescUnordMap<PruneStatus>;
 	using EdgeStatusData = EdgeStatusMap::value_type;
 
 	using IncompleteAssignmentMap
-		= std::map<VertDescriptor, boost::tribool>;
+		= std::unordered_map<VertDescriptor, boost::tribool>;
 	using IncompleteAssignmentData
 		= IncompleteAssignmentMap::value_type;
 

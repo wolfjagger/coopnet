@@ -8,17 +8,16 @@
 namespace sat {
 
 	using DPLLVertStatusMap
-		= std::map<VertDescriptor, DPLLVertStatus>;
+		= std::unordered_map<VertDescriptor, DPLLVertStatus>;
 	using DPLLVertStatusPropMap
 		= boost::associative_property_map<DPLLVertStatusMap>;
 
-	using DPLLEdgeStatusMap
-		= std::map<EdgeDescriptor, DPLLEdgeStatus>;
+	using DPLLEdgeStatusMap = EdgeDescUnordMap<DPLLEdgeStatus>;
 	using DPLLEdgeStatusPropMap
 		= boost::associative_property_map<DPLLEdgeStatusMap>;
 
 	using DPLLColorMap
-		= std::map<VertDescriptor, default_color_type>;
+		= std::unordered_map<VertDescriptor, default_color_type>;
 	using DPLLColorPropMap
 		= boost::associative_property_map<DPLLColorMap>;
 

@@ -12,7 +12,7 @@ namespace coopplot {
 
 		using namespace coopplot;
 
-		auto num_nodes = 70;
+		auto num_nodes = 100;
 		auto start_ratio = 3.5;
 		auto end_ratio = 5.5;
 		auto num_ratios = 21;
@@ -56,8 +56,8 @@ namespace coopplot {
 		using namespace coopplot;
 
 		auto start_num_nodes = 20;
-		auto end_num_nodes = 120;
-		auto num_plots = 6;
+		auto end_num_nodes = 160;
+		auto num_plots = 8;
 		auto start_ratio = 3.5;
 		auto end_ratio = 5.5;
 		auto num_ratios = 21;

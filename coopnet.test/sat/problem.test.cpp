@@ -59,21 +59,17 @@ namespace {
 
 		auto solver_next = sat::DPLLSolver(DPLLNodeChoiceMode::Next);
 		auto pair_next = solver_next.solve(prob);
-		auto solver_last = sat::DPLLSolver(DPLLNodeChoiceMode::Last);
-		auto pair_last = solver_last.solve(prob);
 		auto solver_rand = sat::DPLLSolver(DPLLNodeChoiceMode::Random);
 		auto pair_rand = solver_rand.solve(prob);
 		auto solver_most_sat = sat::DPLLSolver(DPLLNodeChoiceMode::MostClausesSat);
 		auto pair_most_sat = solver_most_sat.solve(prob);
 
-		RC_ASSERT(pair_next.first == pair_last.first);
 		RC_ASSERT(pair_next.first == pair_rand.first);
 		RC_ASSERT(pair_next.first == pair_most_sat.first);
 
 		switch (pair_next.first) {
 		case sat::SolutionStatus::Satisfied:
 			RC_ASSERT(prob.is_satisfied_by(pair_next.second));
-			RC_ASSERT(prob.is_satisfied_by(pair_last.second));
 			RC_ASSERT(prob.is_satisfied_by(pair_rand.second));
 			RC_ASSERT(prob.is_satisfied_by(pair_most_sat.second));
 			break;

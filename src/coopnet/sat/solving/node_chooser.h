@@ -45,15 +45,6 @@ namespace sat {
 	};
 
 
-	class LastNodeChooser : public NodeChooser {
-
-	protected:
-
-		VertChoice do_choose(const Formula& form) override;
-
-	};
-
-
 	class RandNodeChooser : public NodeChooser {
 
 	protected:
