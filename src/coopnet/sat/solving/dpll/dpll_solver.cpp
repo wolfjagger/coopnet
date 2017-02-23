@@ -140,7 +140,7 @@ bool DPLLSolver::change_last_free_choice() {
 
 		auto choice = decision.choice;
 		formula->reverse_prune_to_assignment(choice.n);
-		formula->set_contradicting(false);
+		formula->set_uncontradicting();
 		DEBUG_print_assignment(*formula);
 
 		if (decision.is_first_choice) {
@@ -154,7 +154,7 @@ bool DPLLSolver::change_last_free_choice() {
 
 	}
 
-	formula->set_contradicting(true);
+	formula->set_contradicting();
 	return false;
 
 }

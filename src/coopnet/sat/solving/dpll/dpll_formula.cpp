@@ -14,14 +14,18 @@ namespace {
 
 DPLLFormula::DPLLFormula(const Problem& prob) :
 	Formula(prob),
-	isContradicting(false),
 	greyBuffer(),
 	vertStatusMap(),
 	edgeStatusMap(),
-	colorMap() {
+	colorMap(),
+	isContradicting(false),
+	setContradictCollab(),
+	setUncontradictPub() {
+
 
 	auto vert_iter_pair = boost::vertices(prob_graph());
 	auto edge_iter_pair = boost::edges(prob_graph());
+
 
 	for (auto vert_iter = vert_iter_pair.first;
 		vert_iter != vert_iter_pair.second; ++vert_iter) {
@@ -36,6 +40,7 @@ DPLLFormula::DPLLFormula(const Problem& prob) :
 
 	}
 
+
 	for (auto edge_iter = edge_iter_pair.first;
 		edge_iter != edge_iter_pair.second; ++edge_iter) {
 
@@ -44,10 +49,25 @@ DPLLFormula::DPLLFormula(const Problem& prob) :
 
 	}
 
+
 	propMaps = DPLLPropMaps(
 		vertStatusMap, edgeStatusMap, colorMap);
+
+
+	auto vertContradictionCollab = alphali::collaborator();
+	auto edgeContradictionCollab = alphali::collaborator();
+
+	setContradictCollab.subscribe(vertContradictionCollab,
+		std::bind(&DPLLFormula::set_contradicting, this));
+	setContradictCollab.subscribe(edgeContradictionCollab,
+		std::bind(&DPLLFormula::set_contradicting, this));
+
+
 	pruneVisitor = std::make_unique<DPLLVisitor>(
-		pruneGraph.prune_info(), greyBuffer, propMaps);
+		std::move(vertContradictionCollab),
+		std::move(edgeContradictionCollab),
+		setContradictCollab, setUncontradictPub,
+		pruneGraph.prune_info(), propMaps);
 
 }
 
@@ -72,4 +92,18 @@ void DPLLFormula::set_node(NodeChoice choice) {
 		prob_graph(), vert_node, greyBuffer,
 		*pruneVisitor, propMaps.colorMap);
 
+}
+
+
+
+bool DPLLFormula::is_contradicting() const {
+	return isContradicting;
+}
+void DPLLFormula::set_contradicting() {
+	isContradicting = true;
+	setContradictCollab.publish();
+}
+void DPLLFormula::set_uncontradicting() {
+	isContradicting = false;
+	setUncontradictPub.publish();
 }

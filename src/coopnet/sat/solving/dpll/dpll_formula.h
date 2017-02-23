@@ -15,7 +15,6 @@ namespace sat {
 
 	private:
 
-		bool isContradicting;
 		// Queue for remaining grey nodes to color black
 		boost::queue<VertDescriptor> greyBuffer;
 
@@ -24,6 +23,10 @@ namespace sat {
 		DPLLEdgeStatusMap edgeStatusMap;
 		// Vert color map primarily controlled dynamically by visitor
 		DPLLColorMap colorMap;
+
+		bool isContradicting;
+		alphali::collaborator setContradictCollab;
+		alphali::publisher setUncontradictPub;
 
 		DPLLPropMaps propMaps;
 
@@ -45,12 +48,9 @@ namespace sat {
 
 		void set_node(NodeChoice choice);
 
-		bool is_contradicting() const {
-			return pruneVisitor->isContradicting;
-		}
-		void set_contradicting(bool value) {
-			pruneVisitor->isContradicting = value;
-		}
+		bool is_contradicting() const;
+		void set_contradicting();
+		void set_uncontradicting();
 
 		DPLLPropMaps get_prop_maps() {
 			return propMaps;
