@@ -10,7 +10,7 @@ namespace sat {
 
 	private:
 
-		std::reference_wrapper<const SatGraph> base;
+		std::reference_wrapper<const BaseSatGraph> base;
 		PruneInfo pruneInfo;
 
 		// Connected components members
@@ -21,13 +21,9 @@ namespace sat {
 
 		PrunableSatGraph() = default;
 
-		PrunableSatGraph(const SatGraph& original);
+		PrunableSatGraph(const BaseSatGraph& original);
 
 
-
-		const SatGraph& graph() const {
-			return base;
-		}
 
 		PruneInfo& prune_info() {
 			return pruneInfo;

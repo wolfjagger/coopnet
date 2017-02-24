@@ -31,7 +31,7 @@ namespace sat {
 
 
 
-		void edge_event(const SatGraph& g, EdgeDescriptor e,
+		void edge_event(const BaseSatGraph& g, EdgeDescriptor e,
 			const sat::EdgeProp& edge_property,
 			VertDescriptor vert_node, VertDescriptor vert_clause) {
 

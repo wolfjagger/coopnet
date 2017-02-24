@@ -27,11 +27,11 @@ namespace sat {
 
 	
 	// E.g. vecS means std::vector, giving fast access and slow amendment
-	using SatGraph = boost::adjacency_list <
+	using BaseSatGraph = boost::adjacency_list <
 		boost::setS, boost::vecS, boost::undirectedS,
 		VertProp, EdgeProp>;
-	using VertDescriptor = SatGraph::vertex_descriptor;
-	using EdgeDescriptor = SatGraph::edge_descriptor;
+	using VertDescriptor = BaseSatGraph::vertex_descriptor;
+	using EdgeDescriptor = BaseSatGraph::edge_descriptor;
 	using boost::default_color_type;
 
 	template<typename Value>

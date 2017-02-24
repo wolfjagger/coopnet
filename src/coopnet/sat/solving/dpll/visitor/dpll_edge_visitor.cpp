@@ -43,7 +43,7 @@ DPLLEdgeVisitor::DPLLEdgeVisitor(
 //  (b) clause => set node = a iff clause.num_edges == 1
 // (3) remove edge
 void DPLLEdgeVisitor::dpll_edge_event(
-	const SatGraph& g, EdgeDescriptor edge,
+	const BaseSatGraph& g, EdgeDescriptor edge,
 	const EdgeProp& prop,
 	VertDescriptor node, VertDescriptor clause) {
 
@@ -113,7 +113,7 @@ void DPLLEdgeVisitor::dpll_edge_event(
 }
 
 void DPLLEdgeVisitor::default_edge_event(
-	const SatGraph& g, EdgeDescriptor edge,
+	const BaseSatGraph& g, EdgeDescriptor edge,
 	const EdgeProp& prop,
 	VertDescriptor node, VertDescriptor clause) {
 

@@ -46,7 +46,7 @@ bool Formula::is_SAT() const {
 	return !pruneGraph.prune_info().is_indeterminate();
 }
 
-const SatGraph& Formula::prob_graph() const {
+const BaseSatGraph& Formula::prob_graph() const {
 	return prob.get().get_graph();
 }
 

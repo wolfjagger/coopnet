@@ -36,7 +36,7 @@ namespace sat {
 			DPLLPropMaps initMaps);
 
 		void node_event(
-			const SatGraph& g, VertDescriptor node,
+			const BaseSatGraph& g, VertDescriptor node,
 			const VertProp& prop) {
 
 			if (isContradicting) {
@@ -48,7 +48,7 @@ namespace sat {
 		}
 
 		void clause_event(
-			const SatGraph& g, VertDescriptor clause,
+			const BaseSatGraph& g, VertDescriptor clause,
 			const VertProp& prop) {
 
 			if (isContradicting) {
@@ -62,21 +62,21 @@ namespace sat {
 	private:
 
 		void dpll_node_event(
-			const SatGraph& g, VertDescriptor node,
+			const BaseSatGraph& g, VertDescriptor node,
 			const VertProp& prop);
 
 		void dpll_clause_event(
-			const SatGraph& g, VertDescriptor clause,
+			const BaseSatGraph& g, VertDescriptor clause,
 			const VertProp& prop);
 
 		void default_vert_event(
-			const SatGraph& g, VertDescriptor vert,
+			const BaseSatGraph& g, VertDescriptor vert,
 			const VertProp& prop);
 
 
 
-		void select_node(const SatGraph& g, VertDescriptor node, bool sgn);
-		void satisfy_clause(const SatGraph& g, VertDescriptor clause);
+		void select_node(const BaseSatGraph& g, VertDescriptor node, bool sgn);
+		void satisfy_clause(const BaseSatGraph& g, VertDescriptor clause);
 		void deactivate_vert(VertDescriptor vert);
 		void deactivate_edge(EdgeDescriptor edge);
 

@@ -68,7 +68,7 @@ namespace sat {
 
 
 
-		const SatGraph& prob_graph() const;
+		const BaseSatGraph& prob_graph() const;
 
 	};
 

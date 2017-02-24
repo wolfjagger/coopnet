@@ -21,7 +21,7 @@ DPLLChooseNodeVisitor::DPLLChooseNodeVisitor(const PruneInfo& initPruneInfo) :
 
 
 void DPLLChooseNodeVisitor::node_event(
-	const SatGraph& g, VertDescriptor node, const VertProp& prop) {
+	const BaseSatGraph& g, VertDescriptor node, const VertProp& prop) {
 
 	if (DEBUG) std::cout << "node " << node << std::endl;
 
@@ -79,7 +79,7 @@ void DPLLChooseNodeVisitor::node_event(
 
 
 void DPLLChooseNodeVisitor::clause_event(
-	const SatGraph& g, VertDescriptor clause, const VertProp& prop) {
+	const BaseSatGraph& g, VertDescriptor clause, const VertProp& prop) {
 
 }
 

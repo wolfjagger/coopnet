@@ -5,7 +5,7 @@ using namespace sat;
 
 
 
-PrunableSatGraph::PrunableSatGraph(const SatGraph& original) :
+PrunableSatGraph::PrunableSatGraph(const BaseSatGraph& original) :
 	base(original),
 	pruneInfo(base.get()) {
 

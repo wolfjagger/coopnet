@@ -29,7 +29,7 @@ namespace sat {
 			pruneInfo(initPruneInfo) {}
 
 		// Triggered when vertex is encountered
-		void operator()(VertDescriptor v, const SatGraph& g) {
+		void operator()(VertDescriptor v, const BaseSatGraph& g) {
 
 			if(prune_info().get_vert_status(v) == PruneStatus::Active) {
 
@@ -67,23 +67,23 @@ namespace sat {
 
 
 
-		bool any_active_edge(VertDescriptor v, const SatGraph& g) const {
+		bool any_active_edge(VertDescriptor v, const BaseSatGraph& g) const {
 			auto edgePair = boost::out_edges(v, g);
 			return std::any_of(edgePair.first, edgePair.second, Me::active_predicate(*this));
 		}
 
-		size_t count_active_edges(VertDescriptor v, const SatGraph& g) const {
+		size_t count_active_edges(VertDescriptor v, const BaseSatGraph& g) const {
 			auto edgePair = boost::out_edges(v, g);
 			return std::count_if(edgePair.first, edgePair.second, Me::active_predicate(*this));
 		}
 
-		auto find_active_edge(VertDescriptor v, const SatGraph& g) const {
+		auto find_active_edge(VertDescriptor v, const BaseSatGraph& g) const {
 			auto edgePair = boost::out_edges(v, g);
 			return std::find_if(edgePair.first, edgePair.second, Me::active_predicate(*this));
 		}
 
 		template<typename Pred>
-		auto find_if_active_edge(VertDescriptor v, const SatGraph& g, Pred p) const {
+		auto find_if_active_edge(VertDescriptor v, const BaseSatGraph& g, Pred p) const {
 			auto edgePair = boost::out_edges(v, g);
 			return std::find_if(edgePair.first, edgePair.second, [this, &p](EdgeDescriptor e) {
 				return is_active_edge(e) && p(e);
@@ -91,7 +91,7 @@ namespace sat {
 		}
 
 		template<typename UnaryFcn>
-		void for_each_active_edge(VertDescriptor v, const SatGraph& g, UnaryFcn p) const {
+		void for_each_active_edge(VertDescriptor v, const BaseSatGraph& g, UnaryFcn p) const {
 			auto edgePair = boost::out_edges(v, g);
 			std::for_each(edgePair.first, edgePair.second, [this, &p](EdgeDescriptor e) {
 				if (is_active_edge(e)) p(e);
@@ -99,7 +99,7 @@ namespace sat {
 		}
 
 		template<typename Pred>
-		bool all_of_active_edges(VertDescriptor v, const SatGraph& g, Pred p) const {
+		bool all_of_active_edges(VertDescriptor v, const BaseSatGraph& g, Pred p) const {
 			auto edgePair = boost::out_edges(v, g);
 			return std::all_of(edgePair.first, edgePair.second, [this, &p](EdgeDescriptor e) {
 				return is_active_edge(e) && p(e);
@@ -143,7 +143,7 @@ namespace sat {
 			pruneInfo(initPruneInfo) {}
 
 		// Triggered when edge is encountered
-		void operator()(EdgeDescriptor e, const SatGraph& g) {
+		void operator()(EdgeDescriptor e, const BaseSatGraph& g) {
 
 			if(prune_info().get_edge_status(e) == PruneStatus::Active) {
 				

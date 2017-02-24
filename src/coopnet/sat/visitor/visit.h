@@ -8,7 +8,7 @@ namespace sat {
 
 	template<typename Visitor, typename SourceIter>
 	void visit_sat_graph(Visitor& v,
-		const SatGraph& g, SourceIter sourceBegin, SourceIter sourceEnd) {
+		const BaseSatGraph& g, SourceIter sourceBegin, SourceIter sourceEnd) {
 
 		auto bfv = boost::make_bfs_visitor(v);
 

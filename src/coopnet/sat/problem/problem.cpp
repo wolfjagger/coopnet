@@ -14,7 +14,7 @@ using namespace sat;
 namespace {
 
 	boost::dynamic_properties generate_dyn_props(
-		SatGraph& prob_graph) {
+		BaseSatGraph& prob_graph) {
 
 		boost::dynamic_properties dyn_props;
 
@@ -121,7 +121,7 @@ void Problem::build_graph(NodeList&& nodes, ClauseList&& clauses) {
 	num_nodes = nodes.size();
 	num_clauses = clauses.size();
 
-	prob_graph = SatGraph();
+	prob_graph = BaseSatGraph();
 
 	// Temp map to connect node-clause edges
 	map_node_to_vert = std::make_shared<NodeVertMap>();
@@ -130,7 +130,7 @@ void Problem::build_graph(NodeList&& nodes, ClauseList&& clauses) {
 	for(auto node_to_add : nodes) {
 
 		// Add node as vertex to graph
-		auto prop = SatGraph::vertex_property_type();
+		auto prop = BaseSatGraph::vertex_property_type();
 		prop.kind = VertProp::Node;
 		prop.name = graph_util::node_name(node_to_add);
 
@@ -145,7 +145,7 @@ void Problem::build_graph(NodeList&& nodes, ClauseList&& clauses) {
 	for(auto& clause_to_add : clauses) {
 
 		// Add clause as vertex to graph
-		auto prop = SatGraph::vertex_property_type();
+		auto prop = BaseSatGraph::vertex_property_type();
 		prop.kind = VertProp::Clause;
 		prop.name = graph_util::clause_name(clause_to_add);
 
@@ -157,7 +157,7 @@ void Problem::build_graph(NodeList&& nodes, ClauseList&& clauses) {
 			//TODO: Add error handling for if node not in map.
 			auto node_vert = map_node_to_vert->left.at(lit.first);
 
-			auto prop = SatGraph::edge_property_type();
+			auto prop = BaseSatGraph::edge_property_type();
 			prop.sgn = lit.second;
 
 			auto desc_pair = boost::add_edge(node_vert, clause_vert, prop, prob_graph);

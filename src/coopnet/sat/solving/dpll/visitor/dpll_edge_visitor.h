@@ -38,7 +38,7 @@ namespace sat {
 			DPLLPropMaps initMaps);
 
 		void edge_event(
-			const SatGraph& g, EdgeDescriptor edge,
+			const BaseSatGraph& g, EdgeDescriptor edge,
 			const EdgeProp& prop,
 			VertDescriptor node, VertDescriptor clause) {
 
@@ -53,12 +53,12 @@ namespace sat {
 	private:
 
 		void dpll_edge_event(
-			const SatGraph& g, EdgeDescriptor edge,
+			const BaseSatGraph& g, EdgeDescriptor edge,
 			const EdgeProp& prop,
 			VertDescriptor node, VertDescriptor clause);
 
 		void default_edge_event(
-			const SatGraph& g, EdgeDescriptor edge,
+			const BaseSatGraph& g, EdgeDescriptor edge,
 			const EdgeProp& prop,
 			VertDescriptor node, VertDescriptor clause);
 

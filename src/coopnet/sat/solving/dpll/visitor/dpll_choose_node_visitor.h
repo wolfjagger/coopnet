@@ -24,11 +24,11 @@ namespace sat {
 		DPLLChooseNodeVisitor(const PruneInfo& initPruneInfo);
 
 		void node_event(
-			const SatGraph& g, VertDescriptor node,
+			const BaseSatGraph& g, VertDescriptor node,
 			const VertProp& prop);
 
 		void clause_event(
-			const SatGraph& g, VertDescriptor clause,
+			const BaseSatGraph& g, VertDescriptor clause,
 			const VertProp& prop);
 
 		void reset();

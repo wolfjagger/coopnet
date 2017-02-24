@@ -7,7 +7,7 @@ using namespace sat;
 
 
 
-void graph_util::rename_verts(SatGraph& g, const NodeVertMap& node_to_vertex_map) {
+void graph_util::rename_verts(BaseSatGraph& g, const NodeVertMap& node_to_vertex_map) {
 	
 	auto vert_pair = boost::vertices(g);
 	for (auto vert_iter = vert_pair.first;
@@ -72,7 +72,7 @@ std::string graph_util::clause_name(const Clause& c) {
 
 
 std::vector<VertDescriptor>
-graph_util::calculate_connected_components(const SatGraph& prob_graph) {
+graph_util::calculate_connected_components(const BaseSatGraph& prob_graph) {
 
 	using conn_map_type = std::map<VertDescriptor, size_t>;
 	auto connected_map = conn_map_type();

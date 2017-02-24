@@ -39,7 +39,7 @@ DPLLVertVisitor::DPLLVertVisitor(
 // It also needs to color the surrounding edges if they
 //  should be (re)visited (i.e. if vert is to be removed).
 void DPLLVertVisitor::dpll_node_event(
-	const SatGraph& g, VertDescriptor node, const VertProp& prop) {
+	const BaseSatGraph& g, VertDescriptor node, const VertProp& prop) {
 
 	switch (maps.vertStatusMap[node]) {
 	case DPLLVertStatus::SetToTrue:
@@ -107,7 +107,7 @@ void DPLLVertVisitor::dpll_node_event(
 }
 
 void DPLLVertVisitor::dpll_clause_event(
-	const SatGraph& g, VertDescriptor clause, const VertProp& prop) {
+	const BaseSatGraph& g, VertDescriptor clause, const VertProp& prop) {
 
 	auto& clause_status = maps.vertStatusMap[clause];
 
@@ -174,7 +174,7 @@ void DPLLVertVisitor::dpll_clause_event(
 }
 
 void DPLLVertVisitor::default_vert_event(
-	const SatGraph& g, VertDescriptor vert, const VertProp& prop) {
+	const BaseSatGraph& g, VertDescriptor vert, const VertProp& prop) {
 
 	maps.vertStatusMap[vert] = DPLLVertStatus::Default;
 
@@ -183,7 +183,7 @@ void DPLLVertVisitor::default_vert_event(
 
 
 void DPLLVertVisitor::select_node(
-	const SatGraph& g, VertDescriptor node, bool sgn) {
+	const BaseSatGraph& g, VertDescriptor node, bool sgn) {
 
 	prune_info().set_assignment(node, sgn);
 
@@ -221,7 +221,7 @@ void DPLLVertVisitor::select_node(
 
 
 void DPLLVertVisitor::satisfy_clause(
-	const SatGraph& g, VertDescriptor clause) {
+	const BaseSatGraph& g, VertDescriptor clause) {
 
 	auto remove_edges_fcn = [this](EdgeDescriptor edge) {
 

@@ -11,13 +11,13 @@ namespace sat::test {
 		: public SatVertVisitor<MockSatVertVisitor> {
 
 		void node_event(
-			const SatGraph& g, VertDescriptor node,
+			const BaseSatGraph& g, VertDescriptor node,
 			const VertProp& prop) {
 
 		}
 
 		void clause_event(
-			const SatGraph& g, VertDescriptor clause,
+			const BaseSatGraph& g, VertDescriptor clause,
 			const VertProp& prop) {
 
 		}
@@ -30,7 +30,7 @@ namespace sat::test {
 		: public SatEdgeVisitor<MockSatEdgeVisitor> {
 
 		void edge_event(
-			const SatGraph& g, EdgeDescriptor edge,
+			const BaseSatGraph& g, EdgeDescriptor edge,
 			const EdgeProp& prop,
 			VertDescriptor node, VertDescriptor clause) {
 

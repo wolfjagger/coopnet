@@ -28,7 +28,7 @@ namespace sat {
 		size_t num_clauses;
 
 		// Graph and properties
-		SatGraph prob_graph;
+		BaseSatGraph prob_graph;
 		boost::dynamic_properties dyn_props;
 
 		// Map node with id to vertex_descriptor
@@ -85,7 +85,7 @@ namespace sat {
 
 
 
-		const SatGraph& get_graph() const { return prob_graph; }
+		const BaseSatGraph& get_graph() const { return prob_graph; }
 		const boost::dynamic_properties& get_properties() const { return dyn_props; }
 
 		std::shared_ptr<const NodeVertMap> get_node_vert_map() const {
