@@ -1,7 +1,7 @@
 #include "catch.hpp"
 #include "sat.gen.h"
 
-using namespace sat;
+using namespace coopnet;
 
 
 
@@ -43,8 +43,8 @@ TEST_CASE("Clause", "[sat]") {
 	SECTION("Comparisons.") {
 
 		auto lam = [](
-			sat::Literal::LitSet& lits0,
-			sat::Literal::LitSet& lits1) {
+			coopnet::Literal::LitSet& lits0,
+			coopnet::Literal::LitSet& lits1) {
 
 			auto clause0 = Clause(lits0.cbegin(), lits0.cend());
 			auto clause1 = Clause(lits1.cbegin(), lits1.cend());

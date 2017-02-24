@@ -5,7 +5,7 @@
 #include "prob.gen.h"
 #include "rc_printing.h"
 
-using namespace sat;
+using namespace coopnet;
 
 
 
@@ -43,10 +43,10 @@ namespace {
 	//  Choose at high level!
 	auto lam_dpll_solve_satisfiable = [](const Problem& prob) {
 
-		auto solver = sat::DPLLSolver(DPLLNodeChoiceMode::Next);
+		auto solver = coopnet::DPLLSolver(DPLLNodeChoiceMode::Next);
 		auto pair = solver.solve(prob);
 
-		RC_ASSERT(pair.first == sat::SolutionStatus::Satisfied);
+		RC_ASSERT(pair.first == coopnet::SolutionStatus::Satisfied);
 
 		auto assign_dpll = pair.second;
 		RC_ASSERT(assign_dpll);
@@ -57,27 +57,27 @@ namespace {
 
 	auto lam_dpll_unknown_all = [](const Problem& prob) {
 
-		auto solver_next = sat::DPLLSolver(DPLLNodeChoiceMode::Next);
+		auto solver_next = coopnet::DPLLSolver(DPLLNodeChoiceMode::Next);
 		auto pair_next = solver_next.solve(prob);
-		auto solver_rand = sat::DPLLSolver(DPLLNodeChoiceMode::Random);
+		auto solver_rand = coopnet::DPLLSolver(DPLLNodeChoiceMode::Random);
 		auto pair_rand = solver_rand.solve(prob);
-		auto solver_most_sat = sat::DPLLSolver(DPLLNodeChoiceMode::MostClausesSat);
+		auto solver_most_sat = coopnet::DPLLSolver(DPLLNodeChoiceMode::MostClausesSat);
 		auto pair_most_sat = solver_most_sat.solve(prob);
 
 		RC_ASSERT(pair_next.first == pair_rand.first);
 		RC_ASSERT(pair_next.first == pair_most_sat.first);
 
 		switch (pair_next.first) {
-		case sat::SolutionStatus::Satisfied:
+		case coopnet::SolutionStatus::Satisfied:
 			RC_ASSERT(prob.is_satisfied_by(pair_next.second));
 			RC_ASSERT(prob.is_satisfied_by(pair_rand.second));
 			RC_ASSERT(prob.is_satisfied_by(pair_most_sat.second));
 			break;
-		case sat::SolutionStatus::Unsatisfiable:
+		case coopnet::SolutionStatus::Unsatisfiable:
 			// Note this does not assure it is truly unsatisfiable
 			//  if dpll says it is.
 			break;
-		case sat::SolutionStatus::Undetermined:
+		case coopnet::SolutionStatus::Undetermined:
 			RC_FAIL();
 			break;
 		}
@@ -158,7 +158,7 @@ TEST_CASE("Literal shuffle", "[sat]") {
 				std::make_pair(3, 10),
 				std::make_pair(1, 50));
 
-			auto shuffler = sat::LiteralShuffler(prob);
+			auto shuffler = coopnet::LiteralShuffler(prob);
 
 			shuffler.apply_to_problem(prob);
 
@@ -183,7 +183,7 @@ TEST_CASE("Literal shuffle", "[sat]") {
 			auto assign = lam_create_same_sgn_assign(prob, true);
 			auto assign_cpy = *assign;
 
-			auto shuffler = sat::LiteralShuffler(prob);
+			auto shuffler = coopnet::LiteralShuffler(prob);
 
 			shuffler.apply_to_problem(prob);
 			shuffler.apply_to_assignment(*assign);
@@ -209,7 +209,7 @@ TEST_CASE("Literal shuffle", "[sat]") {
 				std::make_pair(3, 10),
 				std::make_pair(10, 50));
 
-			auto shuffler = sat::LiteralShuffler(prob);
+			auto shuffler = coopnet::LiteralShuffler(prob);
 
 			auto solver = DPLLSolver(DPLLNodeChoiceMode::Next);
 

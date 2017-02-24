@@ -6,7 +6,7 @@
 #include "dpll_formula.h"
 #include "dpll_node_chooser.h"
 
-using namespace sat;
+using namespace coopnet;
 
 
 
@@ -89,10 +89,10 @@ auto DPLLSolver::do_solve(const Problem& prob) -> SolveReturn {
 		auto assign = Assignment(formula->create_assignment());
 		return std::make_pair(
 			SolutionStatus::Satisfied,
-			std::make_shared<sat::Assignment>(std::move(assign)));
+			std::make_shared<coopnet::Assignment>(std::move(assign)));
 	} else {
 		return std::make_pair(
-			SolutionStatus::Unsatisfiable, std::shared_ptr<sat::Assignment>());
+			SolutionStatus::Unsatisfiable, std::shared_ptr<coopnet::Assignment>());
 	}
 
 	formula = nullptr;

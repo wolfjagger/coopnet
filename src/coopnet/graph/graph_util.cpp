@@ -3,7 +3,7 @@
 #include "coopnet/sat/component/clause.h"
 #include "boost/graph/connected_components.hpp"
 
-using namespace sat;
+using namespace coopnet;
 
 
 

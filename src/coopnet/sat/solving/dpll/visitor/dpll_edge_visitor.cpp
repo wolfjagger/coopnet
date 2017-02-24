@@ -1,7 +1,7 @@
 #include "dpll_edge_visitor.h"
 #include <iostream>
 
-using namespace sat;
+using namespace coopnet;
 
 
 

@@ -4,7 +4,7 @@
 
 
 
-namespace sat {
+namespace coopnet {
 
 	struct NodeChoice {
 		Node n;

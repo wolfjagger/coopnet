@@ -7,7 +7,7 @@
 
 
 
-namespace sat {
+namespace coopnet {
 
 	struct VertProp {
 

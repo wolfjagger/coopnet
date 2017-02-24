@@ -1,7 +1,7 @@
 #include "solver.h"
 #include "node_chooser.h"
 
-using namespace sat;
+using namespace coopnet;
 
 
 

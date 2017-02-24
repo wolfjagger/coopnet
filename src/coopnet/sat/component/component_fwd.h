@@ -5,7 +5,7 @@
 
 
 
-namespace sat {
+namespace coopnet {
 	
 	struct Node;
 	using NodeList = std::deque<Node>;

@@ -4,7 +4,7 @@
 
 
 
-namespace sat {
+namespace coopnet {
 
 	template<typename Visitor, typename SourceIter>
 	void visit_sat_graph(Visitor& v,

@@ -8,7 +8,7 @@
 
 
 
-namespace sat {
+namespace coopnet {
 
 	enum class PruneStatus {
 		Active, Inactive

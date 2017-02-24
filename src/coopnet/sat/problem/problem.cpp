@@ -7,7 +7,7 @@
 #include "assignment.h"
 #include "shuffler.h"
 
-using namespace sat;
+using namespace coopnet;
 
 
 
@@ -61,7 +61,7 @@ std::shared_ptr<Assignment> Problem::create_same_sgn_assignment(bool sgn) const 
 		map_assign.emplace(node, sgn);
 	}
 
-	auto assign = std::make_shared<sat::Assignment>();
+	auto assign = std::make_shared<coopnet::Assignment>();
 	assign->data = std::move(map_assign);
 	return assign;
 	
@@ -176,7 +176,7 @@ void Problem::build_graph(NodeList&& nodes, ClauseList&& clauses) {
 
 
 
-std::ostream& sat::operator<<(std::ostream& os, const Problem& prob) {
+std::ostream& coopnet::operator<<(std::ostream& os, const Problem& prob) {
 
 	os << "problem:" << std::endl;
 

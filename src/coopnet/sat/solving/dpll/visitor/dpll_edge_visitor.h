@@ -6,7 +6,7 @@
 
 
 
-namespace sat {
+namespace coopnet {
 
 	// This has three responsibilities.
 	// (1) color unvisited vertex to visit it

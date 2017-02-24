@@ -5,7 +5,7 @@
 
 
 
-namespace sat {
+namespace coopnet {
 
 	enum class DPLLNodeChoiceMode {
 		Next, Random, MostClausesSat

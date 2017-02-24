@@ -5,7 +5,7 @@
 #include "problem.h"
 #include "assignment.h"
 
-using namespace sat;
+using namespace coopnet;
 
 
 

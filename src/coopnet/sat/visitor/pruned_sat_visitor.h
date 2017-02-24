@@ -6,7 +6,7 @@
 
 
 
-namespace sat {
+namespace coopnet {
 
 	template<class ImplVisitor, typename TypePruneInfo,
 		typename = std::enable_if_t<

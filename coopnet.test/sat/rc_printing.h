@@ -13,19 +13,19 @@
 namespace rc { namespace detail {
 		
 	inline std::ostream& operator<<(
-		std::ostream& os, const sat::Node& n) {
+		std::ostream& os, const coopnet::Node& n) {
 		return os << n.id;
 	}
 
 	inline std::ostream& operator<<(
-		std::ostream& os, const sat::Literal& lit) {
+		std::ostream& os, const coopnet::Literal& lit) {
 		os << (lit.sgn ? "p" : "n");
 		os << lit.n;
 		return os;
 	}
 
 	inline std::ostream& operator<<(
-		std::ostream& os, const sat::Clause& c) {
+		std::ostream& os, const coopnet::Clause& c) {
 		for (auto lit : c.literals()) {
 			os << (lit.second ? "p" : "n");
 			os << lit.first << " ";
@@ -48,7 +48,7 @@ namespace rc { namespace detail {
 
 
 	inline std::ostream& operator<<(
-		std::ostream& os, const sat::Assignment& assign) {
+		std::ostream& os, const coopnet::Assignment& assign) {
 		os << "assignment:" << std::endl;
 		for (auto iter = assign.data.cbegin();
 			iter != assign.data.cend(); ++iter) {
@@ -70,16 +70,16 @@ namespace rc { namespace detail {
 
 
 	inline std::ostream& operator<<(
-		std::ostream& os, sat::SolutionStatus status) {
+		std::ostream& os, coopnet::SolutionStatus status) {
 
 		switch (status) {
-		case sat::SolutionStatus::Satisfied:
+		case coopnet::SolutionStatus::Satisfied:
 			os << "Satisfied";
 			break;
-		case sat::SolutionStatus::Unsatisfiable:
+		case coopnet::SolutionStatus::Unsatisfiable:
 			os << "Unsatisfiable";
 			break;
-		case sat::SolutionStatus::Undetermined:
+		case coopnet::SolutionStatus::Undetermined:
 			os << "Undetermined";
 			break;
 		}

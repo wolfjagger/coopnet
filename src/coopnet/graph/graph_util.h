@@ -4,7 +4,7 @@
 
 
 
-namespace sat { namespace graph_util {
+namespace coopnet { namespace graph_util {
 
 	void rename_verts(
 		BaseSatGraph& g, const NodeVertMap& node_to_vertex_map);

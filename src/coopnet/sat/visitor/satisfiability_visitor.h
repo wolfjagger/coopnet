@@ -6,7 +6,7 @@
 
 
 
-namespace sat {
+namespace coopnet {
 
 	struct SatCollectionVisitor :
 		public SatEdgeVisitor<SatCollectionVisitor> {
@@ -32,7 +32,7 @@ namespace sat {
 
 
 		void edge_event(const BaseSatGraph& g, EdgeDescriptor e,
-			const sat::EdgeProp& edge_property,
+			const coopnet::EdgeProp& edge_property,
 			VertDescriptor vert_node, VertDescriptor vert_clause) {
 
 			// If sign of literal in clause matches assignment, clause is satisfied

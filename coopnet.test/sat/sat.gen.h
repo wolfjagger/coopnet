@@ -11,33 +11,33 @@
 namespace rc {
 
 	// Nodes
-	Gen<sat::Node> node_gen_with_int_gen(
+	Gen<coopnet::Node> node_gen_with_int_gen(
 		Gen<unsigned int>& int_gen);
 
 	template<>
-	struct Arbitrary<sat::Node> {
-		static Gen<sat::Node> arbitrary();
+	struct Arbitrary<coopnet::Node> {
+		static Gen<coopnet::Node> arbitrary();
 	};
 
 	// Literals
-	Gen<sat::Literal> lit_gen_with_nodes(
-		Gen<sat::Node>& node_gen);
+	Gen<coopnet::Literal> lit_gen_with_nodes(
+		Gen<coopnet::Node>& node_gen);
 
 	template<>
-	struct Arbitrary<sat::Literal> {
-		static Gen<sat::Literal> arbitrary();
+	struct Arbitrary<coopnet::Literal> {
+		static Gen<coopnet::Literal> arbitrary();
 	};
 
 	// Clause
-	Gen<sat::Clause> clause_gen_with_nodes(
-		Gen<sat::Node>& node_gen);
+	Gen<coopnet::Clause> clause_gen_with_nodes(
+		Gen<coopnet::Node>& node_gen);
 
-	Gen<sat::Clause> clause_gen_with_nodes(
-		size_t len, Gen<sat::Node>& node_gen);
+	Gen<coopnet::Clause> clause_gen_with_nodes(
+		size_t len, Gen<coopnet::Node>& node_gen);
 
 	template<>
-	struct Arbitrary<sat::Clause> {
-		static Gen<sat::Clause> arbitrary();
+	struct Arbitrary<coopnet::Clause> {
+		static Gen<coopnet::Clause> arbitrary();
 	};
 
 	// Tribool
@@ -48,8 +48,8 @@ namespace rc {
 
 	// Assignment
 	template<>
-	struct Arbitrary<sat::Assignment> {
-		static Gen<sat::Assignment> arbitrary();
+	struct Arbitrary<coopnet::Assignment> {
+		static Gen<coopnet::Assignment> arbitrary();
 	};
 
 /*	template<>

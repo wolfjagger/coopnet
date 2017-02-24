@@ -2,7 +2,7 @@
 #include <iostream>
 #include "coopnet/sat/problem/problem.h"
 
-using namespace sat;
+using namespace coopnet;
 
 
 

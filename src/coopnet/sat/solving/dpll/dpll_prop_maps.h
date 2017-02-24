@@ -5,7 +5,7 @@
 
 
 
-namespace sat {
+namespace coopnet {
 
 	using DPLLVertStatusMap
 		= std::unordered_map<VertDescriptor, DPLLVertStatus>;

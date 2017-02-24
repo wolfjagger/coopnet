@@ -1,7 +1,7 @@
 #include "prunable_graph.h"
 #include "graph_util.h"
 
-using namespace sat;
+using namespace coopnet;
 
 
 

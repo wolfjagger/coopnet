@@ -4,7 +4,7 @@
 #include "coopnet/sat/problem/problem_factory.h"
 #include "coopnet/sat/solving/dpll/dpll_solver.h"
 
-using namespace sat;
+using namespace coopnet;
 
 
 

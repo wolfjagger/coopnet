@@ -6,7 +6,7 @@
 
 
 
-namespace sat {
+namespace coopnet {
 
 	using DPLLVisitorTuple =
 		std::pair<DPLLVertVisitor, DPLLEdgeVisitor>;

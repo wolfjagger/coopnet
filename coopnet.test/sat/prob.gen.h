@@ -13,12 +13,12 @@ namespace rc {
 
 	using MinMax = std::pair<unsigned int, unsigned int>;
 	
-	using GenProb = Gen<sat::Problem>;
+	using GenProb = Gen<coopnet::Problem>;
 
 
 
 	template<>
-	struct Arbitrary<sat::Problem> {
+	struct Arbitrary<coopnet::Problem> {
 		static GenProb arbitrary();
 	};
 

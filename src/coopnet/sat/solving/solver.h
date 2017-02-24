@@ -5,7 +5,7 @@
 
 
 
-namespace sat {
+namespace coopnet {
 
 	struct Assignment;
 	class Problem;

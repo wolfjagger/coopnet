@@ -8,7 +8,7 @@
 
 
 
-namespace sat {
+namespace coopnet {
 
 	struct Node;
 	struct Literal;

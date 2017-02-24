@@ -1,6 +1,6 @@
 #include "prune_info.h"
 
-using namespace sat;
+using namespace coopnet;
 
 
 
@@ -181,7 +181,7 @@ void PruneInfo::reset_prune() {
 
 
 
-std::ostream& sat::operator<<(std::ostream& os, PruneStatus status) {
+std::ostream& coopnet::operator<<(std::ostream& os, PruneStatus status) {
 	switch (status) {
 	case PruneStatus::Active:
 		os << "Active";
@@ -191,7 +191,7 @@ std::ostream& sat::operator<<(std::ostream& os, PruneStatus status) {
 	return os;
 }
 
-std::ostream& sat::operator<<(std::ostream& os, boost::logic::tribool b) {
+std::ostream& coopnet::operator<<(std::ostream& os, boost::logic::tribool b) {
 	if (b) {
 		return os << "T";
 	} else if (!b) {

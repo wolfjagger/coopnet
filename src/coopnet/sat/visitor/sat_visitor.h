@@ -4,7 +4,7 @@
 
 
 
-namespace sat {
+namespace coopnet {
 
 	template<class ImplVisitor>
 	struct SatVertVisitor :

@@ -6,7 +6,7 @@
 
 
 
-namespace sat {
+namespace coopnet {
 
 	using alphali::take_chance;
 
@@ -63,7 +63,7 @@ namespace sat {
 			unsigned num_clauses1, unsigned num_clauses2,
 			float prob0, float prob1, float prob2) {
 
-			auto clauses = std::vector<sat::Clause>();
+			auto clauses = std::vector<coopnet::Clause>();
 
 			auto max_num_clauses1
 				= calc_max_num_clauses(num_nodes1, num_clauses1);

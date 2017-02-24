@@ -2,7 +2,7 @@
 
 
 
-namespace sat {
+namespace coopnet {
 
 	enum class DPLLVertStatus {
 		// Nothing

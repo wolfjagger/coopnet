@@ -8,7 +8,7 @@
 
 
 
-namespace sat {
+namespace coopnet {
 
 	class Formula;
 

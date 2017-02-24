@@ -4,7 +4,7 @@
 
 
 
-namespace sat {
+namespace coopnet {
 
 	class DPLLChooseNodeVisitor :
 		public PruneSatVertVisitor<DPLLChooseNodeVisitor, const PruneInfo> {

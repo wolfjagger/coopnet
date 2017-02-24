@@ -6,6 +6,6 @@
 
 namespace coopgephi {
 
-	void print_graph(const sat::BaseSatGraph& g, const boost::dynamic_properties& dp);
+	void print_graph(const coopnet::BaseSatGraph& g, const boost::dynamic_properties& dp);
 
 }

@@ -5,7 +5,7 @@
 
 
 
-namespace sat::test {
+namespace coopnet::test {
 
 	struct MockSatVertVisitor
 		: public SatVertVisitor<MockSatVertVisitor> {

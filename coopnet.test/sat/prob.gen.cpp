@@ -9,7 +9,7 @@ using namespace rc;
 
 namespace {
 
-	using ClauseList = std::set<sat::Clause>;
+	using ClauseList = std::set<coopnet::Clause>;
 
 
 
@@ -24,7 +24,7 @@ namespace {
 
 
 
-	Gen<sat::Clause> create_clause_gen(
+	Gen<coopnet::Clause> create_clause_gen(
 		const ProbGenerationStats& stats,
 		unsigned int num_nodes) {
 
@@ -58,7 +58,7 @@ namespace {
 
 		auto max_num_clauses
 			= static_cast<unsigned int>(
-				sat::problem_util::max_num_clauses_with_lengths(
+				coopnet::problem_util::max_num_clauses_with_lengths(
 					num_nodes, min_clause_size, max_clause_size));
 
 		if (stats.max_num_clauses < max_num_clauses)
@@ -91,9 +91,9 @@ namespace {
 
 		// Map clause generator to problem generator
 		return gen::map(clause_list_gen,
-			[num_nodes](std::set<sat::Clause>& set) {
+			[num_nodes](std::set<coopnet::Clause>& set) {
 
-			return sat::Problem(num_nodes, set.cbegin(), set.cend());
+			return coopnet::Problem(num_nodes, set.cbegin(), set.cend());
 
 		});
 
@@ -119,7 +119,7 @@ namespace {
 
 namespace rc {
 
-	GenProb Arbitrary<sat::Problem>::arbitrary() {
+	GenProb Arbitrary<coopnet::Problem>::arbitrary() {
 
 		ProbGenerationStats stats;
 		return create_problem(stats);
@@ -128,7 +128,7 @@ namespace rc {
 
 
 
-	Gen<sat::Problem> same_sgn_prob_gen(
+	Gen<coopnet::Problem> same_sgn_prob_gen(
 		MinMax num_nodes, MinMax num_clauses,
 		bool assignment_sgn) {
 	
@@ -142,7 +142,7 @@ namespace rc {
 			return gen::map(num_clauses_gen,
 				[num_nodes, assignment_sgn](unsigned int num_clauses) {
 
-				return sat::generate_solvable_3sat_problem(
+				return coopnet::generate_solvable_3sat_problem(
 					num_nodes, num_clauses, assignment_sgn);
 
 			});
@@ -168,7 +168,7 @@ namespace rc {
 		auto sgn_gen = rc::gen::just(assignment_sgn);
 
 		return gen::apply(
-			sat::generate_disconnected_solvable_3sat_problem,
+			coopnet::generate_disconnected_solvable_3sat_problem,
 			num_nodes_gen1, num_nodes_gen2,
 			num_clauses_gen1, num_clauses_gen2, sgn_gen);
 
@@ -184,7 +184,7 @@ namespace rc {
 			num_clauses.first, num_clauses.second+1);
 
 		return gen::apply(
-			sat::generate_random_3sat_problem,
+			coopnet::generate_random_3sat_problem,
 			num_nodes_gen, num_clauses_gen);
 
 	}

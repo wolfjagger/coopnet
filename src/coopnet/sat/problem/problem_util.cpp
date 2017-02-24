@@ -6,7 +6,7 @@
 
 
 
-namespace sat { namespace problem_util {
+namespace coopnet { namespace problem_util {
 
 	namespace {
 

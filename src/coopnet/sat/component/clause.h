@@ -7,7 +7,7 @@
 
 
 
-namespace sat {
+namespace coopnet {
 
 	// Clause main class
 	struct Clause {

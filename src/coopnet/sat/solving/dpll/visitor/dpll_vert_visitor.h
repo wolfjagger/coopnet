@@ -6,7 +6,7 @@
 
 
 
-namespace sat {
+namespace coopnet {
 
 	// This visitor will decide if the vert should be removed:
 	//  either if it only has one edge (clause)

@@ -1,6 +1,6 @@
 #include "dpll_visitor.h"
 
-using namespace sat;
+using namespace coopnet;
 
 
 
