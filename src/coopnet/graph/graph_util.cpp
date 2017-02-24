@@ -1,4 +1,4 @@
-#include "graph.h"
+#include "graph_util.h"
 #include "coopnet/sat/component/node.h"
 #include "coopnet/sat/component/clause.h"
 #include "boost/graph/connected_components.hpp"
@@ -7,54 +7,7 @@ using namespace sat;
 
 
 
-VertDescriptor sat::add_vertex(SatGraph& g, Node n) {
-	
-	auto prop = SatGraph::vertex_property_type();
-	prop.kind = VertProp::Node;
-
-	auto vert = boost::add_vertex(prop, g);
-
-	set_node_name(g[vert], n);
-
-	return vert;
-
-}
-
-VertDescriptor sat::add_vertex(SatGraph& g, const Clause& c) {
-
-	auto prop = SatGraph::vertex_property_type();
-	prop.kind = VertProp::Clause;
-
-	auto vert = boost::add_vertex(prop, g);
-
-	set_clause_name(g[vert], c);
-
-	return vert;
-
-}
-
-
-
-EdgeDescriptor sat::add_edge(SatGraph& g,
-	VertDescriptor node_desc,
-	VertDescriptor clause_desc,
-	bool sgn) {
-
-	auto prop = SatGraph::edge_property_type();
-	
-	auto desc_pair = add_edge(node_desc, clause_desc, prop, g);
-	if (!desc_pair.second) std::exception("Failed to add edge to graph!");
-
-	auto edge = desc_pair.first;
-	set_edge_sgn(g[edge], sgn);
-	
-	return edge;
-
-}
-
-
-
-void sat::rename_verts(SatGraph& g, const NodeVertMap& node_to_vertex_map) {
+void graph_util::rename_verts(SatGraph& g, const NodeVertMap& node_to_vertex_map) {
 	
 	auto vert_pair = boost::vertices(g);
 	for (auto vert_iter = vert_pair.first;
@@ -66,7 +19,7 @@ void sat::rename_verts(SatGraph& g, const NodeVertMap& node_to_vertex_map) {
 		case VertProp::Node: {
 
 			auto n = node_to_vertex_map.right.at(vert);
-			set_node_name(g[vert], n);
+			g[vert].name = node_name(n);
 
 			break;
 
@@ -85,7 +38,7 @@ void sat::rename_verts(SatGraph& g, const NodeVertMap& node_to_vertex_map) {
 			}
 
 			auto c = Clause(lits);
-			set_clause_name(g[vert], c);
+			g[vert].name = clause_name(c);
 
 			break;
 
@@ -97,38 +50,29 @@ void sat::rename_verts(SatGraph& g, const NodeVertMap& node_to_vertex_map) {
 
 
 
-void sat::set_node_name(
-	VertProp& prop, Node n) {
+std::string graph_util::node_name(Node n) {
 
 	auto name = std::string("n");
 	name += std::to_string(n.id);
-	prop.name = name;
+	return name;
 
 }
 
-void sat::set_clause_name(
-	VertProp& prop, const Clause& c) {
+std::string graph_util::clause_name(const Clause& c) {
 
 	auto name = std::string("c");
 	for (auto lit : c.literals()) {
 		name += lit.second ? "p" : "n";
 		name += std::to_string(lit.first.id);
 	}
-	prop.name = name;
-
-}
-
-void sat::set_edge_sgn(
-	EdgeProp& prop, bool sgn) {
-
-	prop.sgn = sgn;
+	return name;
 
 }
 
 
 
 std::vector<VertDescriptor>
-sat::calculate_connected_components(const SatGraph& prob_graph) {
+graph_util::calculate_connected_components(const SatGraph& prob_graph) {
 
 	using conn_map_type = std::map<VertDescriptor, size_t>;
 	auto connected_map = conn_map_type();

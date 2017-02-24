@@ -1,6 +1,7 @@
 #include "problem.h"
 #include <queue>
 #include "boost/graph/breadth_first_search.hpp"
+#include "coopnet/graph/graph_util.h"
 #include "coopnet/sat/solving/formula.h"
 #include "coopnet/sat/visitor/satisfiability_visitor.h"
 #include "assignment.h"
@@ -42,7 +43,7 @@ ClauseSatisfiability Problem::clause_satisfiability_for(
 	auto form = Formula(*this);
 	
 	auto& g = form.prob_graph();
-	auto components = calculate_connected_components(g);
+	auto components = graph_util::calculate_connected_components(g);
 	visit_sat_graph(satisfiability_collector, g, components.cbegin(), components.cend());
 	
 	return *satisfiability_collector.satisfiability;
@@ -85,7 +86,7 @@ void Problem::shuffle_nodes(const NodeShuffler& shuffler) {
 	std::swap(map_cpy, *map_node_to_vert);
 
 	// Rename nodes and clauses
-	rename_verts(prob_graph, *map_node_to_vert);
+	graph_util::rename_verts(prob_graph, *map_node_to_vert);
 
 }
 
@@ -108,7 +109,7 @@ void Problem::shuffle_sgns(const SgnShuffler& shuffler) {
 	}
 
 	// Rename nodes and clauses
-	rename_verts(prob_graph, *map_node_to_vert);
+	graph_util::rename_verts(prob_graph, *map_node_to_vert);
 
 }
 		
@@ -129,7 +130,12 @@ void Problem::build_graph(NodeList&& nodes, ClauseList&& clauses) {
 	for(auto node_to_add : nodes) {
 
 		// Add node as vertex to graph
-		auto node_vert = add_vertex(prob_graph, node_to_add);
+		auto prop = SatGraph::vertex_property_type();
+		prop.kind = VertProp::Node;
+		prop.name = graph_util::node_name(node_to_add);
+
+		auto node_vert = boost::add_vertex(prop, prob_graph);
+
 		map_node_to_vert->insert(NodeVertMap::value_type(node_to_add, node_vert));
 
 	}
@@ -139,13 +145,23 @@ void Problem::build_graph(NodeList&& nodes, ClauseList&& clauses) {
 	for(auto& clause_to_add : clauses) {
 
 		// Add clause as vertex to graph
-		auto clause_vert = add_vertex(prob_graph, clause_to_add);
+		auto prop = SatGraph::vertex_property_type();
+		prop.kind = VertProp::Clause;
+		prop.name = graph_util::clause_name(clause_to_add);
+
+		auto clause_vert = boost::add_vertex(prop, prob_graph);
+		
 		for(auto& lit : clause_to_add.literals()) {
 
 			// Add node in clause as edge to graph
 			//TODO: Add error handling for if node not in map.
 			auto node_vert = map_node_to_vert->left.at(lit.first);
-			add_edge(prob_graph, node_vert, clause_vert, lit.second);
+
+			auto prop = SatGraph::edge_property_type();
+			prop.sgn = lit.second;
+
+			auto desc_pair = boost::add_edge(node_vert, clause_vert, prop, prob_graph);
+			if (!desc_pair.second) std::exception("Failed to add edge to graph!");
 
 		}
 

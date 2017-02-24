@@ -40,37 +40,12 @@ namespace sat {
 
 
 
-	// Ease of use for adding node and property to graph
-	VertDescriptor add_vertex(SatGraph& g, Node n);
-	// Ease of use for adding clause and property to graph (does not add edges)
-	VertDescriptor add_vertex(SatGraph& g, const Clause& c);
-	// Ease of use for adding clause and property to graph
-	EdgeDescriptor add_edge(SatGraph& g,
-		VertDescriptor node_desc,
-		VertDescriptor clause_desc,
-		bool sgn);
-
-
-
 	using NodeVertMap = boost::bimap<Node, VertDescriptor>;
 
-
-
-	void rename_verts(
-		SatGraph& g, const NodeVertMap& node_to_vertex_map);
-
-	void set_node_name(VertProp& prop, Node n);
-	void set_clause_name(VertProp& prop, const Clause& c);
-	void set_edge_sgn(EdgeProp& prop, bool sgn);
 
 
 	struct ClauseSatisfiability {
 		std::set<VertDescriptor> clauses_satisfied;
 	};
-
-
-
-	std::vector<VertDescriptor>
-		calculate_connected_components(const SatGraph& prob_graph);
 
 }

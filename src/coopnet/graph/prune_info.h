@@ -18,15 +18,14 @@ namespace sat {
 
 	using VertStatusMap
 		= std::unordered_map<VertDescriptor, PruneStatus>;
-	using VertStatusData = VertStatusMap::value_type;
-
 	using EdgeStatusMap = EdgeDescUnordMap<PruneStatus>;
-	using EdgeStatusData = EdgeStatusMap::value_type;
-
 	using IncompleteAssignmentMap
 		= std::unordered_map<VertDescriptor, boost::tribool>;
-	using IncompleteAssignmentData
-		= IncompleteAssignmentMap::value_type;
+
+	using VertStatusPair = std::pair<VertDescriptor, PruneStatus>;
+	using EdgeStatusPair = std::pair<EdgeDescriptor, PruneStatus>;
+	using IncompleteAssignmentPair
+		= std::pair<VertDescriptor, boost::tribool>;
 
 
 	struct PruneAction {
@@ -34,12 +33,12 @@ namespace sat {
 		enum class PruneObject { Vertex, Edge, Assignment };
 
 		PruneObject type;
-		boost::variant<VertStatusData, EdgeStatusData,
-			IncompleteAssignmentData> suppData;
+		boost::variant<VertStatusPair, EdgeStatusPair,
+			IncompleteAssignmentPair> suppData;
 
-		explicit PruneAction(VertStatusData pruneData);
-		explicit PruneAction(EdgeStatusData pruneData);
-		explicit PruneAction(IncompleteAssignmentData pruneData);
+		explicit PruneAction(VertStatusPair pruneData);
+		explicit PruneAction(EdgeStatusPair pruneData);
+		explicit PruneAction(IncompleteAssignmentPair pruneData);
 
 	};
 

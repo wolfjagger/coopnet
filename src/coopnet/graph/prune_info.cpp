@@ -10,19 +10,19 @@ namespace {
 
 
 
-PruneAction::PruneAction(VertStatusData pruneData) :
+PruneAction::PruneAction(VertStatusPair pruneData) :
 	type(PruneObject::Vertex),
 	suppData(pruneData) {
 
 }
 
-PruneAction::PruneAction(EdgeStatusData pruneData) :
+PruneAction::PruneAction(EdgeStatusPair pruneData) :
 	type(PruneObject::Edge),
 	suppData(pruneData) {
 
 }
 
-PruneAction::PruneAction(IncompleteAssignmentData pruneData) :
+PruneAction::PruneAction(IncompleteAssignmentPair pruneData) :
 	type(PruneObject::Assignment),
 	suppData(pruneData) {
 
@@ -111,7 +111,7 @@ void PruneInfo::reverse_to_vert(VertDescriptor v) {
 		case prune_object::Vertex: {
 
 			auto& vertexData =
-				boost::get<VertStatusData>(action.suppData);
+				boost::get<VertStatusPair>(action.suppData);
 			auto vert = vertexData.first;
 			auto status = vertexData.second;
 
@@ -129,7 +129,7 @@ void PruneInfo::reverse_to_vert(VertDescriptor v) {
 		case prune_object::Edge: {
 
 			auto& edgeData =
-				boost::get<EdgeStatusData>(action.suppData);
+				boost::get<EdgeStatusPair>(action.suppData);
 			auto edge = edgeData.first;
 			auto status = edgeData.second;
 
@@ -143,7 +143,7 @@ void PruneInfo::reverse_to_vert(VertDescriptor v) {
 		case prune_object::Assignment: {
 
 			auto& incompleteAssignmentData =
-				boost::get<IncompleteAssignmentData>(action.suppData);
+				boost::get<IncompleteAssignmentPair>(action.suppData);
 			auto vert = incompleteAssignmentData.first;
 			auto value = incompleteAssignmentData.second;
 

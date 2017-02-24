@@ -1,4 +1,5 @@
 #include "prunable_graph.h"
+#include "graph_util.h"
 
 using namespace sat;
 
@@ -8,7 +9,7 @@ PrunableSatGraph::PrunableSatGraph(const SatGraph& original) :
 	base(original),
 	pruneInfo(base.get()) {
 
-	connectedComponentEntryPts = calculate_connected_components(original);
+	connectedComponentEntryPts = graph_util::calculate_connected_components(original);
 	numConnectedComponents = connectedComponentEntryPts.size();
 
 }
