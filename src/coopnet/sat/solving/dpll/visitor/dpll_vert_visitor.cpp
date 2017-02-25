@@ -15,9 +15,7 @@ DPLLVertVisitor::DPLLVertVisitor(
 	alphali::collaborator&& initContradictCollab,
 	alphali::collaborator& mainContradictCollab,
 	alphali::publisher& mainUncontradictPub,
-	PruneInfo& initPruneInfo,
 	DPLLPropMaps initMaps) :
-	PruneSatVertVisitor(initPruneInfo),
 	maps(initMaps) {
 
 	set_uncontradicting();
@@ -39,7 +37,7 @@ DPLLVertVisitor::DPLLVertVisitor(
 // It also needs to color the surrounding edges if they
 //  should be (re)visited (i.e. if vert is to be removed).
 void DPLLVertVisitor::dpll_node_event(
-	const BaseSatGraph& g, VertDescriptor node, const VertProp& prop) {
+	const MutableSatGraph& g, VertDescriptor node, const MutableSatVProp& prop) {
 
 	switch (maps.vertStatusMap[node]) {
 	case DPLLVertStatus::SetToTrue:
@@ -107,7 +105,7 @@ void DPLLVertVisitor::dpll_node_event(
 }
 
 void DPLLVertVisitor::dpll_clause_event(
-	const BaseSatGraph& g, VertDescriptor clause, const VertProp& prop) {
+	const MutableSatGraph& g, VertDescriptor clause, const MutableSatVProp& prop) {
 
 	auto& clause_status = maps.vertStatusMap[clause];
 
@@ -174,7 +172,7 @@ void DPLLVertVisitor::dpll_clause_event(
 }
 
 void DPLLVertVisitor::default_vert_event(
-	const BaseSatGraph& g, VertDescriptor vert, const VertProp& prop) {
+	const MutableSatGraph& g, VertDescriptor vert, const MutableSatVProp& prop) {
 
 	maps.vertStatusMap[vert] = DPLLVertStatus::Default;
 
@@ -183,7 +181,7 @@ void DPLLVertVisitor::default_vert_event(
 
 
 void DPLLVertVisitor::select_node(
-	const BaseSatGraph& g, VertDescriptor node, bool sgn) {
+	const MutableSatGraph& g, VertDescriptor node, bool sgn) {
 
 	prune_info().set_assignment(node, sgn);
 
@@ -221,7 +219,7 @@ void DPLLVertVisitor::select_node(
 
 
 void DPLLVertVisitor::satisfy_clause(
-	const BaseSatGraph& g, VertDescriptor clause) {
+	const MutableSatGraph& g, VertDescriptor clause) {
 
 	auto remove_edges_fcn = [this](EdgeDescriptor edge) {
 

@@ -21,7 +21,6 @@ namespace coopnet {
 			alphali::collaborator&& edgeContradictionCollab,
 			alphali::collaborator& mainContradictCollab,
 			alphali::publisher& mainUncontradictPub, 
-			PruneInfo& initPruneInfo,
 			DPLLPropMaps initMaps);
 
 	};

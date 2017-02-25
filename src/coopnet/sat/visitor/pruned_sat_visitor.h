@@ -8,38 +8,30 @@
 
 namespace coopnet {
 
-	template<class ImplVisitor, typename TypePruneInfo,
-		typename = std::enable_if_t<
-		std::is_same_v<PruneInfo, std::remove_cv_t<TypePruneInfo>>>>
+	template<class ImplVisitor>
 	struct PruneSatVertVisitor :
-		public boost::base_visitor<PruneSatVertVisitor<ImplVisitor, TypePruneInfo>> {
+		public boost::base_visitor<PruneSatVertVisitor<ImplVisitor>> {
 
 		// Vertex visitor, so make sure this is an vertex filter.
 
 	private:
 
-		using Me = PruneSatVertVisitor<ImplVisitor, TypePruneInfo>;
-
-		// Needs to be set to match the PrunableSatGraph that will be visited
-		std::reference_wrapper<TypePruneInfo> pruneInfo;
+		using Me = PruneSatVertVisitor<ImplVisitor>;
 
 	public:
 
-		PruneSatVertVisitor(TypePruneInfo& initPruneInfo) :
-			pruneInfo(initPruneInfo) {}
-
 		// Triggered when vertex is encountered
-		void operator()(VertDescriptor v, const BaseSatGraph& g) {
+		void operator()(VertDescriptor v, const MutableSatGraph& g) {
 
-			if(prune_info().get_vert_status(v) == PruneStatus::Active) {
+			auto& prop = g[v];
+			if(prop.mutate.status == PruneStatus::Active) {
 
 				// Split depending on whether vert is node or clause
-				auto& prop = g[v];
 				switch (prop.kind) {
-				case VertProp::Node:
+				case BaseSatVProp::Node:
 					static_cast<ImplVisitor*>(this)->node_event(g, v, prop);
 					break;
-				case VertProp::Clause:
+				case BaseSatVProp::Clause:
 					static_cast<ImplVisitor*>(this)->clause_event(g, v, prop);
 					break;
 				}
@@ -50,40 +42,25 @@ namespace coopnet {
 
 
 
-		void set_prune_info(TypePruneInfo& newInfo) {
-			pruneInfo = newInfo;
-		}
-
-
-
 	protected:
 
-		TypePruneInfo& prune_info() {
-			return pruneInfo;
-		}
-		const TypePruneInfo& prune_info() const {
-			return pruneInfo;
-		}
-
-
-
-		bool any_active_edge(VertDescriptor v, const BaseSatGraph& g) const {
+		static bool any_active_edge(VertDescriptor v, const MutableSatGraph& g) {
 			auto edgePair = boost::out_edges(v, g);
-			return std::any_of(edgePair.first, edgePair.second, Me::active_predicate(*this));
+			return std::any_of(edgePair.first, edgePair.second, is_active_pred);
 		}
 
-		size_t count_active_edges(VertDescriptor v, const BaseSatGraph& g) const {
+		static size_t count_active_edges(VertDescriptor v, const MutableSatGraph& g) {
 			auto edgePair = boost::out_edges(v, g);
-			return std::count_if(edgePair.first, edgePair.second, Me::active_predicate(*this));
+			return std::count_if(edgePair.first, edgePair.second, is_active_pred);
 		}
 
-		auto find_active_edge(VertDescriptor v, const BaseSatGraph& g) const {
+		static auto find_active_edge(VertDescriptor v, const MutableSatGraph& g) {
 			auto edgePair = boost::out_edges(v, g);
-			return std::find_if(edgePair.first, edgePair.second, Me::active_predicate(*this));
+			return std::find_if(edgePair.first, edgePair.second, is_active_pred);
 		}
 
 		template<typename Pred>
-		auto find_if_active_edge(VertDescriptor v, const BaseSatGraph& g, Pred p) const {
+		static auto find_if_active_edge(VertDescriptor v, const MutableSatGraph& g, Pred p) {
 			auto edgePair = boost::out_edges(v, g);
 			return std::find_if(edgePair.first, edgePair.second, [this, &p](EdgeDescriptor e) {
 				return is_active_edge(e) && p(e);
@@ -91,7 +68,7 @@ namespace coopnet {
 		}
 
 		template<typename UnaryFcn>
-		void for_each_active_edge(VertDescriptor v, const BaseSatGraph& g, UnaryFcn p) const {
+		static void for_each_active_edge(VertDescriptor v, const MutableSatGraph& g, UnaryFcn p) {
 			auto edgePair = boost::out_edges(v, g);
 			std::for_each(edgePair.first, edgePair.second, [this, &p](EdgeDescriptor e) {
 				if (is_active_edge(e)) p(e);
@@ -99,79 +76,56 @@ namespace coopnet {
 		}
 
 		template<typename Pred>
-		bool all_of_active_edges(VertDescriptor v, const BaseSatGraph& g, Pred p) const {
+		static bool all_of_active_edges(VertDescriptor v, const MutableSatGraph& g, Pred p) {
 			auto edgePair = boost::out_edges(v, g);
 			return std::all_of(edgePair.first, edgePair.second, [this, &p](EdgeDescriptor e) {
 				return is_active_edge(e) && p(e);
 			});
 		}
 
-		bool is_active_edge(EdgeDescriptor e) const {
-			return prune_info().get_edge_status(e) == PruneStatus::Active;
+		static bool is_active_edge(EdgeDescriptor e, const MutableSatGraph& g) {
+			return g[e].mutate.status == PruneStatus::Active;
 		}
 
 	private:
 
-		static auto active_predicate(const Me& me) {
-			return [&me](EdgeDescriptor e) {
-				return me.is_active_edge(e);
-			};
+		static auto is_active_pred(const MutableSatGraph& g) {
+			return [&g](EdgeDescriptor e) { return is_active_edge(e, g); };
 		}
 
 	};
 
 
 
-	template<class ImplVisitor, typename TypePruneInfo,
-		typename = std::enable_if_t<
-		std::is_same_v<PruneInfo, std::remove_cv_t<TypePruneInfo>>>>
+	template<class ImplVisitor>
 	struct PruneSatEdgeVisitor :
-		public boost::base_visitor<PruneSatEdgeVisitor<ImplVisitor, TypePruneInfo>> {
+		public boost::base_visitor<PruneSatEdgeVisitor<ImplVisitor>> {
 
 		// Edge visitor, so make sure this is an edge filter.
 
 	private:
 
-		using Me = PruneSatVertVisitor<ImplVisitor, TypePruneInfo>;
-
-		// Needs to be set to match the PrunableSatGraph that will be visited
-		TypePruneInfo& pruneInfo;
+		using Me = PruneSatVertVisitor<ImplVisitor>;
 
 	public:
 
-		PruneSatEdgeVisitor(TypePruneInfo& initPruneInfo) :
-			pruneInfo(initPruneInfo) {}
-
 		// Triggered when edge is encountered
-		void operator()(EdgeDescriptor e, const BaseSatGraph& g) {
+		void operator()(EdgeDescriptor e, const MutableSatGraph& g) {
 
-			if(prune_info().get_edge_status(e) == PruneStatus::Active) {
+			auto& prop = g[e];
+			if(prop.mutate.status == PruneStatus::Active) {
 				
 				// Find which vert is node and which is clause
 				auto vert_node = boost::source(e, g);
 				auto vert_clause = boost::target(e, g);
-				if (g[vert_node].kind == VertProp::Clause)
+				if (g[vert_node].base.kind == BaseSatVProp::Clause)
 					std::swap(vert_node, vert_clause);
 
 				static_cast<ImplVisitor*>(this)->edge_event(
-					g, e, g[e], vert_node, vert_clause);
+					g, e, prop, vert_node, vert_clause);
 
 			}
 
-		}
-
-
-
-		void set_prune_info(TypePruneInfo& newInfo) {
-			pruneInfo = newInfo;
-		}
-
-
-
-	protected:
-
-		TypePruneInfo& prune_info() {
-			return pruneInfo;
 		}
 
 	};

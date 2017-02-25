@@ -175,6 +175,7 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\coopnet\graph\graph.cpp" />
     <ClCompile Include="src\coopnet\graph\prunable_graph.cpp" />
     <ClCompile Include="src\coopnet\graph\prune_info.cpp" />
     <ClCompile Include="src\coopnet\sat\component\node.cpp" />

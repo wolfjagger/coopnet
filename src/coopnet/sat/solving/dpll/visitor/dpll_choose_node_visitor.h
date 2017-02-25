@@ -7,7 +7,7 @@
 namespace coopnet {
 
 	class DPLLChooseNodeVisitor :
-		public PruneSatVertVisitor<DPLLChooseNodeVisitor, const PruneInfo> {
+		public PruneSatVertVisitor<DPLLChooseNodeVisitor> {
 
 	public:
 		using event_filter = boost::on_examine_vertex;
@@ -21,15 +21,13 @@ namespace coopnet {
 
 	public:
 
-		DPLLChooseNodeVisitor(const PruneInfo& initPruneInfo);
-
 		void node_event(
 			const BaseSatGraph& g, VertDescriptor node,
-			const VertProp& prop);
+			const BaseSatVProp& prop);
 
 		void clause_event(
 			const BaseSatGraph& g, VertDescriptor clause,
-			const VertProp& prop);
+			const BaseSatVProp& prop);
 
 		void reset();
 

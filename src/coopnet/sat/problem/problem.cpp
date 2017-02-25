@@ -19,12 +19,8 @@ namespace {
 		boost::dynamic_properties dyn_props;
 
 		// Generate dynamic_properties
-		auto name_map = get(&VertProp::name, prob_graph);
-		dyn_props.property("name", name_map);
-		auto kind_map = get(&VertProp::kind, prob_graph);
-		dyn_props.property("kind", kind_map);
-		auto sgn_map = get(&EdgeProp::sgn, prob_graph);
-		dyn_props.property("sign", sgn_map);
+		auto base_map = get(&BaseSatVProp::base, prob_graph);
+		dyn_props.property("basic properties", base_map);
 
 		return dyn_props;
 
@@ -102,7 +98,7 @@ void Problem::shuffle_sgns(const SgnShuffler& shuffler) {
 
 			auto edge_pair = boost::out_edges(vert, prob_graph);
 			for_each(edge_pair.first, edge_pair.second, [this](EdgeDescriptor e) {
-				prob_graph[e].sgn = !prob_graph[e].sgn;
+				prob_graph[e].base.sgn = !prob_graph[e].base.sgn;
 			});
 
 		}
@@ -131,8 +127,8 @@ void Problem::build_graph(NodeList&& nodes, ClauseList&& clauses) {
 
 		// Add node as vertex to graph
 		auto prop = BaseSatGraph::vertex_property_type();
-		prop.kind = VertProp::Node;
-		prop.name = graph_util::node_name(node_to_add);
+		prop.base.kind = BaseSatVProp::Node;
+		prop.base.name = graph_util::node_name(node_to_add);
 
 		auto node_vert = boost::add_vertex(prop, prob_graph);
 
@@ -146,8 +142,8 @@ void Problem::build_graph(NodeList&& nodes, ClauseList&& clauses) {
 
 		// Add clause as vertex to graph
 		auto prop = BaseSatGraph::vertex_property_type();
-		prop.kind = VertProp::Clause;
-		prop.name = graph_util::clause_name(clause_to_add);
+		prop.base.kind = BaseSatVProp::Clause;
+		prop.base.name = graph_util::clause_name(clause_to_add);
 
 		auto clause_vert = boost::add_vertex(prop, prob_graph);
 		
@@ -158,10 +154,10 @@ void Problem::build_graph(NodeList&& nodes, ClauseList&& clauses) {
 			auto node_vert = map_node_to_vert->left.at(lit.first);
 
 			auto prop = BaseSatGraph::edge_property_type();
-			prop.sgn = lit.second;
+			prop.base.sgn = lit.second;
 
 			auto desc_pair = boost::add_edge(node_vert, clause_vert, prop, prob_graph);
-			if (!desc_pair.second) std::exception("Failed to add edge to graph!");
+			if (!desc_pair.second) std::exception("Failed to add edge to graph.");
 
 		}
 
@@ -184,7 +180,7 @@ std::ostream& coopnet::operator<<(std::ostream& os, const Problem& prob) {
 	auto vert_pair = boost::vertices(prob.get_graph());
 	for (auto vert = vert_pair.first; vert != vert_pair.second; ++vert) {
 		const auto& prop = g[*vert];
-		os << prop.kind << prop.name << std::endl;
+		os << prop.base.kind << prop.base.name << std::endl;
 	}
 
 	return os << std::endl;

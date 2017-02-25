@@ -15,16 +15,16 @@ void graph_util::rename_verts(BaseSatGraph& g, const NodeVertMap& node_to_vertex
 
 		auto vert = *vert_iter;
 
-		switch(g[vert].kind) {
-		case VertProp::Node: {
+		switch(g[vert].base.kind) {
+		case BaseSatVProp::Node: {
 
 			auto n = node_to_vertex_map.right.at(vert);
-			g[vert].name = node_name(n);
+			g[vert].base.name = node_name(n);
 
 			break;
 
 		}
-		case VertProp::Clause: {
+		case BaseSatVProp::Clause: {
 
 			auto lits = Clause::LitStorage();
 			auto edge_pair = boost::out_edges(vert, g);
@@ -33,12 +33,12 @@ void graph_util::rename_verts(BaseSatGraph& g, const NodeVertMap& node_to_vertex
 
 				auto n = node_to_vertex_map.right.at(
 					boost::target(*edge_iter, g));
-				lits.emplace(std::make_pair(n, g[*edge_iter].sgn));
+				lits.emplace(std::make_pair(n, g[*edge_iter].base.sgn));
 
 			}
 
 			auto c = Clause(lits);
-			g[vert].name = clause_name(c);
+			g[vert].base.name = clause_name(c);
 
 			break;
 

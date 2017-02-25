@@ -67,7 +67,7 @@ DPLLFormula::DPLLFormula(const Problem& prob) :
 		std::move(vertContradictionCollab),
 		std::move(edgeContradictionCollab),
 		setContradictCollab, setUncontradictPub,
-		pruneGraph.prune_info(), propMaps);
+		propMaps);
 
 }
 

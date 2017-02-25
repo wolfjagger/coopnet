@@ -18,10 +18,10 @@ namespace coopnet {
 			// Split depending on whether vert is node or clause
 			auto& prop = g[v];
 			switch(prop.kind) {
-			case VertProp::Node:
+			case BaseSatVProp::Node:
 				static_cast<ImplVisitor*>(this)->node_event(g, v, prop);
 				break;
-			case VertProp::Clause:
+			case BaseSatVProp::Clause:
 				static_cast<ImplVisitor*>(this)->clause_event(g, v, prop);
 				break;
 			}
@@ -44,7 +44,7 @@ namespace coopnet {
 			// Find which vert is node and which is clause
 			auto vert_node = boost::source(e, g);
 			auto vert_clause = boost::target(e, g);
-			if (g[vert_node].kind == VertProp::Clause)
+			if (g[vert_node].base.kind == BaseSatVProp::Clause)
 				std::swap(vert_node, vert_clause);
 
 			static_cast<ImplVisitor*>(this)->edge_event(

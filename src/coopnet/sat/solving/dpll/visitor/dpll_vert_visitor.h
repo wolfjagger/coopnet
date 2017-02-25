@@ -14,7 +14,7 @@ namespace coopnet {
 	// It also needs to color the surrounding edges if they
 	//  should be (re)visited (i.e. if vert is to be removed).
 	class DPLLVertVisitor :
-		public PruneSatVertVisitor<DPLLVertVisitor, PruneInfo> {
+		public PruneSatVertVisitor<DPLLVertVisitor> {
 
 	public:
 		using event_filter = boost::on_examine_vertex;
@@ -32,12 +32,11 @@ namespace coopnet {
 			alphali::collaborator&& initContradictionCollab,
 			alphali::collaborator& mainContradictCollab,
 			alphali::publisher& mainUncontradictPub,
-			PruneInfo& initPruneInfo,
 			DPLLPropMaps initMaps);
 
 		void node_event(
-			const BaseSatGraph& g, VertDescriptor node,
-			const VertProp& prop) {
+			const MutableSatGraph& g, VertDescriptor node,
+			const MutableSatVProp& prop) {
 
 			if (isContradicting) {
 				default_vert_event(g, node, prop);
@@ -48,8 +47,8 @@ namespace coopnet {
 		}
 
 		void clause_event(
-			const BaseSatGraph& g, VertDescriptor clause,
-			const VertProp& prop) {
+			const MutableSatGraph& g, VertDescriptor clause,
+			const MutableSatVProp& prop) {
 
 			if (isContradicting) {
 				default_vert_event(g, clause, prop);
@@ -62,21 +61,21 @@ namespace coopnet {
 	private:
 
 		void dpll_node_event(
-			const BaseSatGraph& g, VertDescriptor node,
-			const VertProp& prop);
+			const MutableSatGraph& g, VertDescriptor node,
+			const MutableSatVProp& prop);
 
 		void dpll_clause_event(
-			const BaseSatGraph& g, VertDescriptor clause,
-			const VertProp& prop);
+			const MutableSatGraph& g, VertDescriptor clause,
+			const MutableSatVProp& prop);
 
 		void default_vert_event(
-			const BaseSatGraph& g, VertDescriptor vert,
-			const VertProp& prop);
+			const MutableSatGraph& g, VertDescriptor vert,
+			const MutableSatVProp& prop);
 
 
 
-		void select_node(const BaseSatGraph& g, VertDescriptor node, bool sgn);
-		void satisfy_clause(const BaseSatGraph& g, VertDescriptor clause);
+		void select_node(const MutableSatGraph& g, VertDescriptor node, bool sgn);
+		void satisfy_clause(const MutableSatGraph& g, VertDescriptor clause);
 		void deactivate_vert(VertDescriptor vert);
 		void deactivate_edge(EdgeDescriptor edge);
 

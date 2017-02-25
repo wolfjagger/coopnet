@@ -16,7 +16,7 @@ namespace coopnet {
 	//  (b) clause => set node = sgn(edge) iff clause.num_edges == 1
 	// (3) remove edge
 	class DPLLEdgeVisitor :
-		public PruneSatEdgeVisitor<DPLLEdgeVisitor, PruneInfo> {
+		public PruneSatEdgeVisitor<DPLLEdgeVisitor> {
 
 	public:
 		using event_filter = boost::on_examine_edge;
@@ -34,12 +34,11 @@ namespace coopnet {
 			alphali::collaborator&& initContradictionCollab,
 			alphali::collaborator& mainContradictCollab,
 			alphali::publisher& mainUncontradictPub,
-			PruneInfo& initPruneInfo,
 			DPLLPropMaps initMaps);
 
 		void edge_event(
-			const BaseSatGraph& g, EdgeDescriptor edge,
-			const EdgeProp& prop,
+			const MutableSatGraph& g, EdgeDescriptor edge,
+			const MutableSatEProp& prop,
 			VertDescriptor node, VertDescriptor clause) {
 
 			if (isContradicting) {
@@ -53,13 +52,13 @@ namespace coopnet {
 	private:
 
 		void dpll_edge_event(
-			const BaseSatGraph& g, EdgeDescriptor edge,
-			const EdgeProp& prop,
+			const MutableSatGraph& g, EdgeDescriptor edge,
+			const MutableSatEProp& prop,
 			VertDescriptor node, VertDescriptor clause);
 
 		void default_edge_event(
-			const BaseSatGraph& g, EdgeDescriptor edge,
-			const EdgeProp& prop,
+			const MutableSatGraph& g, EdgeDescriptor edge,
+			const MutableSatEProp& prop,
 			VertDescriptor node, VertDescriptor clause);
 
 

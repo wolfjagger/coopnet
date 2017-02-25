@@ -23,7 +23,7 @@ Formula::Formula(const Problem& prob) :
 void Formula::reverse_prune_to_assignment(Node n) {
 
 	auto vert = node_vert_map().left.at(n);
-	pruneGraph.prune_info().reverse_to_vert(vert);
+	pruneGraph.reverse_to_vert(vert);
 
 }
 
@@ -43,7 +43,7 @@ const PrunableSatGraph& Formula::prune_graph() const {
 
 
 bool Formula::is_SAT() const {
-	return !pruneGraph.prune_info().is_indeterminate();
+	return !pruneGraph.is_indeterminate();
 }
 
 const BaseSatGraph& Formula::prob_graph() const {
@@ -54,13 +54,13 @@ const BaseSatGraph& Formula::prob_graph() const {
 
 Assignment Formula::create_assignment() const {
 
-	if (pruneGraph.prune_info().is_indeterminate()) {
+	if (pruneGraph.is_indeterminate()) {
 		throw std::exception("Incomplete assignment cannot be transformed.");
 	}
 
 	Assignment assign;
-	auto copy_pred = [&assign, &inc_data = pruneGraph.prune_info().get_assignment_map()](auto pair) {
-		assign.data.emplace(pair.first, bool(inc_data.at(pair.second)));
+	auto copy_pred = [this, &assign](auto pair) {
+		assign.data.emplace(pair.first, bool(pruneGraph.get_assignment(pair.second)));
 	};
 
 	auto& node_vert_map = prob.get().get_node_vert_map()->left;

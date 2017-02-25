@@ -17,9 +17,7 @@ DPLLEdgeVisitor::DPLLEdgeVisitor(
 	alphali::collaborator&& initContradictionCollab,
 	alphali::collaborator& mainContradictCollab,
 	alphali::publisher& mainUncontradictPub,
-	PruneInfo& initPruneInfo,
 	DPLLPropMaps initMaps) :
-	PruneSatEdgeVisitor(initPruneInfo),
 	maps(initMaps) {
 
 	set_uncontradicting();
@@ -43,8 +41,8 @@ DPLLEdgeVisitor::DPLLEdgeVisitor(
 //  (b) clause => set node = a iff clause.num_edges == 1
 // (3) remove edge
 void DPLLEdgeVisitor::dpll_edge_event(
-	const BaseSatGraph& g, EdgeDescriptor edge,
-	const EdgeProp& prop,
+	const MutableSatGraph& g, EdgeDescriptor edge,
+	const MutableSatEProp& prop,
 	VertDescriptor node, VertDescriptor clause) {
 
 	auto status = maps.edgeStatusMap[edge];
@@ -113,8 +111,8 @@ void DPLLEdgeVisitor::dpll_edge_event(
 }
 
 void DPLLEdgeVisitor::default_edge_event(
-	const BaseSatGraph& g, EdgeDescriptor edge,
-	const EdgeProp& prop,
+	const MutableSatGraph& g, EdgeDescriptor edge,
+	const MutableSatEProp& prop,
 	VertDescriptor node, VertDescriptor clause) {
 
 	maps.edgeStatusMap[edge] = DPLLEdgeStatus::Default;
