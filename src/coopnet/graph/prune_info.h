@@ -18,8 +18,9 @@ namespace coopnet {
 
 	using VertStatusPair = std::pair<VertDescriptor, PruneStatus>;
 	using EdgeStatusPair = std::pair<EdgeDescriptor, PruneStatus>;
-	using IncompleteAssignmentPair
-		= std::pair<VertDescriptor, boost::tribool>;
+	using IncompleteAssignment
+		= std::unordered_map<VertDescriptor, boost::tribool>;
+	using IncompleteAssignmentPair = IncompleteAssignment::value_type;
 
 
 	struct PruneAction {
@@ -57,8 +58,8 @@ namespace coopnet {
 
 
 
-	inline std::ostream& operator<<(std::ostream& os, PruneStatus status);
+	std::ostream& operator<<(std::ostream& os, PruneStatus status);
 
-	inline std::ostream& operator<<(std::ostream& os, boost::logic::tribool b);
+	std::ostream& operator<<(std::ostream& os, boost::logic::tribool b);
 
 }

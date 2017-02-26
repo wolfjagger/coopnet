@@ -12,12 +12,12 @@ using namespace coopnet;
 
 namespace {
 
-	constexpr bool DEBUG = false;
+	constexpr bool DEBUG = true;
 
 	void DEBUG_print_assignment(const DPLLFormula& formula) {
-		if(DEBUG) {
+		if (DEBUG) {
 			auto print_pred =
-				[](IncompleteAssignmentMap::value_type pair) {
+				[](IncompleteAssignment::value_type pair) {
 				if (pair.second) {
 					std::cout << "T";
 				} else if (!pair.second) {
@@ -28,7 +28,7 @@ namespace {
 					std::cout << "O";
 				}
 			};
-			auto& assign = formula.prune_graph().prune_info().get_assignment_map();
+			auto& assign = formula.create_incomplete_assignment();
 			std::for_each(assign.cbegin(), assign.cend(), print_pred);
 			std::cout << "\n";
 		}

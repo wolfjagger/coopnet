@@ -13,11 +13,12 @@ namespace coopnet {
 		// Vertex visitor, so make sure this is an vertex filter.
 
 		// Triggered when vertex is encountered
-		void operator()(VertDescriptor v, const BaseSatGraph& g) {
+		template<typename SatGraph>
+		void operator()(VertDescriptor v, const SatGraph& g) {
 
 			// Split depending on whether vert is node or clause
 			auto& prop = g[v];
-			switch(prop.kind) {
+			switch(prop.base.kind) {
 			case BaseSatVProp::Node:
 				static_cast<ImplVisitor*>(this)->node_event(g, v, prop);
 				break;
@@ -39,7 +40,8 @@ namespace coopnet {
 		// Edge visitor, so make sure this is an edge filter.
 
 		// Triggered when edge is encountered
-		void operator()(EdgeDescriptor e, const BaseSatGraph& g) {
+		template<typename SatGraph>
+		void operator()(EdgeDescriptor e, const SatGraph& g) {
 
 			// Find which vert is node and which is clause
 			auto vert_node = boost::source(e, g);

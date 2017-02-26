@@ -63,7 +63,7 @@ namespace coopnet {
 
 
 
-		void deactivate_edge(EdgeDescriptor edge);
+		void deactivate_edge(const MutableSatGraph& g, EdgeDescriptor edge);
 
 		void change_vert_status(
 			VertDescriptor vert, DPLLVertStatus new_status);

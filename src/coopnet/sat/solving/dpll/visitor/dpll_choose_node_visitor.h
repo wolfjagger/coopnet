@@ -21,13 +21,15 @@ namespace coopnet {
 
 	public:
 
+		DPLLChooseNodeVisitor();
+
 		void node_event(
-			const BaseSatGraph& g, VertDescriptor node,
-			const BaseSatVProp& prop);
+			const MutableSatGraph& g, VertDescriptor node,
+			const MutableSatVProp& prop);
 
 		void clause_event(
-			const BaseSatGraph& g, VertDescriptor clause,
-			const BaseSatVProp& prop);
+			const MutableSatGraph& g, VertDescriptor clause,
+			const MutableSatVProp& prop);
 
 		void reset();
 

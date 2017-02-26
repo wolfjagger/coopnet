@@ -1,14 +1,14 @@
 #pragma once
 
-#include "coopnet/graph/prunable_graph.h"
+#include "coopnet/graph/graph.h"
 
 
 
 namespace coopnet {
 
-	template<typename Visitor, typename SourceIter>
+	template<typename SatGraph, typename Visitor, typename SourceIter>
 	void visit_sat_graph(Visitor& v,
-		const BaseSatGraph& g, SourceIter sourceBegin, SourceIter sourceEnd) {
+		const SatGraph& g, SourceIter sourceBegin, SourceIter sourceEnd) {
 
 		auto bfv = boost::make_bfs_visitor(v);
 

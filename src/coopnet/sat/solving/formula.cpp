@@ -46,11 +46,25 @@ bool Formula::is_SAT() const {
 	return !pruneGraph.is_indeterminate();
 }
 
-const BaseSatGraph& Formula::prob_graph() const {
-	return prob.get().get_graph();
+const MutableSatGraph& Formula::graph() const {
+	return pruneGraph.get_graph();
 }
 
 
+
+IncompleteAssignment Formula::create_incomplete_assignment() const {
+
+	auto assign = IncompleteAssignment();
+	auto copy_pred = [this, &assign](auto pair) {
+		assign.emplace(pair.second, pruneGraph.get_assignment(pair.second));
+	};
+
+	auto& node_vert_map = prob.get().get_node_vert_map()->left;
+	std::for_each(node_vert_map.begin(), node_vert_map.end(), copy_pred);
+
+	return assign;
+
+}
 
 Assignment Formula::create_assignment() const {
 

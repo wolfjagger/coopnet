@@ -23,8 +23,8 @@ DPLLFormula::DPLLFormula(const Problem& prob) :
 	setUncontradictPub() {
 
 
-	auto vert_iter_pair = boost::vertices(prob_graph());
-	auto edge_iter_pair = boost::edges(prob_graph());
+	auto vert_iter_pair = boost::vertices(graph());
+	auto edge_iter_pair = boost::edges(graph());
 
 
 	for (auto vert_iter = vert_iter_pair.first;
@@ -89,7 +89,7 @@ void DPLLFormula::set_node(NodeChoice choice) {
 		" with vert " << vert_node << " to " << status << std::endl;
 
 	boost::breadth_first_visit(
-		prob_graph(), vert_node, greyBuffer,
+		graph(), vert_node, greyBuffer,
 		*pruneVisitor, propMaps.colorMap);
 
 }

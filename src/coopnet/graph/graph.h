@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ostream>
+#include <iostream>
 #include "boost/bimap.hpp"
 #include "coopnet/sat/component/component_fwd.h"
 #include "bgl_inc.h"
@@ -18,8 +18,8 @@ namespace coopnet {
 		} base;
 	};
 
-	inline std::ostream& operator<<(std::ostream& os, const BaseSatVProp::Base& base);
-	inline std::istream& operator>>(std::istream& is, BaseSatVProp::Base& base);
+	std::ostream& operator<<(std::ostream& os, const BaseSatVProp::Base& base);
+	std::istream& operator>>(std::istream& is, BaseSatVProp::Base& base);
 
 	struct BaseSatEProp {
 		struct Base {
@@ -27,8 +27,8 @@ namespace coopnet {
 		} base;
 	};
 
-	inline std::ostream& operator<<(std::ostream& os, const BaseSatEProp::Base& base);
-	inline std::istream& operator>>(std::istream& is, BaseSatEProp::Base& base);
+	std::ostream& operator<<(std::ostream& os, const BaseSatEProp::Base& base);
+	std::istream& operator>>(std::istream& is, BaseSatEProp::Base& base);
 
 
 

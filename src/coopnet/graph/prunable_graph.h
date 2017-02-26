@@ -57,9 +57,7 @@ namespace coopnet {
 		template<typename PruneVisitor>
 		void visit(PruneVisitor& v) {
 
-			v.set_prune_info(pruneInfo);
-
-			visit_sat_graph(v, base,
+			visit_sat_graph(v, graph,
 				connectedComponentEntryPts.begin(), connectedComponentEntryPts.end());
 
 		}
@@ -67,9 +65,7 @@ namespace coopnet {
 		template<typename PruneVisitor>
 		void visit(PruneVisitor& v) const {
 
-			v.set_prune_info(pruneInfo);
-
-			visit_sat_graph(v, base,
+			visit_sat_graph(v, graph,
 				connectedComponentEntryPts.begin(), connectedComponentEntryPts.end());
 
 		}

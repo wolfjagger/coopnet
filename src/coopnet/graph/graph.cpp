@@ -4,7 +4,7 @@ using namespace coopnet;
 
 
 
-inline std::ostream& coopnet::operator<<(std::ostream& os, const BaseSatVProp::Base& base) {
+std::ostream& coopnet::operator<<(std::ostream& os, const BaseSatVProp::Base& base) {
 
 	switch (base.kind) {
 	case BaseSatVProp::Node:
@@ -18,19 +18,19 @@ inline std::ostream& coopnet::operator<<(std::ostream& os, const BaseSatVProp::B
 	return os << std::endl;
 
 }
-inline std::istream& coopnet::operator>>(std::istream& is, BaseSatVProp::Base& base) {
+std::istream& coopnet::operator>>(std::istream& is, BaseSatVProp::Base& base) {
 
 	throw std::exception("Input stream to BaseSatVProp not set up.");
 
 }
 
-inline std::ostream& coopnet::operator<<(std::ostream& os, const BaseSatEProp::Base& base) {
+std::ostream& coopnet::operator<<(std::ostream& os, const BaseSatEProp::Base& base) {
 	
 	os << "sgn: " << (base.sgn ? "T" : "F");
 	return os << std::endl;
 
 }
-inline std::istream& coopnet::operator >> (std::istream& is, BaseSatEProp::Base& base) {
+std::istream& coopnet::operator >> (std::istream& is, BaseSatEProp::Base& base) {
 
 	throw std::exception("Input stream to BaseSatVProp not set up.");
 

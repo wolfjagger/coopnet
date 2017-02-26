@@ -76,17 +76,17 @@ void DPLLVertVisitor::dpll_node_event(
 			//  (select_node will check for multiple conflicting constraints)
 			if (constraining_edge != edges_pair.second) {
 
-				prune_info().set_edge_status(*constraining_edge, PruneStatus::Inactive);
-				select_node(g, node, g[*constraining_edge].sgn);
+				g[*constraining_edge].mutate.status = PruneStatus::Inactive;
+				select_node(g, node, g[*constraining_edge].base.sgn);
 
 			}
 			// Otherwise, if all active edges have same sgn, select node = sgn
 			else {
 
 				auto first_active_edge = find_active_edge(node, g);
-				auto first_sgn = g[*first_active_edge].sgn;
+				auto first_sgn = g[*first_active_edge].base.sgn;
 				auto same_sgn_fcn = [first_sgn, &g, this](EdgeDescriptor e) {
-					return first_sgn == g[e].sgn;
+					return first_sgn == g[e].base.sgn;
 				};
 
 				if (all_of_active_edges(node, g, same_sgn_fcn))
@@ -139,7 +139,7 @@ void DPLLVertVisitor::dpll_clause_event(
 		//  (satisfy_clause will check for multiple conflicting constraints)
 		if (satisfying_edge != edges_pair.second) {
 
-			deactivate_edge(*satisfying_edge);
+			deactivate_edge(g, *satisfying_edge);
 			satisfy_clause(g, clause);
 
 		} else {
@@ -183,7 +183,7 @@ void DPLLVertVisitor::default_vert_event(
 void DPLLVertVisitor::select_node(
 	const MutableSatGraph& g, VertDescriptor node, bool sgn) {
 
-	prune_info().set_assignment(node, sgn);
+	g[node].mutate.assignment = sgn;
 
 	auto prop_to_edges_fcn = [this, &g, sgn](EdgeDescriptor edge) {
 
@@ -191,7 +191,7 @@ void DPLLVertVisitor::select_node(
 		switch (status) {
 		case DPLLEdgeStatus::Default:
 			// If active edge, use to satisfy clause (if correct sgn) or remove
-			if (g[edge].sgn == sgn) {
+			if (g[edge].base.sgn == sgn) {
 				change_edge_status(edge, DPLLEdgeStatus::SatisfyClause);
 			} else {
 				change_edge_status(edge, DPLLEdgeStatus::Remove);
@@ -199,8 +199,8 @@ void DPLLVertVisitor::select_node(
 			break;
 		case DPLLEdgeStatus::ConstrainNode:
 			// If already set to constrain node, set inactive or contradict
-			if (g[edge].sgn == sgn) {
-				deactivate_edge(edge);
+			if (g[edge].base.sgn == sgn) {
+				deactivate_edge(g, edge);
 			} else {
 				if (DEBUG) std::cout << "Contradict: opposite constraints on node.\n";
 				contradictionCollab.publish();
@@ -212,7 +212,7 @@ void DPLLVertVisitor::select_node(
 
 	for_each_active_edge(node, g, prop_to_edges_fcn);
 
-	deactivate_vert(node);
+	deactivate_vert(g, node);
 
 }
 
@@ -236,20 +236,26 @@ void DPLLVertVisitor::satisfy_clause(
 
 	for_each_active_edge(clause, g, remove_edges_fcn);
 
-	deactivate_vert(clause);
+	deactivate_vert(g, clause);
 
 }
 
 
 
-void DPLLVertVisitor::deactivate_vert(VertDescriptor vert) {
+void DPLLVertVisitor::deactivate_vert(
+	const MutableSatGraph& g, VertDescriptor vert) {
+
 	change_vert_status(vert, DPLLVertStatus::Default);
-	prune_info().set_vert_status(vert, PruneStatus::Inactive);
+	g[vert].mutate.status = PruneStatus::Inactive;
+
 }
 
-void DPLLVertVisitor::deactivate_edge(EdgeDescriptor edge) {
+void DPLLVertVisitor::deactivate_edge(
+	const MutableSatGraph& g, EdgeDescriptor edge) {
+
 	change_edge_status(edge, DPLLEdgeStatus::Default);
-	prune_info().set_edge_status(edge, PruneStatus::Inactive);
+	g[edge].mutate.status = PruneStatus::Inactive;
+
 }
 
 

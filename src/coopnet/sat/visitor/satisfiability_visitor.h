@@ -31,7 +31,8 @@ namespace coopnet {
 
 
 
-		void edge_event(const BaseSatGraph& g, EdgeDescriptor e,
+		template<typename SatGraph>
+		void edge_event(const SatGraph& g, EdgeDescriptor e,
 			const coopnet::BaseSatEProp& edge_property,
 			VertDescriptor vert_node, VertDescriptor vert_clause) {
 

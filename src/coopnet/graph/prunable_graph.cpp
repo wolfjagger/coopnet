@@ -7,7 +7,7 @@ using namespace coopnet;
 
 namespace {
 
-	constexpr bool DEBUG = false;
+	constexpr bool DEBUG = true;
 
 	MutableSatGraph create_mutable_from_base(const BaseSatGraph& original) {
 

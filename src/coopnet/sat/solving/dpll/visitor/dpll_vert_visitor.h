@@ -76,8 +76,8 @@ namespace coopnet {
 
 		void select_node(const MutableSatGraph& g, VertDescriptor node, bool sgn);
 		void satisfy_clause(const MutableSatGraph& g, VertDescriptor clause);
-		void deactivate_vert(VertDescriptor vert);
-		void deactivate_edge(EdgeDescriptor edge);
+		void deactivate_vert(const MutableSatGraph& g, VertDescriptor vert);
+		void deactivate_edge(const MutableSatGraph& g, EdgeDescriptor edge);
 
 		void change_vert_status(
 			VertDescriptor vert, DPLLVertStatus new_status);

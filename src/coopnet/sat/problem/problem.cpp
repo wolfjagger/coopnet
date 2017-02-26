@@ -38,7 +38,7 @@ ClauseSatisfiability Problem::clause_satisfiability_for(
 
 	auto form = Formula(*this);
 	
-	auto& g = form.prob_graph();
+	auto& g = form.graph();
 	auto components = graph_util::calculate_connected_components(g);
 	visit_sat_graph(satisfiability_collector, g, components.cbegin(), components.cend());
 	
