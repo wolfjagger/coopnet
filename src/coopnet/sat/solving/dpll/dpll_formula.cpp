@@ -64,6 +64,7 @@ DPLLFormula::DPLLFormula(const Problem& prob) :
 
 
 	pruneVisitor = std::make_unique<DPLLVisitor>(
+		pruneGraph.prune_stack(),
 		std::move(vertContradictionCollab),
 		std::move(edgeContradictionCollab),
 		setContradictCollab, setUncontradictPub,

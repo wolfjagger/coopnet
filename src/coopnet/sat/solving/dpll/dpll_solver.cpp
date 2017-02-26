@@ -12,7 +12,7 @@ using namespace coopnet;
 
 namespace {
 
-	constexpr bool DEBUG = true;
+	constexpr bool DEBUG = false;
 
 	void DEBUG_print_assignment(const DPLLFormula& formula) {
 		if (DEBUG) {

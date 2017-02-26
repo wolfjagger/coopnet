@@ -7,6 +7,7 @@ using namespace coopnet;
 namespace {
 
 	DPLLVisitorTuple make_visitor_tuple(
+		PruneStack& pruneStack,
 		alphali::collaborator&& vertContradictionCollab,
 		alphali::collaborator&& edgeContradictionCollab,
 		alphali::collaborator& mainContradictCollab,
@@ -15,10 +16,12 @@ namespace {
 
 		return std::make_pair(
 			DPLLVertVisitor(
+				pruneStack,
 				std::move(vertContradictionCollab),
 				mainContradictCollab, mainUncontradictPub,
 				maps),
 			DPLLEdgeVisitor(
+				pruneStack,
 				std::move(edgeContradictionCollab),
 				mainContradictCollab, mainUncontradictPub,
 				maps));
@@ -30,6 +33,7 @@ namespace {
 
 
 DPLLVisitor::DPLLVisitor(
+	PruneStack& pruneStack,
 	alphali::collaborator&& vertContradictionCollab,
 	alphali::collaborator&& edgeContradictionCollab,
 	alphali::collaborator& mainContradictCollab,
@@ -37,6 +41,7 @@ DPLLVisitor::DPLLVisitor(
 	DPLLPropMaps maps) :
 	boost::bfs_visitor<DPLLVisitorTuple>(
 		make_visitor_tuple(
+			pruneStack,
 			std::move(vertContradictionCollab),
 			std::move(edgeContradictionCollab),
 			mainContradictCollab, mainUncontradictPub,

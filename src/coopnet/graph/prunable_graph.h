@@ -28,6 +28,9 @@ namespace coopnet {
 		MutableSatGraph& get_graph() { return graph; }
 		const MutableSatGraph& get_graph() const { return graph; }
 
+		PruneStack& prune_stack() { return pruneStack; }
+		const PruneStack& prune_stack() const { return pruneStack; }
+
 
 
 		PruneStatus PrunableSatGraph::get_vert_status(VertDescriptor v) const;

@@ -160,6 +160,7 @@
       <AdditionalIncludeDirectories>src;..\boost;alphali\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsCpp</CompileAs>
       <DisableSpecificWarnings>4503</DisableSpecificWarnings>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -217,6 +218,7 @@
     <ClInclude Include="src\coopnet\sat\solving\node_chooser.h" />
     <ClInclude Include="src\coopnet\sat\solving\dpll\visitor\dpll_choose_node_visitor.h" />
     <ClInclude Include="src\coopnet\sat\visitor\pruned_sat_visitor.h" />
+    <ClInclude Include="src\coopnet\sat\visitor\pruning_sat_visitor.h" />
     <ClInclude Include="src\coopnet\sat\visitor\visit.h" />
     <ClInclude Include="src\sat\sat_defs.h" />
     <ClInclude Include="src\coopnet\sat\visitor\sat_visitor.h" />

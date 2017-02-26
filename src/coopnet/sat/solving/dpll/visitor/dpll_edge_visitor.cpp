@@ -14,10 +14,12 @@ namespace {
 
 
 DPLLEdgeVisitor::DPLLEdgeVisitor(
+	PruneStack& initPruneStack,
 	alphali::collaborator&& initContradictionCollab,
 	alphali::collaborator& mainContradictCollab,
 	alphali::publisher& mainUncontradictPub,
 	DPLLPropMaps initMaps) :
+	PruningSatEdgeVisitor<DPLLEdgeVisitor>(initPruneStack),
 	maps(initMaps) {
 
 	set_uncontradicting();
@@ -106,7 +108,7 @@ void DPLLEdgeVisitor::dpll_edge_event(
 	}
 	}
 
-	deactivate_edge(g, edge);
+	deactivate_edge(edge, prop);
 
 }
 
@@ -122,9 +124,9 @@ void DPLLEdgeVisitor::default_edge_event(
 
 
 void DPLLEdgeVisitor::deactivate_edge(
-	const MutableSatGraph& g, EdgeDescriptor edge) {
+	EdgeDescriptor edge, const MutableSatEProp& prop) {
 	change_edge_status(edge, DPLLEdgeStatus::Default);
-	g[edge].mutate.status = PruneStatus::Inactive;
+	set_prune_status(edge, prop.mutate.status, PruneStatus::Inactive);
 }
 
 

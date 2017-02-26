@@ -2,7 +2,7 @@
 
 #include "alphali/designs/pubsub/collaborator.h"
 #include "coopnet/sat/solving/dpll/dpll_prop_maps.h"
-#include "coopnet/sat/visitor/pruned_sat_visitor.h"
+#include "coopnet/sat/visitor/pruning_sat_visitor.h"
 
 
 
@@ -14,7 +14,7 @@ namespace coopnet {
 	// It also needs to color the surrounding edges if they
 	//  should be (re)visited (i.e. if vert is to be removed).
 	class DPLLVertVisitor :
-		public PruneSatVertVisitor<DPLLVertVisitor> {
+		public PruningSatVertVisitor<DPLLVertVisitor> {
 
 	public:
 		using event_filter = boost::on_examine_vertex;
@@ -29,6 +29,7 @@ namespace coopnet {
 	public:
 
 		DPLLVertVisitor(
+			PruneStack& initPruneStack,
 			alphali::collaborator&& initContradictionCollab,
 			alphali::collaborator& mainContradictCollab,
 			alphali::publisher& mainUncontradictPub,
@@ -74,10 +75,13 @@ namespace coopnet {
 
 
 
-		void select_node(const MutableSatGraph& g, VertDescriptor node, bool sgn);
-		void satisfy_clause(const MutableSatGraph& g, VertDescriptor clause);
-		void deactivate_vert(const MutableSatGraph& g, VertDescriptor vert);
-		void deactivate_edge(const MutableSatGraph& g, EdgeDescriptor edge);
+		void select_node(const MutableSatGraph& g,
+			VertDescriptor node, const MutableSatVProp& prop, bool sgn);
+		void satisfy_clause(const MutableSatGraph& g,
+			VertDescriptor clause, const MutableSatVProp& prop);
+
+		void deactivate_vert(VertDescriptor vert, const MutableSatVProp& prop);
+		void deactivate_edge(EdgeDescriptor edge, const MutableSatEProp& prop);
 
 		void change_vert_status(
 			VertDescriptor vert, DPLLVertStatus new_status);
