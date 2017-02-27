@@ -27,9 +27,9 @@ DPLLEdgeVisitor::DPLLEdgeVisitor(
 	contradictionCollab = std::move(initContradictionCollab);
 
 	contradictionCollab.subscribe(mainContradictCollab,
-		std::bind(&DPLLEdgeVisitor::set_contradicting, this));
+		[this]() { set_contradicting(); });
 	contradictionCollab.subscribe(mainUncontradictPub,
-		std::bind(&DPLLEdgeVisitor::set_uncontradicting, this));
+		[this]() { set_uncontradicting(); });
 
 }
 

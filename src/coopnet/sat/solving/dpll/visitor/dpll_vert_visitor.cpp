@@ -25,9 +25,9 @@ DPLLVertVisitor::DPLLVertVisitor(
 	contradictionCollab = std::move(initContradictCollab);
 
 	contradictionCollab.subscribe(mainContradictCollab,
-		std::bind(&DPLLVertVisitor::set_contradicting, this));
+		[this]() { set_contradicting(); });
 	contradictionCollab.subscribe(mainUncontradictPub,
-		std::bind(&DPLLVertVisitor::set_uncontradicting, this));
+		[this]() { set_uncontradicting(); });
 
 }
 

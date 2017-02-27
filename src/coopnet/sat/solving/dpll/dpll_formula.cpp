@@ -58,9 +58,9 @@ DPLLFormula::DPLLFormula(const Problem& prob) :
 	auto edgeContradictionCollab = alphali::collaborator();
 
 	setContradictCollab.subscribe(vertContradictionCollab,
-		std::bind(&DPLLFormula::set_contradicting, this));
+		[this] { set_contradicting(); });
 	setContradictCollab.subscribe(edgeContradictionCollab,
-		std::bind(&DPLLFormula::set_contradicting, this));
+		[this] { set_contradicting(); });
 
 
 	pruneVisitor = std::make_unique<DPLLVisitor>(
