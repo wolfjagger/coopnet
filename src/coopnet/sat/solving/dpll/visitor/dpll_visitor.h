@@ -17,11 +17,11 @@ namespace coopnet {
 	public:
 
 		DPLLVisitor(
+			PruneStack& pruneStack,
 			alphali::collaborator&& vertContradictionCollab,
 			alphali::collaborator&& edgeContradictionCollab,
 			alphali::collaborator& mainContradictCollab,
 			alphali::publisher& mainUncontradictPub, 
-			PruneInfo& initPruneInfo,
 			DPLLPropMaps initMaps);
 
 	};

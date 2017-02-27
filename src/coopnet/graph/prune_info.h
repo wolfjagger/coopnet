@@ -16,16 +16,11 @@ namespace coopnet {
 
 
 
-	using VertStatusMap
-		= std::unordered_map<VertDescriptor, PruneStatus>;
-	using EdgeStatusMap = EdgeDescUnordMap<PruneStatus>;
-	using IncompleteAssignmentMap
-		= std::unordered_map<VertDescriptor, boost::tribool>;
-
 	using VertStatusPair = std::pair<VertDescriptor, PruneStatus>;
 	using EdgeStatusPair = std::pair<EdgeDescriptor, PruneStatus>;
-	using IncompleteAssignmentPair
-		= std::pair<VertDescriptor, boost::tribool>;
+	using IncompleteAssignment
+		= std::unordered_map<VertDescriptor, boost::tribool>;
+	using IncompleteAssignmentPair = IncompleteAssignment::value_type;
 
 
 	struct PruneAction {
@@ -46,63 +41,25 @@ namespace coopnet {
 
 
 
-
-	class PruneInfo {
-
-	private:
-
-		VertStatusMap vertStatus;
-		EdgeStatusMap edgeStatus;
-		IncompleteAssignmentMap assignment;
-		PruneStack pruneStack;
-
-	public:
-
-		template<typename Graph>
-		PruneInfo(const Graph& g) {
-		
-			auto vPair = boost::vertices(g);
-			auto ePair = boost::edges(g);
-
-			std::for_each(vPair.first, vPair.second, [this, &g](VertDescriptor v) {
-				vertStatus.emplace(v, PruneStatus::Active);
-				if (g[v].kind == VertProp::Node) {
-					assignment.emplace(v, boost::indeterminate);
-				}
-			});
-
-			std::for_each(ePair.first, ePair.second, [this](EdgeDescriptor v) {
-				edgeStatus.emplace(v, PruneStatus::Active);
-			});
-
-		}
-
-
-
-		PruneStatus get_vert_status(VertDescriptor v) const;
-		void set_vert_status(VertDescriptor v, PruneStatus newStatus);
-
-		PruneStatus get_edge_status(EdgeDescriptor e) const;
-		void set_edge_status(EdgeDescriptor e, PruneStatus newStatus);
-
-		bool is_indeterminate() const;
-		boost::tribool get_assignment(VertDescriptor v) const;
-		void set_assignment(VertDescriptor v, boost::tribool newAssignment);
-
-		const IncompleteAssignmentMap& get_assignment_map() const;
-
-
-
-		void reverse_to_vert(VertDescriptor v);
-
-		void reset_prune();
-
+	struct MutableSatVProp : public BaseSatVProp {
+		mutable struct Mutable {
+			PruneStatus status;
+			boost::tribool assignment;
+		} mutate;
 	};
 
+	struct MutableSatEProp : public BaseSatEProp {
+		mutable struct Mutable {
+			PruneStatus status;
+		} mutate;
+	};
+
+	using MutableSatGraph = SatGraph<MutableSatVProp, MutableSatEProp>;
 
 
-	inline std::ostream& operator<<(std::ostream& os, PruneStatus status);
 
-	inline std::ostream& operator<<(std::ostream& os, boost::logic::tribool b);
+	std::ostream& operator<<(std::ostream& os, PruneStatus status);
+
+	std::ostream& operator<<(std::ostream& os, boost::logic::tribool b);
 
 }

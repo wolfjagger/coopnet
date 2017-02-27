@@ -1,6 +1,6 @@
 #pragma once
 
-#include <unordered_map>
+#include <iostream>
 #include "boost/bimap.hpp"
 #include "coopnet/sat/component/component_fwd.h"
 #include "bgl_inc.h"
@@ -9,27 +9,41 @@
 
 namespace coopnet {
 
-	struct VertProp {
-
-		enum VertKind { Node=0, Clause=1 };
-
-		std::string name;
-		// Unfortunately, can't use enum here, so int.
-		int kind;
-
+	struct BaseSatVProp {
+		enum VertKind { Node = 0, Clause = 1 };
+		struct Base {
+			std::string name;
+			// Unfortunately, can't use enum here, so int.
+			int kind;
+		} base;
 	};
 
-	struct EdgeProp {
-		
-		bool sgn;
+	std::ostream& operator<<(std::ostream& os, const BaseSatVProp::Base& base);
+	std::istream& operator>>(std::istream& is, BaseSatVProp::Base& base);
 
+	struct BaseSatEProp {
+		struct Base {
+			bool sgn;
+		} base;
 	};
 
-	
+	std::ostream& operator<<(std::ostream& os, const BaseSatEProp::Base& base);
+	std::istream& operator>>(std::istream& is, BaseSatEProp::Base& base);
+
+
+
 	// E.g. vecS means std::vector, giving fast access and slow amendment
-	using BaseSatGraph = boost::adjacency_list <
+	template<typename VProp, typename EProp>
+	using SatGraph = boost::adjacency_list <
 		boost::setS, boost::vecS, boost::undirectedS,
-		VertProp, EdgeProp>;
+		VProp, EProp>;
+
+
+
+	using BaseSatGraph = SatGraph<BaseSatVProp, BaseSatEProp>;
+
+
+
 	using VertDescriptor = BaseSatGraph::vertex_descriptor;
 	using EdgeDescriptor = BaseSatGraph::edge_descriptor;
 	using boost::default_color_type;

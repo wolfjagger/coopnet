@@ -14,12 +14,12 @@ namespace {
 
 
 DPLLEdgeVisitor::DPLLEdgeVisitor(
+	PruneStack& initPruneStack,
 	alphali::collaborator&& initContradictionCollab,
 	alphali::collaborator& mainContradictCollab,
 	alphali::publisher& mainUncontradictPub,
-	PruneInfo& initPruneInfo,
 	DPLLPropMaps initMaps) :
-	PruneSatEdgeVisitor(initPruneInfo),
+	PruningSatEdgeVisitor<DPLLEdgeVisitor>(initPruneStack),
 	maps(initMaps) {
 
 	set_uncontradicting();
@@ -27,9 +27,9 @@ DPLLEdgeVisitor::DPLLEdgeVisitor(
 	contradictionCollab = std::move(initContradictionCollab);
 
 	contradictionCollab.subscribe(mainContradictCollab,
-		std::bind(&DPLLEdgeVisitor::set_contradicting, this));
+		[this]() { set_contradicting(); });
 	contradictionCollab.subscribe(mainUncontradictPub,
-		std::bind(&DPLLEdgeVisitor::set_uncontradicting, this));
+		[this]() { set_uncontradicting(); });
 
 }
 
@@ -43,8 +43,8 @@ DPLLEdgeVisitor::DPLLEdgeVisitor(
 //  (b) clause => set node = a iff clause.num_edges == 1
 // (3) remove edge
 void DPLLEdgeVisitor::dpll_edge_event(
-	const BaseSatGraph& g, EdgeDescriptor edge,
-	const EdgeProp& prop,
+	const MutableSatGraph& g, EdgeDescriptor edge,
+	const MutableSatEProp& prop,
 	VertDescriptor node, VertDescriptor clause) {
 
 	auto status = maps.edgeStatusMap[edge];
@@ -65,7 +65,7 @@ void DPLLEdgeVisitor::dpll_edge_event(
 
 		// If node satisfies clause, remove clause
 
-		if (prune_info().get_vert_status(clause) != PruneStatus::Inactive)
+		if (g[clause].mutate.status != PruneStatus::Inactive)
 			change_vert_status(clause, DPLLVertStatus::Remove);
 		break;
 
@@ -74,18 +74,18 @@ void DPLLEdgeVisitor::dpll_edge_event(
 
 		// If clause constrains node, set node to sgn
 
-		if (prune_info().get_vert_status(node) == PruneStatus::Active) {
+		if (g[node].mutate.status == PruneStatus::Active) {
 
 			switch (maps.vertStatusMap[node]) {
 			case DPLLVertStatus::Default:
 
-				change_vert_status(node, prop.sgn ?
+				change_vert_status(node, prop.base.sgn ?
 					DPLLVertStatus::SetToTrue : DPLLVertStatus::SetToFalse);
 				break;
 
 			case DPLLVertStatus::SetToTrue:
 
-				if (!prop.sgn) {
+				if (!prop.base.sgn) {
 					if (DEBUG) std::cout << "Contradict: Can't constrain node to false when already true.\n";
 					contradictionCollab.publish();
 				}
@@ -93,7 +93,7 @@ void DPLLEdgeVisitor::dpll_edge_event(
 
 			case DPLLVertStatus::SetToFalse:
 
-				if (prop.sgn) {
+				if (prop.base.sgn) {
 					if (DEBUG) std::cout << "Contradict: Can't constrain node to true when already false.\n";
 					contradictionCollab.publish();
 				}
@@ -108,13 +108,13 @@ void DPLLEdgeVisitor::dpll_edge_event(
 	}
 	}
 
-	deactivate_edge(edge);
+	deactivate_edge(edge, prop);
 
 }
 
 void DPLLEdgeVisitor::default_edge_event(
-	const BaseSatGraph& g, EdgeDescriptor edge,
-	const EdgeProp& prop,
+	const MutableSatGraph& g, EdgeDescriptor edge,
+	const MutableSatEProp& prop,
 	VertDescriptor node, VertDescriptor clause) {
 
 	maps.edgeStatusMap[edge] = DPLLEdgeStatus::Default;
@@ -123,9 +123,10 @@ void DPLLEdgeVisitor::default_edge_event(
 
 
 
-void DPLLEdgeVisitor::deactivate_edge(EdgeDescriptor edge) {
+void DPLLEdgeVisitor::deactivate_edge(
+	EdgeDescriptor edge, const MutableSatEProp& prop) {
 	change_edge_status(edge, DPLLEdgeStatus::Default);
-	prune_info().set_edge_status(edge, PruneStatus::Inactive);
+	set_prune_status(edge, prop.mutate.status, PruneStatus::Inactive);
 }
 
 

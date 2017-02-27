@@ -28,8 +28,6 @@ namespace coopnet {
 
 		virtual VertChoice do_choose(const Formula& form) = 0;
 
-		static bool is_ind_pair(std::pair<VertDescriptor, boost::tribool> pair);
-
 	};
 
 

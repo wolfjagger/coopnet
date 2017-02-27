@@ -3,6 +3,7 @@
 #include <functional>
 #include "coopnet/sat/visitor/visit.h"
 #include "coopnet/sat/problem/assignment.h"
+#include "coopnet/graph/prunable_graph.h"
 #include "node_choice.h"
 
 
@@ -41,9 +42,9 @@ namespace coopnet {
 
 			auto sources = std::vector<size_t>();
 			for (auto source_vert : pruneGraph.connected_component_entry_pts())
-				sources.push_back(boost::vertex(source_vert, prob_graph()));
+				sources.push_back(boost::vertex(source_vert, graph()));
 
-			visit_sat_graph(v, prob_graph(), sources.cbegin(), sources.cend());
+			visit_sat_graph(v, graph(), sources.cbegin(), sources.cend());
 
 		}
 
@@ -64,11 +65,12 @@ namespace coopnet {
 		const PrunableSatGraph& prune_graph() const;
 
 		bool is_SAT() const;
+		IncompleteAssignment create_incomplete_assignment() const;
 		Assignment create_assignment() const;
 
 
 
-		const BaseSatGraph& prob_graph() const;
+		const MutableSatGraph& graph() const;
 
 	};
 

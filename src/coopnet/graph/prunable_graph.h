@@ -10,8 +10,8 @@ namespace coopnet {
 
 	private:
 
-		std::reference_wrapper<const BaseSatGraph> base;
-		PruneInfo pruneInfo;
+		MutableSatGraph graph;
+		PruneStack pruneStack;
 
 		// Connected components members
 		size_t numConnectedComponents;
@@ -25,13 +25,28 @@ namespace coopnet {
 
 
 
-		PruneInfo& prune_info() {
-			return pruneInfo;
-		}
-		const PruneInfo& prune_info() const {
-			return pruneInfo;
-		}
+		MutableSatGraph& get_graph() { return graph; }
+		const MutableSatGraph& get_graph() const { return graph; }
 
+		PruneStack& prune_stack() { return pruneStack; }
+		const PruneStack& prune_stack() const { return pruneStack; }
+
+
+
+		PruneStatus PrunableSatGraph::get_vert_status(VertDescriptor v) const;
+		void PrunableSatGraph::set_vert_status(VertDescriptor v, PruneStatus newStatus);
+
+		PruneStatus PrunableSatGraph::get_edge_status(EdgeDescriptor e) const;
+		void PrunableSatGraph::set_edge_status(EdgeDescriptor e, PruneStatus newStatus);
+
+		boost::tribool PrunableSatGraph::get_assignment(VertDescriptor v) const;
+		void PrunableSatGraph::set_assignment(VertDescriptor v, boost::tribool newValue);
+		bool PrunableSatGraph::is_indeterminate_node(VertDescriptor v) const;
+		bool PrunableSatGraph::is_indeterminate() const;
+
+
+
+		void reverse_to_vert(VertDescriptor v);
 		void reset_prune();
 
 
@@ -45,9 +60,7 @@ namespace coopnet {
 		template<typename PruneVisitor>
 		void visit(PruneVisitor& v) {
 
-			v.set_prune_info(pruneInfo);
-
-			visit_sat_graph(v, base,
+			visit_sat_graph(v, graph,
 				connectedComponentEntryPts.begin(), connectedComponentEntryPts.end());
 
 		}
@@ -55,9 +68,7 @@ namespace coopnet {
 		template<typename PruneVisitor>
 		void visit(PruneVisitor& v) const {
 
-			v.set_prune_info(pruneInfo);
-
-			visit_sat_graph(v, base,
+			visit_sat_graph(v, graph,
 				connectedComponentEntryPts.begin(), connectedComponentEntryPts.end());
 
 		}

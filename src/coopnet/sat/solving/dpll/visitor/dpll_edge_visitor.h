@@ -2,7 +2,7 @@
 
 #include "alphali/designs/pubsub/collaborator.h"
 #include "coopnet/sat/solving/dpll/dpll_prop_maps.h"
-#include "coopnet/sat/visitor/pruned_sat_visitor.h"
+#include "coopnet/sat/visitor/pruning_sat_visitor.h"
 
 
 
@@ -16,7 +16,7 @@ namespace coopnet {
 	//  (b) clause => set node = sgn(edge) iff clause.num_edges == 1
 	// (3) remove edge
 	class DPLLEdgeVisitor :
-		public PruneSatEdgeVisitor<DPLLEdgeVisitor, PruneInfo> {
+		public PruningSatEdgeVisitor<DPLLEdgeVisitor> {
 
 	public:
 		using event_filter = boost::on_examine_edge;
@@ -31,15 +31,15 @@ namespace coopnet {
 	public:
 
 		DPLLEdgeVisitor(
+			PruneStack& initPruneStack,
 			alphali::collaborator&& initContradictionCollab,
 			alphali::collaborator& mainContradictCollab,
 			alphali::publisher& mainUncontradictPub,
-			PruneInfo& initPruneInfo,
 			DPLLPropMaps initMaps);
 
 		void edge_event(
-			const BaseSatGraph& g, EdgeDescriptor edge,
-			const EdgeProp& prop,
+			const MutableSatGraph& g, EdgeDescriptor edge,
+			const MutableSatEProp& prop,
 			VertDescriptor node, VertDescriptor clause) {
 
 			if (isContradicting) {
@@ -53,18 +53,18 @@ namespace coopnet {
 	private:
 
 		void dpll_edge_event(
-			const BaseSatGraph& g, EdgeDescriptor edge,
-			const EdgeProp& prop,
+			const MutableSatGraph& g, EdgeDescriptor edge,
+			const MutableSatEProp& prop,
 			VertDescriptor node, VertDescriptor clause);
 
 		void default_edge_event(
-			const BaseSatGraph& g, EdgeDescriptor edge,
-			const EdgeProp& prop,
+			const MutableSatGraph& g, EdgeDescriptor edge,
+			const MutableSatEProp& prop,
 			VertDescriptor node, VertDescriptor clause);
 
 
 
-		void deactivate_edge(EdgeDescriptor edge);
+		void deactivate_edge(EdgeDescriptor edge, const MutableSatEProp& prop);
 
 		void change_vert_status(
 			VertDescriptor vert, DPLLVertStatus new_status);

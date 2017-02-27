@@ -12,7 +12,7 @@ auto DPLLNodeChooser::do_choose(const Formula& form)
 	-> VertChoice {
 
 	auto& dpll_form = static_cast<const DPLLFormula&>(form);
-	auto visitor = DPLLChooseNodeVisitor(form.prune_graph().prune_info());
+	auto visitor = DPLLChooseNodeVisitor();
 
 	form.visit_active_graph(visitor);
 

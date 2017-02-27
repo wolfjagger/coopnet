@@ -31,13 +31,14 @@ namespace coopnet {
 
 
 
-		void edge_event(const BaseSatGraph& g, EdgeDescriptor e,
-			const coopnet::EdgeProp& edge_property,
+		template<typename SatGraph>
+		void edge_event(const SatGraph& g, EdgeDescriptor e,
+			const coopnet::BaseSatEProp& edge_property,
 			VertDescriptor vert_node, VertDescriptor vert_clause) {
 
 			// If sign of literal in clause matches assignment, clause is satisfied
 			auto n = node_to_vertex_map->right.at(vert_node);
-			auto sgn_of_literal = edge_property.sgn;
+			auto sgn_of_literal = edge_property.base.sgn;
 			auto assigned_val = assigned->data.at(n);
 			if(sgn_of_literal == assigned_val) {
 				satisfiability->clauses_satisfied.insert(vert_clause);

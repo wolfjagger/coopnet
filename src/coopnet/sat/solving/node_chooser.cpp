@@ -14,7 +14,7 @@ boost::optional<NodeChoice> NodeChooser::choose(const Formula& form) {
 	auto& pruneGraph = form.prune_graph();
 
 	// If none, return no node
-	if(!pruneGraph.prune_info().is_indeterminate()) {
+	if(!pruneGraph.is_indeterminate()) {
 		return boost::optional<NodeChoice>();
 	} else {
 
@@ -28,10 +28,6 @@ boost::optional<NodeChoice> NodeChooser::choose(const Formula& form) {
 
 }
 
-bool NodeChooser::is_ind_pair(std::pair<VertDescriptor, boost::tribool> pair) {
-	return boost::indeterminate(pair.second);
-}
-
 
 
 
@@ -40,11 +36,17 @@ auto NextNodeChooser::do_choose(const Formula& form)
 	-> VertChoice {
 
 	auto& pruneGraph = form.prune_graph();
-	auto& assign_map = pruneGraph.prune_info().get_assignment_map();
+	
+	auto vPair = boost::vertices(pruneGraph.get_graph());
 
-	auto iter = std::find_if(
-		assign_map.cbegin(), assign_map.cend(), is_ind_pair);
-	return std::make_pair(iter->first, true);
+	auto iter = std::find_if(vPair.first, vPair.second,
+		[&pruneGraph](VertDescriptor v) {
+	
+		return pruneGraph.is_indeterminate_node(v);
+
+	});
+
+	return std::make_pair(*iter, true);
 
 }
 
@@ -59,10 +61,16 @@ auto RandNodeChooser::do_choose(const Formula& form)
 	-> VertChoice {
 
 	auto& pruneGraph = form.prune_graph();
-	auto& assign_map = pruneGraph.prune_info().get_assignment_map();
 
-	auto iter = alphali::random_find_if(
-		assign_map.cbegin(), assign_map.cend(), is_ind_pair, rand_engine);
-	return std::make_pair(iter->first, alphali::coin_flip());
+	auto vPair = boost::vertices(pruneGraph.get_graph());
+
+	auto iter = alphali::random_find_if(vPair.first, vPair.second,
+		[&pruneGraph](VertDescriptor v) {
+
+		return pruneGraph.is_indeterminate_node(v);
+
+	}, rand_engine);
+
+	return std::make_pair(*iter, true);
 
 }

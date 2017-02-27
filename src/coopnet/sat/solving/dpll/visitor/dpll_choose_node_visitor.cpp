@@ -11,8 +11,7 @@ namespace {
 
 
 
-DPLLChooseNodeVisitor::DPLLChooseNodeVisitor(const PruneInfo& initPruneInfo) :
-	PruneSatVertVisitor(initPruneInfo) {
+DPLLChooseNodeVisitor::DPLLChooseNodeVisitor() {
 
 	reset();
 
@@ -21,7 +20,7 @@ DPLLChooseNodeVisitor::DPLLChooseNodeVisitor(const PruneInfo& initPruneInfo) :
 
 
 void DPLLChooseNodeVisitor::node_event(
-	const BaseSatGraph& g, VertDescriptor node, const VertProp& prop) {
+	const MutableSatGraph& g, VertDescriptor node, const MutableSatVProp& prop) {
 
 	if (DEBUG) std::cout << "node " << node << std::endl;
 
@@ -30,7 +29,7 @@ void DPLLChooseNodeVisitor::node_event(
 
 
 	auto count_fcn = [&g, &num_pos_edges, &num_neg_edges](EdgeDescriptor e) {
-		if (g[e].sgn) {
+		if (g[e].base.sgn) {
 			++num_pos_edges;
 		} else {
 			++num_neg_edges;
@@ -79,7 +78,7 @@ void DPLLChooseNodeVisitor::node_event(
 
 
 void DPLLChooseNodeVisitor::clause_event(
-	const BaseSatGraph& g, VertDescriptor clause, const VertProp& prop) {
+	const MutableSatGraph& g, VertDescriptor clause, const MutableSatVProp& prop) {
 
 }
 

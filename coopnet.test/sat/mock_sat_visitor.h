@@ -12,13 +12,13 @@ namespace coopnet::test {
 
 		void node_event(
 			const BaseSatGraph& g, VertDescriptor node,
-			const VertProp& prop) {
+			const BaseSatVProp& prop) {
 
 		}
 
 		void clause_event(
 			const BaseSatGraph& g, VertDescriptor clause,
-			const VertProp& prop) {
+			const BaseSatVProp& prop) {
 
 		}
 
@@ -31,7 +31,7 @@ namespace coopnet::test {
 
 		void edge_event(
 			const BaseSatGraph& g, EdgeDescriptor edge,
-			const EdgeProp& prop,
+			const BaseSatEProp& prop,
 			VertDescriptor node, VertDescriptor clause) {
 
 		}
