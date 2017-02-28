@@ -3,7 +3,7 @@
 #include <functional>
 #include "coopnet/sat/visitor/visit.h"
 #include "coopnet/sat/problem/assignment.h"
-#include "coopnet/graph/prunable_graph.h"
+#include "coopnet/graph/mutable_graph.h"
 #include "node_choice.h"
 
 

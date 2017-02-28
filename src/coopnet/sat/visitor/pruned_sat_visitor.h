@@ -1,7 +1,7 @@
 #pragma once
 
 #include <algorithm>
-#include "coopnet/graph/prunable_graph.h"
+#include "coopnet/graph/mutable_graph.h"
 #include "sat_visitor.h"
 
 

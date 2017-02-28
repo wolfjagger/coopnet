@@ -179,7 +179,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\coopnet\graph\graph.cpp" />
-    <ClCompile Include="src\coopnet\graph\prunable_graph.cpp" />
+    <None Include="src\coopnet\graph\extended_graph.inl">
+      <FileType>CppCode</FileType>
+    </None>
     <ClCompile Include="src\coopnet\graph\prune_info.cpp" />
     <ClCompile Include="src\coopnet\sat\component\node.cpp" />
     <ClCompile Include="src\coopnet\sat\problem\shuffler.cpp" />
@@ -200,7 +202,8 @@
   <ItemGroup>
     <ClInclude Include="src\coopnet\graph\bgl_inc.h" />
     <ClInclude Include="src\coopnet\graph\graph_util.h" />
-    <ClInclude Include="src\coopnet\graph\prunable_graph.h" />
+    <ClInclude Include="src\coopnet\graph\mutable_graph.h" />
+    <ClInclude Include="src\coopnet\graph\extended_graph.h" />
     <ClInclude Include="src\coopnet\graph\prune_info.h" />
     <ClInclude Include="src\coopnet\sat\problem\assignment.h" />
     <ClInclude Include="src\coopnet\sat\component\clause.h" />

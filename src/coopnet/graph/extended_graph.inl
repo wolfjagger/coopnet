@@ -1,59 +1,8 @@
-#include "prunable_graph.h"
-#include "graph_util.h"
-
-using namespace coopnet;
 
 
 
-namespace {
-
-	constexpr bool DEBUG = false;
-
-	MutableSatGraph create_mutable_from_base(const BaseSatGraph& original) {
-
-		auto out = MutableSatGraph();
-
-		auto vPair = boost::vertices(original);
-		auto ePair = boost::edges(original);
-
-		auto mapOrigToOut = std::map<VertDescriptor, VertDescriptor>();
-
-		std::for_each(vPair.first, vPair.second,
-			[&out, &original, &mapOrigToOut](VertDescriptor v) {
-			
-			auto prop = MutableSatVProp();
-			prop.base = original[v].base;
-			prop.mutate.status = PruneStatus::Active;
-			prop.mutate.assignment = boost::indeterminate;
-
-			auto outVert = boost::add_vertex(prop, out);
-			mapOrigToOut.emplace(v, outVert);
-
-		});
-
-		std::for_each(ePair.first, ePair.second,
-			[&out, &original, &mapOrigToOut](EdgeDescriptor e) {
-
-			auto prop = MutableSatEProp();
-			prop.base = original[e].base;
-			prop.mutate.status = PruneStatus::Active;
-
-			auto vert1 = boost::source(e, out);
-			auto vert2 = boost::target(e, out);
-
-			boost::add_edge(vert1, vert2, prop, out);
-
-		});
-
-		return out;
-
-	}
-
-}
-
-
-
-PrunableSatGraph::PrunableSatGraph(const BaseSatGraph& original) :
+template<typename VProp, typename EProp>
+ExtendedSatGraph<VProp, EProp>::ExtendedSatGraph(const BaseSatGraph& original) :
 	graph(create_mutable_from_base(original)),
 	pruneStack() {
 
@@ -67,10 +16,13 @@ PrunableSatGraph::PrunableSatGraph(const BaseSatGraph& original) :
 
 
 
-PruneStatus PrunableSatGraph::get_vert_status(VertDescriptor v) const {
+template<typename VProp, typename EProp>
+PruneStatus ExtendedSatGraph<VProp, EProp>::get_vert_status(VertDescriptor v) const {
 	return graph[v].mutate.status;
 }
-void PrunableSatGraph::set_vert_status(VertDescriptor v, PruneStatus newStatus) {
+
+template<typename VProp, typename EProp>
+void ExtendedSatGraph<VProp, EProp>::set_vert_status(VertDescriptor v, PruneStatus newStatus) {
 
 	auto& oldStatus = graph[v].mutate.status;
 	if (oldStatus != newStatus) {
@@ -84,10 +36,13 @@ void PrunableSatGraph::set_vert_status(VertDescriptor v, PruneStatus newStatus) 
 
 }
 
-PruneStatus PrunableSatGraph::get_edge_status(EdgeDescriptor e) const {
+template<typename VProp, typename EProp>
+PruneStatus ExtendedSatGraph<VProp, EProp>::get_edge_status(EdgeDescriptor e) const {
 	return graph[e].mutate.status;
 }
-void PrunableSatGraph::set_edge_status(EdgeDescriptor e, PruneStatus newStatus) {
+
+template<typename VProp, typename EProp>
+void ExtendedSatGraph<VProp, EProp>::set_edge_status(EdgeDescriptor e, PruneStatus newStatus) {
 
 	auto& oldStatus = graph[e].mutate.status;
 	if (oldStatus != newStatus) {
@@ -101,10 +56,13 @@ void PrunableSatGraph::set_edge_status(EdgeDescriptor e, PruneStatus newStatus) 
 
 }
 
-boost::tribool PrunableSatGraph::get_assignment(VertDescriptor v) const {
+template<typename VProp, typename EProp>
+boost::tribool ExtendedSatGraph<VProp, EProp>::get_assignment(VertDescriptor v) const {
 	return graph[v].mutate.assignment;
 }
-void PrunableSatGraph::set_assignment(VertDescriptor v, boost::tribool newValue) {
+
+template<typename VProp, typename EProp>
+void ExtendedSatGraph<VProp, EProp>::set_assignment(VertDescriptor v, boost::tribool newValue) {
 
 	auto& oldValue = graph[v].mutate.assignment;
 	if (oldValue != newValue ||
@@ -119,13 +77,17 @@ void PrunableSatGraph::set_assignment(VertDescriptor v, boost::tribool newValue)
 	}
 
 }
-bool PrunableSatGraph::is_indeterminate_node(VertDescriptor v) const {
+
+template<typename VProp, typename EProp>
+bool ExtendedSatGraph<VProp, EProp>::is_indeterminate_node(VertDescriptor v) const {
 
 	return (graph[v].base.kind == MutableSatVProp::Node)
 		&& (boost::indeterminate(graph[v].mutate.assignment));
 
 }
-bool PrunableSatGraph::is_indeterminate() const {
+
+template<typename VProp, typename EProp>
+bool ExtendedSatGraph<VProp, EProp>::is_indeterminate() const {
 
 	auto vPair = boost::vertices(graph);
 	return std::any_of(vPair.first, vPair.second, [this](VertDescriptor v) {
@@ -136,7 +98,8 @@ bool PrunableSatGraph::is_indeterminate() const {
 
 
 
-void PrunableSatGraph::reverse_to_vert(VertDescriptor v) {
+template<typename VProp, typename EProp>
+void ExtendedSatGraph<VProp, EProp>::reverse_to_vert(VertDescriptor v) {
 
 	auto done = false;
 	while (!done && !pruneStack.empty()) {
@@ -198,7 +161,8 @@ void PrunableSatGraph::reverse_to_vert(VertDescriptor v) {
 
 }
 
-void PrunableSatGraph::reset_prune() {
+template<typename VProp, typename EProp>
+void ExtendedSatGraph<VProp, EProp>::reset_prune() {
 
 	auto vPair = boost::vertices(graph);
 	auto ePair = boost::edges(graph);
@@ -220,10 +184,59 @@ void PrunableSatGraph::reset_prune() {
 
 
 
-size_t PrunableSatGraph::num_connected_components() const {
+template<typename VProp, typename EProp>
+size_t ExtendedSatGraph<VProp, EProp>::num_connected_components() const {
 	return numConnectedComponents;
 }
+
+template<typename VProp, typename EProp>
 const std::vector<VertDescriptor>&
-PrunableSatGraph::connected_component_entry_pts() const {
+ExtendedSatGraph<VProp, EProp>::connected_component_entry_pts() const {
 	return connectedComponentEntryPts;
+}
+
+
+
+
+
+
+template<typename VProp, typename EProp>
+SatGraph<VProp, EProp> ExtendedSatGraph<VProp, EProp>::create_mutable_from_base(const BaseSatGraph& original) {
+
+	auto out = MutableSatGraph();
+
+	auto vPair = boost::vertices(original);
+	auto ePair = boost::edges(original);
+
+	auto mapOrigToOut = std::map<VertDescriptor, VertDescriptor>();
+
+	std::for_each(vPair.first, vPair.second,
+		[&out, &original, &mapOrigToOut](VertDescriptor v) {
+
+		auto prop = MutableSatVProp();
+		prop.base = original[v].base;
+		prop.mutate.status = PruneStatus::Active;
+		prop.mutate.assignment = boost::indeterminate;
+
+		auto outVert = boost::add_vertex(prop, out);
+		mapOrigToOut.emplace(v, outVert);
+
+	});
+
+	std::for_each(ePair.first, ePair.second,
+		[&out, &original, &mapOrigToOut](EdgeDescriptor e) {
+
+		auto prop = MutableSatEProp();
+		prop.base = original[e].base;
+		prop.mutate.status = PruneStatus::Active;
+
+		auto vert1 = boost::source(e, out);
+		auto vert2 = boost::target(e, out);
+
+		boost::add_edge(vert1, vert2, prop, out);
+
+	});
+
+	return out;
+
 }
