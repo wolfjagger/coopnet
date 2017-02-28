@@ -33,7 +33,7 @@ namespace coopnet {
 		DPLLEdgeVisitor(
 			PruneStack& initPruneStack,
 			alphali::collaborator&& initContradictionCollab,
-			alphali::collaborator& mainContradictCollab,
+			alphali::publisher& mainContradictPub,
 			alphali::publisher& mainUncontradictPub,
 			DPLLPropMaps initMaps);
 

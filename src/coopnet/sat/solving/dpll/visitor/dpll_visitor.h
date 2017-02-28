@@ -20,7 +20,7 @@ namespace coopnet {
 			PruneStack& pruneStack,
 			alphali::collaborator&& vertContradictionCollab,
 			alphali::collaborator&& edgeContradictionCollab,
-			alphali::collaborator& mainContradictCollab,
+			alphali::publisher& mainContradictPub,
 			alphali::publisher& mainUncontradictPub, 
 			DPLLPropMaps initMaps);
 

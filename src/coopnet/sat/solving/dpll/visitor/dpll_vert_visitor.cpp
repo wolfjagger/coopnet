@@ -14,7 +14,7 @@ namespace {
 DPLLVertVisitor::DPLLVertVisitor(
 	PruneStack& initPruneStack,
 	alphali::collaborator&& initContradictCollab,
-	alphali::collaborator& mainContradictCollab,
+	alphali::publisher& mainContradictPub,
 	alphali::publisher& mainUncontradictPub,
 	DPLLPropMaps initMaps) :
 	PruningSatVertVisitor<DPLLVertVisitor>(initPruneStack),
@@ -24,7 +24,7 @@ DPLLVertVisitor::DPLLVertVisitor(
 
 	contradictionCollab = std::move(initContradictCollab);
 
-	contradictionCollab.subscribe(mainContradictCollab,
+	contradictionCollab.subscribe(mainContradictPub,
 		[this]() { set_contradicting(); });
 	contradictionCollab.subscribe(mainUncontradictPub,
 		[this]() { set_uncontradicting(); });

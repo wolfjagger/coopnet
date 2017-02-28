@@ -11,7 +11,8 @@ namespace {
 }
 
 
-
+// Optimization turned off because something about the pub-sub mechanism
+#pragma optimize("", off)
 DPLLFormula::DPLLFormula(const Problem& prob) :
 	Formula(prob),
 	greyBuffer(),
@@ -19,7 +20,8 @@ DPLLFormula::DPLLFormula(const Problem& prob) :
 	edgeStatusMap(),
 	colorMap(),
 	isContradicting(false),
-	setContradictCollab(),
+	setContradictPub(),
+	setContradictSub(),
 	setUncontradictPub() {
 
 
@@ -53,13 +55,13 @@ DPLLFormula::DPLLFormula(const Problem& prob) :
 	propMaps = DPLLPropMaps(
 		vertStatusMap, edgeStatusMap, colorMap);
 
-
+	
 	auto vertContradictionCollab = alphali::collaborator();
 	auto edgeContradictionCollab = alphali::collaborator();
 
-	setContradictCollab.subscribe(vertContradictionCollab,
+	setContradictSub.subscribe(vertContradictionCollab,
 		[this] { set_contradicting(); });
-	setContradictCollab.subscribe(edgeContradictionCollab,
+	setContradictSub.subscribe(edgeContradictionCollab,
 		[this] { set_contradicting(); });
 
 
@@ -67,10 +69,11 @@ DPLLFormula::DPLLFormula(const Problem& prob) :
 		pruneGraph.prune_stack(),
 		std::move(vertContradictionCollab),
 		std::move(edgeContradictionCollab),
-		setContradictCollab, setUncontradictPub,
+		setContradictPub, setUncontradictPub,
 		propMaps);
 
 }
+#pragma optimize("", on)
 
 
 
@@ -100,10 +103,15 @@ void DPLLFormula::set_node(NodeChoice choice) {
 bool DPLLFormula::is_contradicting() const {
 	return isContradicting;
 }
+
+// Optimization turned off because something about the pub-sub mechanism
+#pragma optimize("", off)
 void DPLLFormula::set_contradicting() {
 	isContradicting = true;
-	setContradictCollab.publish();
+	setContradictPub.publish();
 }
+#pragma optimize("", on)
+
 void DPLLFormula::set_uncontradicting() {
 	isContradicting = false;
 	setUncontradictPub.publish();

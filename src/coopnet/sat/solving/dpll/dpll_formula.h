@@ -25,7 +25,8 @@ namespace coopnet {
 		DPLLColorMap colorMap;
 
 		bool isContradicting;
-		alphali::collaborator setContradictCollab;
+		alphali::publisher setContradictPub;
+		alphali::subscriber setContradictSub;
 		alphali::publisher setUncontradictPub;
 
 		DPLLPropMaps propMaps;
