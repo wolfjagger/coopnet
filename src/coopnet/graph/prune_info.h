@@ -41,23 +41,6 @@ namespace coopnet {
 
 
 
-	struct MutableSatVProp : public BaseSatVProp {
-		mutable struct Mutable {
-			PruneStatus status;
-			boost::tribool assignment;
-		} mutate;
-	};
-
-	struct MutableSatEProp : public BaseSatEProp {
-		mutable struct Mutable {
-			PruneStatus status;
-		} mutate;
-	};
-
-	using MutableSatGraph = SatGraph<MutableSatVProp, MutableSatEProp>;
-
-
-
 	std::ostream& operator<<(std::ostream& os, PruneStatus status);
 
 	std::ostream& operator<<(std::ostream& os, boost::logic::tribool b);
