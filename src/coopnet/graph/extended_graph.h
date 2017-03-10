@@ -62,20 +62,10 @@ namespace coopnet {
 
 
 		template<typename PruneVisitor>
-		void visit(PruneVisitor& v) {
-
-			visit_sat_graph(v, graph,
-				connectedComponentEntryPts.begin(), connectedComponentEntryPts.end());
-
-		}
+		void visit(PruneVisitor& v);
 
 		template<typename PruneVisitor>
-		void visit(PruneVisitor& v) const {
-
-			visit_sat_graph(v, graph,
-				connectedComponentEntryPts.begin(), connectedComponentEntryPts.end());
-
-		}
+		void visit(PruneVisitor& v) const;
 
 	private:
 

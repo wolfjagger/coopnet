@@ -197,6 +197,26 @@ ExtendedSatGraph<VProp, EProp>::connected_component_entry_pts() const {
 
 
 
+template<typename VProp, typename EProp>
+template<typename PruneVisitor>
+void ExtendedSatGraph<VProp, EProp>::visit(PruneVisitor& v) {
+
+	visit_sat_graph(v, graph,
+		connectedComponentEntryPts.begin(), connectedComponentEntryPts.end());
+
+}
+
+template<typename VProp, typename EProp>
+template<typename PruneVisitor>
+void ExtendedSatGraph<VProp, EProp>::visit(PruneVisitor& v) const {
+
+	visit_sat_graph(v, graph,
+		connectedComponentEntryPts.begin(), connectedComponentEntryPts.end());
+
+}
+
+
+
 
 
 
