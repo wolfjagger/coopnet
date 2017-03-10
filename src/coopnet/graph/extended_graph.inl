@@ -3,7 +3,7 @@
 
 template<typename VProp, typename EProp>
 ExtendedSatGraph<VProp, EProp>::ExtendedSatGraph(const BaseSatGraph& original) :
-	graph(create_mutable_from_base(original)),
+	graph(create_extended_from_base(original)),
 	pruneStack() {
 
 	connectedComponentEntryPts
@@ -221,9 +221,10 @@ void ExtendedSatGraph<VProp, EProp>::visit(PruneVisitor& v) const {
 
 
 template<typename VProp, typename EProp>
-SatGraph<VProp, EProp> ExtendedSatGraph<VProp, EProp>::create_mutable_from_base(const BaseSatGraph& original) {
+SatGraph<VProp, EProp> ExtendedSatGraph<VProp, EProp>::create_extended_from_base(
+	const BaseSatGraph& original) {
 
-	auto out = MutableSatGraph();
+	auto out = SatGraph<VProp, EProp>();
 
 	auto vPair = boost::vertices(original);
 	auto ePair = boost::edges(original);
@@ -233,10 +234,10 @@ SatGraph<VProp, EProp> ExtendedSatGraph<VProp, EProp>::create_mutable_from_base(
 	std::for_each(vPair.first, vPair.second,
 		[&out, &original, &mapOrigToOut](VertDescriptor v) {
 
-		auto prop = MutableSatVProp();
+		auto prop = VProp();
 		prop.base = original[v].base;
-		prop.mutate.status = PruneStatus::Active;
-		prop.mutate.assignment = boost::indeterminate;
+
+		init_extra_vert_props(prop);
 
 		auto outVert = boost::add_vertex(prop, out);
 		mapOrigToOut.emplace(v, outVert);
@@ -246,9 +247,10 @@ SatGraph<VProp, EProp> ExtendedSatGraph<VProp, EProp>::create_mutable_from_base(
 	std::for_each(ePair.first, ePair.second,
 		[&out, &original, &mapOrigToOut](EdgeDescriptor e) {
 
-		auto prop = MutableSatEProp();
+		auto prop = EProp();
 		prop.base = original[e].base;
-		prop.mutate.status = PruneStatus::Active;
+
+		init_extra_edge_props(prop);
 
 		auto vert1 = boost::source(e, out);
 		auto vert2 = boost::target(e, out);

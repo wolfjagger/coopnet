@@ -69,7 +69,7 @@ namespace coopnet {
 
 	private:
 
-		static SatGraph<VProp, EProp> create_mutable_from_base(const BaseSatGraph& original);
+		static SatGraph<VProp, EProp> create_extended_from_base(const BaseSatGraph& original);
 		
 	};
 

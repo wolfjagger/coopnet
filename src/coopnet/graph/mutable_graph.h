@@ -26,4 +26,13 @@ namespace coopnet {
 
 	using PrunableSatGraph = ExtendedSatGraph<MutableSatVProp, MutableSatEProp>;
 
+	inline void init_extra_vert_props(MutableSatVProp& prop) {
+		prop.mutate.status = PruneStatus::Active;
+		prop.mutate.assignment = boost::indeterminate;
+	}
+
+	inline void init_extra_edge_props(MutableSatEProp& prop) {
+		prop.mutate.status = PruneStatus::Active;
+	}
+
 }
