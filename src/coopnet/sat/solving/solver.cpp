@@ -1,12 +1,10 @@
 #include "solver.h"
-#include "node_chooser.h"
 
 using namespace coopnet;
 
 
 
-Solver::Solver(std::unique_ptr<NodeChooser> chooser) :
-	n_chooser(std::move(chooser)) {
+Solver::Solver() {
 
 }
 
@@ -16,8 +14,7 @@ Solver::~Solver() {
 
 
 
-CompleteSolver::CompleteSolver(std::unique_ptr<NodeChooser> chooser) :
-	Solver(std::move(chooser)) {
+CompleteSolver::CompleteSolver() {
 
 }
 
@@ -39,8 +36,7 @@ auto CompleteSolver::solve(const Problem& prob) -> SolveReturn {
 
 
 
-IncompleteSolver::IncompleteSolver(std::unique_ptr<NodeChooser> chooser) :
-	Solver(std::move(chooser)) {
+IncompleteSolver::IncompleteSolver() {
 
 }
 

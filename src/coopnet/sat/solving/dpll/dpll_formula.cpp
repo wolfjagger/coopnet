@@ -14,7 +14,7 @@ namespace {
 // Optimization turned off because something about the pub-sub mechanism
 #pragma optimize("", off)
 DPLLFormula::DPLLFormula(const Problem& prob) :
-	Formula(prob),
+	Formula<MutableSatVProp, MutableSatEProp>(prob),
 	greyBuffer(),
 	vertStatusMap(),
 	edgeStatusMap(),
@@ -66,7 +66,7 @@ DPLLFormula::DPLLFormula(const Problem& prob) :
 
 
 	pruneVisitor = std::make_unique<DPLLVisitor>(
-		pruneGraph.prune_stack(),
+		extendedGraph.prune_stack(),
 		std::move(vertContradictionCollab),
 		std::move(edgeContradictionCollab),
 		setContradictPub, setUncontradictPub,

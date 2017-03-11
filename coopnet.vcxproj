@@ -189,11 +189,14 @@
     <ClCompile Include="src\coopnet\sat\problem\problem_factory.cpp" />
     <ClCompile Include="src\coopnet\sat\problem\problem_util.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\dpll\dpll_formula.cpp" />
-    <ClCompile Include="src\coopnet\sat\solving\dpll\dpll_node_chooser.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\dpll\visitor\dpll_edge_visitor.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\dpll\visitor\dpll_vert_visitor.cpp" />
-    <ClCompile Include="src\coopnet\sat\solving\formula.cpp" />
-    <ClCompile Include="src\coopnet\sat\solving\node_chooser.cpp" />
+    <None Include="src\coopnet\sat\solving\formula.inl">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="src\coopnet\sat\solving\node_chooser.inl">
+      <FileType>CppCode</FileType>
+    </None>
     <ClCompile Include="src\coopnet\sat\solving\dpll\dpll_solver.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\dpll\visitor\dpll_visitor.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\solver.cpp" />
@@ -222,6 +225,7 @@
     <ClInclude Include="src\coopnet\sat\solving\node_choice.h" />
     <ClInclude Include="src\coopnet\sat\solving\node_chooser.h" />
     <ClInclude Include="src\coopnet\sat\solving\dpll\visitor\dpll_choose_node_visitor.h" />
+    <ClInclude Include="src\coopnet\sat\solving\simple_formula.h" />
     <ClInclude Include="src\coopnet\sat\visitor\pruned_sat_visitor.h" />
     <ClInclude Include="src\coopnet\sat\visitor\pruning_sat_visitor.h" />
     <ClInclude Include="src\coopnet\sat\visitor\visit.h" />

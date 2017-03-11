@@ -1,5 +1,7 @@
 #pragma once
 
+#include "alphali/containers/random_iterator.h"
+#include "alphali/util/random.h"
 #include "boost/logic/tribool.hpp"
 #include "boost/optional.hpp"
 #include "coopnet/graph/graph.h"
@@ -10,10 +12,7 @@
 
 namespace coopnet {
 
-	class Formula;
-
-	// Note: Will include sort by largest connection,
-	//  watched literals or clauses, most clauses solved, etc.
+	template<class ConcreteFormula>
 	class NodeChooser {
 
 	protected:
@@ -22,11 +21,11 @@ namespace coopnet {
 
 	public:
 
-		boost::optional<NodeChoice> choose(const Formula& form);
+		boost::optional<NodeChoice> choose(const ConcreteFormula& form);
 
 	protected:
 
-		virtual VertChoice do_choose(const Formula& form) = 0;
+		virtual VertChoice do_choose(const ConcreteFormula& form) = 0;
 
 	};
 
@@ -34,21 +33,25 @@ namespace coopnet {
 
 
 
-	class NextNodeChooser : public NodeChooser {
+	template<class ConcreteFormula>
+	class NextNodeChooser : public NodeChooser<ConcreteFormula> {
 
 	protected:
 
-		VertChoice do_choose(const Formula& form) override;
+		VertChoice do_choose(const ConcreteFormula& form) override;
 
 	};
 
 
-	class RandNodeChooser : public NodeChooser {
+	template<class ConcreteFormula>
+	class RandNodeChooser : public NodeChooser<ConcreteFormula> {
 
 	protected:
 
-		VertChoice do_choose(const Formula& form) override;
+		VertChoice do_choose(const ConcreteFormula& form) override;
 
 	};
+
+#include "node_chooser.inl"
 
 }

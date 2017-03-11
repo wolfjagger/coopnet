@@ -18,6 +18,8 @@ namespace coopnet {
 
 		std::unique_ptr<DPLLFormula> formula;
 
+		std::unique_ptr<NodeChooser<DPLLFormula>> nodeChooser;
+
 		// Choice: node, sgn, first time chosen (out of two)
 		std::stack<NodeDecision> decisions;
 

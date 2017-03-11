@@ -3,6 +3,7 @@
 #include <functional>
 #include "coopnet/sat/visitor/visit.h"
 #include "coopnet/sat/problem/assignment.h"
+#include "coopnet/sat/problem/problem.h"
 #include "coopnet/graph/mutable_graph.h"
 #include "node_choice.h"
 
@@ -10,18 +11,19 @@
 
 namespace coopnet {
 
-	class Problem;
-
+	template<typename VProp, typename EProp>
 	class Formula {
 
 	private:
+
+		using Graph = SatGraph<VProp, EProp>;
+		using ExtendedGraph = ExtendedSatGraph<VProp, EProp>;
 
 		std::reference_wrapper<const Problem> prob;
 
 	protected:
 
-		// Assignment information, including "unassigned"
-		PrunableSatGraph pruneGraph;
+		ExtendedGraph extendedGraph;
 
 	public:
 
@@ -50,7 +52,7 @@ namespace coopnet {
 
 		template<typename PruneVisitor>
 		void visit_active_graph(PruneVisitor& v) const {
-			pruneGraph.visit(v);
+			extendedGraph.visit(v);
 		}
 
 		
@@ -62,16 +64,15 @@ namespace coopnet {
 		const NodeVertMap& node_vert_map() const;
 		std::shared_ptr<const NodeVertMap> node_vert_map_ptr() const;
 
-		const PrunableSatGraph& prune_graph() const;
+		const ExtendedGraph& extended_graph() const;
+		const Graph& graph() const;
 
 		bool is_SAT() const;
 		IncompleteAssignment create_incomplete_assignment() const;
 		Assignment create_assignment() const;
 
-
-
-		const MutableSatGraph& graph() const;
-
 	};
+
+#include "formula.inl"
 
 }

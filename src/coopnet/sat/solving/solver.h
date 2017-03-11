@@ -9,7 +9,6 @@ namespace coopnet {
 
 	struct Assignment;
 	class Problem;
-	class NodeChooser;
 
 	enum class SolutionStatus {
 		Satisfied, Unsatisfiable, Undetermined
@@ -19,17 +18,13 @@ namespace coopnet {
 	// Interface for SAT solvers
 	class Solver {
 
-	protected:
-
-		std::unique_ptr<NodeChooser> n_chooser;
-
 	public:
 
 		using SolveReturn = std::pair<SolutionStatus, std::shared_ptr<Assignment>>;
 
 	public:
 
-		Solver(std::unique_ptr<NodeChooser> chooser);
+		Solver();
 
 		Solver(const Solver& other) = delete;
 		Solver& operator=(const Solver& other) = delete;
@@ -48,7 +43,7 @@ namespace coopnet {
 
 	public:
 
-		CompleteSolver(std::unique_ptr<NodeChooser> chooser);
+		CompleteSolver();
 
 		CompleteSolver(CompleteSolver&& other) = default;
 		CompleteSolver& operator=(CompleteSolver&& other) = default;
@@ -69,7 +64,7 @@ namespace coopnet {
 
 	public:
 
-		IncompleteSolver(std::unique_ptr<NodeChooser> chooser);
+		IncompleteSolver();
 
 		IncompleteSolver(IncompleteSolver&& other) = default;
 		IncompleteSolver& operator=(IncompleteSolver&& other) = default;

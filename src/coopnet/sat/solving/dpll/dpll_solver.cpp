@@ -39,7 +39,7 @@ namespace {
 
 
 DPLLSolver::DPLLSolver(DPLLNodeChoiceMode mode) :
-	CompleteSolver(std::move(create_dpll_node_chooser(mode))) {
+	nodeChooser(create_dpll_node_chooser(mode)) {
 
 }
 
@@ -105,7 +105,7 @@ void DPLLSolver::find_assignment() {
 
 	while (true) {
 
-		auto new_choice = n_chooser->choose(*formula);
+		auto new_choice = nodeChooser->choose(*formula);
 
 		// If no valid new node, formula is reduced
 		if (!new_choice.is_initialized()) break;

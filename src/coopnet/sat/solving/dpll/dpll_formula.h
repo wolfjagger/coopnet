@@ -11,7 +11,7 @@ namespace coopnet {
 
 	class Problem;
 
-	class DPLLFormula : public Formula {
+	class DPLLFormula : public Formula<MutableSatVProp, MutableSatEProp> {
 
 	private:
 
