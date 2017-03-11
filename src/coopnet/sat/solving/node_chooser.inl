@@ -68,3 +68,17 @@ auto RandNodeChooser<ConcreteFormula>::do_choose(const ConcreteFormula& form)
 	return std::make_pair(*iter, true);
 
 }
+
+
+
+template<class ConcreteFormula>
+auto MaxClauseNodeChooser<ConcreteFormula>::do_choose(const ConcreteFormula& form)
+    -> VertChoice {
+
+	auto visitor = ChooseMaxClausesVisitor();
+
+	form.visit_active_graph(visitor);
+
+	return visitor.retreive_choice();
+
+}

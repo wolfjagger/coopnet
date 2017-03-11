@@ -200,7 +200,7 @@
     <ClCompile Include="src\coopnet\sat\solving\dpll\dpll_solver.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\dpll\visitor\dpll_visitor.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\solver.cpp" />
-    <ClCompile Include="src\coopnet\sat\solving\dpll\visitor\dpll_choose_node_visitor.cpp" />
+    <ClCompile Include="src\coopnet\sat\visitor\choose_max_clauses_visitor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\coopnet\graph\bgl_inc.h" />
@@ -224,7 +224,7 @@
     <ClInclude Include="src\coopnet\sat\solving\formula.h" />
     <ClInclude Include="src\coopnet\sat\solving\node_choice.h" />
     <ClInclude Include="src\coopnet\sat\solving\node_chooser.h" />
-    <ClInclude Include="src\coopnet\sat\solving\dpll\visitor\dpll_choose_node_visitor.h" />
+    <ClInclude Include="src\coopnet\sat\visitor\choose_max_clauses_visitor.h" />
     <ClInclude Include="src\coopnet\sat\solving\simple_formula.h" />
     <ClInclude Include="src\coopnet\sat\visitor\pruned_sat_visitor.h" />
     <ClInclude Include="src\coopnet\sat\visitor\pruning_sat_visitor.h" />

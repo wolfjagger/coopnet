@@ -21,8 +21,6 @@ namespace coopnet {
 
 	private:
 
-		DPLLPropMaps maps;
-
 		bool isContradicting;
 		alphali::collaborator contradictionCollab;
 
@@ -32,12 +30,11 @@ namespace coopnet {
 			PruneStack& initPruneStack,
 			alphali::collaborator&& initContradictionCollab,
 			alphali::publisher& mainContradictPub,
-			alphali::publisher& mainUncontradictPub,
-			DPLLPropMaps initMaps);
+			alphali::publisher& mainUncontradictPub);
 
 		void node_event(
-			const MutableSatGraph& g, VertDescriptor node,
-			const MutableSatVProp& prop) {
+			const DPLLSatGraph& g, VertDescriptor node,
+			const DPLLVProp& prop) {
 
 			if (isContradicting) {
 				default_vert_event(g, node, prop);
@@ -48,8 +45,8 @@ namespace coopnet {
 		}
 
 		void clause_event(
-			const MutableSatGraph& g, VertDescriptor clause,
-			const MutableSatVProp& prop) {
+			const DPLLSatGraph& g, VertDescriptor clause,
+			const DPLLVProp& prop) {
 
 			if (isContradicting) {
 				default_vert_event(g, clause, prop);
@@ -62,31 +59,31 @@ namespace coopnet {
 	private:
 
 		void dpll_node_event(
-			const MutableSatGraph& g, VertDescriptor node,
-			const MutableSatVProp& prop);
+			const DPLLSatGraph& g, VertDescriptor node,
+			const DPLLVProp& prop);
 
 		void dpll_clause_event(
-			const MutableSatGraph& g, VertDescriptor clause,
-			const MutableSatVProp& prop);
+			const DPLLSatGraph& g, VertDescriptor clause,
+			const DPLLVProp& prop);
 
 		void default_vert_event(
-			const MutableSatGraph& g, VertDescriptor vert,
-			const MutableSatVProp& prop);
+			const DPLLSatGraph& g, VertDescriptor vert,
+			const DPLLVProp& prop);
 
 
 
-		void select_node(const MutableSatGraph& g,
-			VertDescriptor node, const MutableSatVProp& prop, bool sgn);
-		void satisfy_clause(const MutableSatGraph& g,
-			VertDescriptor clause, const MutableSatVProp& prop);
+		void select_node(const DPLLSatGraph& g,
+			VertDescriptor node, const DPLLVProp& prop, bool sgn);
+		void satisfy_clause(const DPLLSatGraph& g,
+			VertDescriptor clause, const DPLLVProp& prop);
 
-		void deactivate_vert(VertDescriptor vert, const MutableSatVProp& prop);
-		void deactivate_edge(EdgeDescriptor edge, const MutableSatEProp& prop);
+		void deactivate_vert(VertDescriptor vert, const DPLLVProp& prop);
+		void deactivate_edge(EdgeDescriptor edge, const DPLLEProp& prop);
 
 		void change_vert_status(
-			VertDescriptor vert, DPLLVertStatus new_status);
+			VertDescriptor vert, const DPLLVProp& prop, DPLLVertStatus new_status);
 		void change_edge_status(
-			EdgeDescriptor edge, DPLLEdgeStatus new_status);
+			EdgeDescriptor edge, const DPLLEProp& prop, DPLLEdgeStatus new_status);
 
 
 

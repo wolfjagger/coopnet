@@ -23,8 +23,6 @@ namespace coopnet {
 
 	private:
 
-		DPLLPropMaps maps;
-
 		bool isContradicting;
 		alphali::collaborator contradictionCollab;
 
@@ -34,12 +32,11 @@ namespace coopnet {
 			PruneStack& initPruneStack,
 			alphali::collaborator&& initContradictionCollab,
 			alphali::publisher& mainContradictPub,
-			alphali::publisher& mainUncontradictPub,
-			DPLLPropMaps initMaps);
+			alphali::publisher& mainUncontradictPub);
 
 		void edge_event(
-			const MutableSatGraph& g, EdgeDescriptor edge,
-			const MutableSatEProp& prop,
+			const DPLLSatGraph& g, EdgeDescriptor edge,
+			const DPLLEProp& prop,
 			VertDescriptor node, VertDescriptor clause) {
 
 			if (isContradicting) {
@@ -53,23 +50,23 @@ namespace coopnet {
 	private:
 
 		void dpll_edge_event(
-			const MutableSatGraph& g, EdgeDescriptor edge,
-			const MutableSatEProp& prop,
+			const DPLLSatGraph& g, EdgeDescriptor edge,
+			const DPLLEProp& prop,
 			VertDescriptor node, VertDescriptor clause);
 
 		void default_edge_event(
-			const MutableSatGraph& g, EdgeDescriptor edge,
-			const MutableSatEProp& prop,
+			const DPLLSatGraph& g, EdgeDescriptor edge,
+			const DPLLEProp& prop,
 			VertDescriptor node, VertDescriptor clause);
 
 
 
-		void deactivate_edge(EdgeDescriptor edge, const MutableSatEProp& prop);
+		void deactivate_edge(EdgeDescriptor edge, const DPLLEProp& prop);
 
 		void change_vert_status(
-			VertDescriptor vert, DPLLVertStatus new_status);
+			VertDescriptor vert, const DPLLVProp& prop, DPLLVertStatus new_status);
 		void change_edge_status(
-			EdgeDescriptor edge, DPLLEdgeStatus new_status);
+			EdgeDescriptor edge, const DPLLEProp& prop, DPLLEdgeStatus new_status);
 
 
 

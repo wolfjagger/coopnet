@@ -16,6 +16,10 @@ namespace coopnet {
 			// Unfortunately, can't use enum here, so int.
 			int kind;
 		} base;
+
+		BaseSatVProp() :
+			base{std::string(), 0} { }
+
 	};
 
 	std::ostream& operator<<(std::ostream& os, const BaseSatVProp::Base& base);
@@ -25,6 +29,10 @@ namespace coopnet {
 		struct Base {
 			bool sgn;
 		} base;
+
+		BaseSatEProp() :
+			base{true} { }
+
 	};
 
 	std::ostream& operator<<(std::ostream& os, const BaseSatEProp::Base& base);

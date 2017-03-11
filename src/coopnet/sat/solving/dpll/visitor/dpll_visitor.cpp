@@ -11,20 +11,18 @@ namespace {
 		alphali::collaborator&& vertContradictionCollab,
 		alphali::collaborator&& edgeContradictionCollab,
 		alphali::publisher& mainContradictPub,
-		alphali::publisher& mainUncontradictPub,
-		DPLLPropMaps maps) {
+		alphali::publisher& mainUncontradictPub) {
 
 		return std::make_pair(
 			DPLLVertVisitor(
 				pruneStack,
 				std::move(vertContradictionCollab),
-				mainContradictPub, mainUncontradictPub,
-				maps),
+				mainContradictPub, mainUncontradictPub),
 			DPLLEdgeVisitor(
 				pruneStack,
 				std::move(edgeContradictionCollab),
-				mainContradictPub, mainUncontradictPub,
-				maps));
+				mainContradictPub, mainUncontradictPub)
+		);
 
 	}
 
@@ -37,14 +35,12 @@ DPLLVisitor::DPLLVisitor(
 	alphali::collaborator&& vertContradictionCollab,
 	alphali::collaborator&& edgeContradictionCollab,
 	alphali::publisher& mainContradictPub,
-	alphali::publisher& mainUncontradictPub,
-	DPLLPropMaps maps) :
+	alphali::publisher& mainUncontradictPub) :
 	boost::bfs_visitor<DPLLVisitorTuple>(
 		make_visitor_tuple(
 			pruneStack,
 			std::move(vertContradictionCollab),
 			std::move(edgeContradictionCollab),
-			mainContradictPub, mainUncontradictPub,
-			maps)) {
+			mainContradictPub, mainUncontradictPub)) {
 
 }

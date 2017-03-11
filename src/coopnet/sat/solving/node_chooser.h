@@ -6,6 +6,7 @@
 #include "boost/optional.hpp"
 #include "coopnet/graph/graph.h"
 #include "coopnet/sat/problem/assignment.h"
+#include "coopnet/sat/visitor/choose_max_clauses_visitor.h"
 #include "node_choice.h"
 
 
@@ -51,6 +52,19 @@ namespace coopnet {
 		VertChoice do_choose(const ConcreteFormula& form) override;
 
 	};
+
+
+
+	template<class ConcreteFormula>
+	class MaxClauseNodeChooser : public NodeChooser<ConcreteFormula> {
+
+	protected:
+
+		VertChoice do_choose(const ConcreteFormula& form) override;
+
+	};
+
+
 
 #include "node_chooser.inl"
 

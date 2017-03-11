@@ -15,10 +15,8 @@ DPLLVertVisitor::DPLLVertVisitor(
 	PruneStack& initPruneStack,
 	alphali::collaborator&& initContradictCollab,
 	alphali::publisher& mainContradictPub,
-	alphali::publisher& mainUncontradictPub,
-	DPLLPropMaps initMaps) :
-	PruningSatVertVisitor<DPLLVertVisitor>(initPruneStack),
-	maps(initMaps) {
+	alphali::publisher& mainUncontradictPub) :
+	PruningSatVertVisitor<DPLLVertVisitor>(initPruneStack) {
 
 	set_uncontradicting();
 
@@ -39,9 +37,9 @@ DPLLVertVisitor::DPLLVertVisitor(
 // It also needs to color the surrounding edges if they
 //  should be (re)visited (i.e. if vert is to be removed).
 void DPLLVertVisitor::dpll_node_event(
-	const MutableSatGraph& g, VertDescriptor node, const MutableSatVProp& prop) {
+	const DPLLSatGraph& g, VertDescriptor node, const DPLLVProp& prop) {
 
-	switch (maps.vertStatusMap[node]) {
+	switch (prop.dpll.status) {
 	case DPLLVertStatus::SetToTrue:
 
 		select_node(g, node, prop, true);
@@ -67,8 +65,8 @@ void DPLLVertVisitor::dpll_node_event(
 		} else {
 
 			auto edges_pair = boost::out_edges(node, g);
-			auto constrain_node_fcn = [this](EdgeDescriptor e) {
-				return maps.edgeStatusMap[e] == DPLLEdgeStatus::ConstrainNode;
+			auto constrain_node_fcn = [&g](EdgeDescriptor e) {
+				return g[e].dpll.status == DPLLEdgeStatus::ConstrainNode;
 			};
 
 			auto constraining_edge = std::find_if(
@@ -88,7 +86,7 @@ void DPLLVertVisitor::dpll_node_event(
 
 				auto first_active_edge = find_active_edge(node, g);
 				auto first_sgn = g[*first_active_edge].base.sgn;
-				auto same_sgn_fcn = [first_sgn, &g, this](EdgeDescriptor e) {
+				auto same_sgn_fcn = [first_sgn, &g](EdgeDescriptor e) {
 					return first_sgn == g[e].base.sgn;
 				};
 
@@ -108,9 +106,9 @@ void DPLLVertVisitor::dpll_node_event(
 }
 
 void DPLLVertVisitor::dpll_clause_event(
-	const MutableSatGraph& g, VertDescriptor clause, const MutableSatVProp& prop) {
+	const DPLLSatGraph& g, VertDescriptor clause, const DPLLVProp& prop) {
 
-	auto& clause_status = maps.vertStatusMap[clause];
+	auto& clause_status = prop.dpll.status;
 
 	switch (clause_status) {
 	case DPLLVertStatus::Remove: {
@@ -133,8 +131,8 @@ void DPLLVertVisitor::dpll_clause_event(
 
 		auto edges_pair = boost::out_edges(clause, g);
 
-		auto satisfy_clause_fcn = [this](EdgeDescriptor e) {
-			return maps.edgeStatusMap[e] == DPLLEdgeStatus::SatisfyClause;
+		auto satisfy_clause_fcn = [&g](EdgeDescriptor e) {
+			return g[e].dpll.status == DPLLEdgeStatus::SatisfyClause;
 		};
 		auto satisfying_edge = find_if_active_edge(clause, g, satisfy_clause_fcn);
 
@@ -158,9 +156,9 @@ void DPLLVertVisitor::dpll_clause_event(
 			// If one edge left, it must be used to satisfy clause
 			else if (num_active_edges == 1) {
 
-				auto edge = find_active_edge(clause, g);
+				auto edge = *find_active_edge(clause, g);
 
-				change_edge_status(*edge, DPLLEdgeStatus::ConstrainNode);
+				change_edge_status(edge, g[edge], DPLLEdgeStatus::ConstrainNode);
 				satisfy_clause(g, clause, prop);
 
 			}
@@ -176,29 +174,29 @@ void DPLLVertVisitor::dpll_clause_event(
 }
 
 void DPLLVertVisitor::default_vert_event(
-	const MutableSatGraph& g, VertDescriptor vert, const MutableSatVProp& prop) {
+	const DPLLSatGraph& g, VertDescriptor vert, const DPLLVProp& prop) {
 
-	maps.vertStatusMap[vert] = DPLLVertStatus::Default;
+	prop.dpll.status = DPLLVertStatus::Default;
 
 }
 
 
 
 void DPLLVertVisitor::select_node(
-	const MutableSatGraph& g, VertDescriptor node, const MutableSatVProp& prop, bool sgn) {
+	const DPLLSatGraph& g, VertDescriptor node, const DPLLVProp& prop, bool sgn) {
 
 	set_assignment(node, prop.mutate.assignment, sgn);
 
 	auto prop_to_edges_fcn = [this, &g, sgn](EdgeDescriptor edge) {
 
-		auto status = maps.edgeStatusMap[edge];
+		auto status = g[edge].dpll.status;
 		switch (status) {
 		case DPLLEdgeStatus::Default:
 			// If active edge, use to satisfy clause (if correct sgn) or remove
 			if (g[edge].base.sgn == sgn) {
-				change_edge_status(edge, DPLLEdgeStatus::SatisfyClause);
+				change_edge_status(edge, g[edge], DPLLEdgeStatus::SatisfyClause);
 			} else {
-				change_edge_status(edge, DPLLEdgeStatus::Remove);
+				change_edge_status(edge, g[edge], DPLLEdgeStatus::Remove);
 			}
 			break;
 		case DPLLEdgeStatus::ConstrainNode:
@@ -224,16 +222,16 @@ void DPLLVertVisitor::select_node(
 
 
 void DPLLVertVisitor::satisfy_clause(
-	const MutableSatGraph& g, VertDescriptor clause, const MutableSatVProp& prop) {
+	const DPLLSatGraph& g, VertDescriptor clause, const DPLLVProp& prop) {
 
-	auto remove_edges_fcn = [this](EdgeDescriptor edge) {
+	auto remove_edges_fcn = [this, &g](EdgeDescriptor edge) {
 
-		auto status = maps.edgeStatusMap[edge];
+		auto status = g[edge].dpll.status;
 		switch (status) {
 		case DPLLEdgeStatus::Default:
 		case DPLLEdgeStatus::SatisfyClause:
 			// Even if pushing node info to clause, info is now unnecessary
-			change_edge_status(edge, DPLLEdgeStatus::Remove);
+			change_edge_status(edge, g[edge], DPLLEdgeStatus::Remove);
 			break;
 		}
 
@@ -248,14 +246,14 @@ void DPLLVertVisitor::satisfy_clause(
 
 
 void DPLLVertVisitor::deactivate_vert(
-	VertDescriptor vert, const MutableSatVProp& prop) {
-	change_vert_status(vert, DPLLVertStatus::Default);
+	VertDescriptor vert, const DPLLVProp& prop) {
+	change_vert_status(vert, prop, DPLLVertStatus::Default);
 	set_prune_status(vert, prop.mutate.status, PruneStatus::Inactive);
 }
 
 void DPLLVertVisitor::deactivate_edge(
-	EdgeDescriptor edge, const MutableSatEProp& prop) {
-	change_edge_status(edge, DPLLEdgeStatus::Default);
+	EdgeDescriptor edge, const DPLLEProp& prop) {
+	change_edge_status(edge, prop, DPLLEdgeStatus::Default);
 	set_prune_status(edge, prop.mutate.status, PruneStatus::Inactive);
 }
 
@@ -263,9 +261,9 @@ void DPLLVertVisitor::deactivate_edge(
 
 
 void DPLLVertVisitor::change_vert_status(
-	VertDescriptor vert, DPLLVertStatus newStatus) {
+	VertDescriptor vert, const DPLLVProp& prop, DPLLVertStatus newStatus) {
 
-	auto& status = maps.vertStatusMap[vert];
+	auto& status = prop.dpll.status;
 	if (status != newStatus) {
 		if (DEBUG) std::cout << "vert " << vert << " goes " << status << " to " << newStatus << std::endl;
 		status = newStatus;
@@ -274,9 +272,9 @@ void DPLLVertVisitor::change_vert_status(
 }
 
 void DPLLVertVisitor::change_edge_status(
-	EdgeDescriptor edge, DPLLEdgeStatus newStatus) {
+	EdgeDescriptor edge, const DPLLEProp& prop, DPLLEdgeStatus newStatus) {
 
-	auto& status = maps.edgeStatusMap[edge];
+	auto& status = prop.dpll.status;
 	if (status != newStatus) {
 		if (DEBUG) std::cout << "edge " << edge << " goes " << status << " to " << newStatus << std::endl;
 		status = newStatus;

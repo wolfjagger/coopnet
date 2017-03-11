@@ -1,42 +1,44 @@
 #pragma once
 
-#include "coopnet/graph/graph.h"
+#include "coopnet/graph/mutable_graph.h"
 #include "dpll_status.h"
 
 
 
 namespace coopnet {
 
-	using DPLLVertStatusMap
-		= std::unordered_map<VertDescriptor, DPLLVertStatus>;
-	using DPLLVertStatusPropMap
-		= boost::associative_property_map<DPLLVertStatusMap>;
+	struct DPLLVProp : public MutableSatVProp {
+		mutable struct DPLL {
+			DPLLVertStatus status;
+		} dpll;
+		mutable default_color_type color;
 
-	using DPLLEdgeStatusMap = EdgeDescUnordMap<DPLLEdgeStatus>;
-	using DPLLEdgeStatusPropMap
-		= boost::associative_property_map<DPLLEdgeStatusMap>;
-
-	using DPLLColorMap
-		= std::unordered_map<VertDescriptor, default_color_type>;
-	using DPLLColorPropMap
-		= boost::associative_property_map<DPLLColorMap>;
-
-	struct DPLLPropMaps {
-
-		DPLLVertStatusPropMap vertStatusMap;
-		DPLLEdgeStatusPropMap edgeStatusMap;
-		DPLLColorPropMap colorMap;
-
-		DPLLPropMaps() = default;
-
-		DPLLPropMaps(
-			DPLLVertStatusPropMap initVertStatusMap,
-			DPLLEdgeStatusPropMap initEdgeStatusMap,
-			DPLLColorPropMap initColorMap) :
-			vertStatusMap(initVertStatusMap),
-			edgeStatusMap(initEdgeStatusMap),
-			colorMap(initColorMap) {}
+		DPLLVProp() :
+			MutableSatVProp(),
+			dpll{DPLLVertStatus::Default},
+			color(default_color_type::black_color) { }
 
 	};
 
+	struct DPLLEProp : public MutableSatEProp {
+		mutable struct DPLL {
+			DPLLEdgeStatus status;
+		} dpll;
+
+		DPLLEProp() :
+			MutableSatEProp(),
+			dpll{DPLLEdgeStatus::Default} {}
+
+	};
+
+
+
+	using DPLLSatGraph = SatGraph<DPLLVProp, DPLLEProp>;
+
+	using DPLLExtSatGraph = ExtendedSatGraph<DPLLVProp, DPLLEProp>;
+	
+
+
+	using DPLLColorPropMap
+		= boost::property_map<DPLLSatGraph, default_color_type DPLLVProp::*>::type;
 }

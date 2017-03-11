@@ -21,17 +21,19 @@ namespace coopnet {
 
 
 
+		template<class SatGraph, typename VProp>
 		void node_event(
-			const MutableSatGraph& g, VertDescriptor node,
-			const MutableSatVProp& prop) {
+			const SatGraph& g, VertDescriptor node,
+			const VProp& prop) {
 
 			static_cast<ImplVisitor*>(this)->node_event(g, node, prop);
 
 		}
 
+		template<class SatGraph, typename VProp>
 		void clause_event(
-			const MutableSatGraph& g, VertDescriptor clause,
-			const MutableSatVProp& prop) {
+			const SatGraph& g, VertDescriptor clause,
+			const VProp& prop) {
 
 			static_cast<ImplVisitor*>(this)->clause_event(g, clause, prop);
 
@@ -101,9 +103,10 @@ namespace coopnet {
 
 
 
+		template<class SatGraph, typename EProp>
 		void edge_event(
-			const MutableSatGraph& g, EdgeDescriptor edge,
-			const MutableSatEProp& prop,
+			const SatGraph& g, EdgeDescriptor edge,
+			const EProp& prop,
 			VertDescriptor node, VertDescriptor clause) {
 
 			static_cast<ImplVisitor*>(this)->edge_event(

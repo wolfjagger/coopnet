@@ -45,52 +45,57 @@ namespace coopnet {
 
 	protected:
 
-		static bool any_active_edge(VertDescriptor v, const MutableSatGraph& g) {
+		template<class SatGraph>
+		static bool any_active_edge(VertDescriptor v, const SatGraph& g) {
 			auto edgePair = boost::out_edges(v, g);
 			return std::any_of(edgePair.first, edgePair.second, is_active_pred(g));
 		}
 
-		static size_t count_active_edges(VertDescriptor v, const MutableSatGraph& g) {
+		template<class SatGraph>
+		static size_t count_active_edges(VertDescriptor v, const SatGraph& g) {
 			auto edgePair = boost::out_edges(v, g);
 			return std::count_if(edgePair.first, edgePair.second, is_active_pred(g));
 		}
 
-		static auto find_active_edge(VertDescriptor v, const MutableSatGraph& g) {
+		template<class SatGraph>
+		static auto find_active_edge(VertDescriptor v, const SatGraph& g) {
 			auto edgePair = boost::out_edges(v, g);
 			return std::find_if(edgePair.first, edgePair.second, is_active_pred(g));
 		}
 
-		template<typename Pred>
-		static auto find_if_active_edge(VertDescriptor v, const MutableSatGraph& g, Pred p) {
+		template<class SatGraph, typename Pred>
+		static auto find_if_active_edge(VertDescriptor v, const SatGraph& g, Pred p) {
 			auto edgePair = boost::out_edges(v, g);
 			return std::find_if(edgePair.first, edgePair.second, [&p, &g](EdgeDescriptor e) {
 				return is_active_edge(e, g) && p(e);
 			});
 		}
 
-		template<typename UnaryFcn>
-		static void for_each_active_edge(VertDescriptor v, const MutableSatGraph& g, UnaryFcn p) {
+		template<class SatGraph, typename UnaryFcn>
+		static void for_each_active_edge(VertDescriptor v, const SatGraph& g, UnaryFcn p) {
 			auto edgePair = boost::out_edges(v, g);
 			std::for_each(edgePair.first, edgePair.second, [&p, &g](EdgeDescriptor e) {
 				if (is_active_edge(e, g)) p(e);
 			});
 		}
 
-		template<typename Pred>
-		static bool all_of_active_edges(VertDescriptor v, const MutableSatGraph& g, Pred p) {
+		template<class SatGraph, typename Pred>
+		static bool all_of_active_edges(VertDescriptor v, const SatGraph& g, Pred p) {
 			auto edgePair = boost::out_edges(v, g);
 			return std::all_of(edgePair.first, edgePair.second, [&p, &g](EdgeDescriptor e) {
 				return is_active_edge(e, g) && p(e);
 			});
 		}
 
-		static bool is_active_edge(EdgeDescriptor e, const MutableSatGraph& g) {
+		template<class SatGraph>
+		static bool is_active_edge(EdgeDescriptor e, const SatGraph& g) {
 			return g[e].mutate.status == PruneStatus::Active;
 		}
 
 	private:
 
-		static auto is_active_pred(const MutableSatGraph& g) {
+		template<class SatGraph>
+		static auto is_active_pred(const SatGraph& g) {
 			return [&g](EdgeDescriptor e) { return is_active_edge(e, g); };
 		}
 

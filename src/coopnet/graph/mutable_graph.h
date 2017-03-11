@@ -11,12 +11,22 @@ namespace coopnet {
 			PruneStatus status;
 			boost::tribool assignment;
 		} mutate;
+
+		MutableSatVProp() :
+			BaseSatVProp(),
+			mutate{PruneStatus::Active, boost::indeterminate} { }
+
 	};
 
 	struct MutableSatEProp : public BaseSatEProp {
 		mutable struct Mutable {
 			PruneStatus status;
 		} mutate;
+
+		MutableSatEProp() :
+			BaseSatEProp(),
+			mutate{PruneStatus::Active} { }
+
 	};
 
 	using MutableSatGraph = SatGraph<MutableSatVProp, MutableSatEProp>;
@@ -25,14 +35,5 @@ namespace coopnet {
 
 
 	using PrunableSatGraph = ExtendedSatGraph<MutableSatVProp, MutableSatEProp>;
-
-	inline void init_extra_vert_props(MutableSatVProp& prop) {
-		prop.mutate.status = PruneStatus::Active;
-		prop.mutate.assignment = boost::indeterminate;
-	}
-
-	inline void init_extra_edge_props(MutableSatEProp& prop) {
-		prop.mutate.status = PruneStatus::Active;
-	}
 
 }

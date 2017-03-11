@@ -17,10 +17,8 @@ DPLLEdgeVisitor::DPLLEdgeVisitor(
 	PruneStack& initPruneStack,
 	alphali::collaborator&& initContradictionCollab,
 	alphali::publisher& mainContradictPub,
-	alphali::publisher& mainUncontradictPub,
-	DPLLPropMaps initMaps) :
-	PruningSatEdgeVisitor<DPLLEdgeVisitor>(initPruneStack),
-	maps(initMaps) {
+	alphali::publisher& mainUncontradictPub) :
+	PruningSatEdgeVisitor<DPLLEdgeVisitor>(initPruneStack) {
 
 	set_uncontradicting();
 
@@ -43,11 +41,11 @@ DPLLEdgeVisitor::DPLLEdgeVisitor(
 //  (b) clause => set node = a iff clause.num_edges == 1
 // (3) remove edge
 void DPLLEdgeVisitor::dpll_edge_event(
-	const MutableSatGraph& g, EdgeDescriptor edge,
-	const MutableSatEProp& prop,
+	const DPLLSatGraph& g, EdgeDescriptor edge,
+	const DPLLEProp& prop,
 	VertDescriptor node, VertDescriptor clause) {
 
-	auto status = maps.edgeStatusMap[edge];
+	auto status = g[edge].dpll.status;
 
 	// If edge is in default state, there is no action required;
 	//  the edge is not meant to be traversed
@@ -55,7 +53,7 @@ void DPLLEdgeVisitor::dpll_edge_event(
 
 	// If edge should be traversed (i.e. has status SatisfyClause, ConstrainNode, or Remove),
 	//  propagate white color to target if black (grey means in queue already)
-	auto& color = maps.colorMap[boost::target(edge, g)];
+	auto& color = g[boost::target(edge, g)].color;
 	if (color == default_color_type::black_color)
 		color = default_color_type::white_color;
 
@@ -66,7 +64,7 @@ void DPLLEdgeVisitor::dpll_edge_event(
 		// If node satisfies clause, remove clause
 
 		if (g[clause].mutate.status != PruneStatus::Inactive)
-			change_vert_status(clause, DPLLVertStatus::Remove);
+			change_vert_status(clause, g[clause], DPLLVertStatus::Remove);
 		break;
 
 	}
@@ -76,10 +74,10 @@ void DPLLEdgeVisitor::dpll_edge_event(
 
 		if (g[node].mutate.status == PruneStatus::Active) {
 
-			switch (maps.vertStatusMap[node]) {
+			switch (g[node].dpll.status) {
 			case DPLLVertStatus::Default:
 
-				change_vert_status(node, prop.base.sgn ?
+				change_vert_status(node, g[node], prop.base.sgn ?
 					DPLLVertStatus::SetToTrue : DPLLVertStatus::SetToFalse);
 				break;
 
@@ -113,19 +111,19 @@ void DPLLEdgeVisitor::dpll_edge_event(
 }
 
 void DPLLEdgeVisitor::default_edge_event(
-	const MutableSatGraph& g, EdgeDescriptor edge,
-	const MutableSatEProp& prop,
+	const DPLLSatGraph& g, EdgeDescriptor edge,
+	const DPLLEProp& prop,
 	VertDescriptor node, VertDescriptor clause) {
 
-	maps.edgeStatusMap[edge] = DPLLEdgeStatus::Default;
+	prop.dpll.status = DPLLEdgeStatus::Default;
 
 }
 
 
 
 void DPLLEdgeVisitor::deactivate_edge(
-	EdgeDescriptor edge, const MutableSatEProp& prop) {
-	change_edge_status(edge, DPLLEdgeStatus::Default);
+	EdgeDescriptor edge, const DPLLEProp& prop) {
+	change_edge_status(edge, prop, DPLLEdgeStatus::Default);
 	set_prune_status(edge, prop.mutate.status, PruneStatus::Inactive);
 }
 
@@ -133,9 +131,9 @@ void DPLLEdgeVisitor::deactivate_edge(
 
 //TODO: Undo replication here and redundancy btwn the three unique methods
 void DPLLEdgeVisitor::change_vert_status(
-	VertDescriptor vert, DPLLVertStatus newStatus) {
+	VertDescriptor vert, const DPLLVProp& prop, DPLLVertStatus newStatus) {
 
-	auto& status = maps.vertStatusMap[vert];
+	auto& status = prop.dpll.status;
 	if (status != newStatus) {
 		if (DEBUG) std::cout << "vert " << vert << " goes " << status << " to " << newStatus << std::endl;
 		status = newStatus;
@@ -144,9 +142,9 @@ void DPLLEdgeVisitor::change_vert_status(
 }
 
 void DPLLEdgeVisitor::change_edge_status(
-	EdgeDescriptor edge, DPLLEdgeStatus newStatus) {
+	EdgeDescriptor edge, const DPLLEProp& prop, DPLLEdgeStatus newStatus) {
 
-	auto& status = maps.edgeStatusMap[edge];
+	auto& status = prop.dpll.status;
 	if (status != newStatus) {
 		if (DEBUG) std::cout << "edge " << edge << " goes " << status << " to " << newStatus << std::endl;
 		status = newStatus;

@@ -237,8 +237,6 @@ SatGraph<VProp, EProp> ExtendedSatGraph<VProp, EProp>::create_extended_from_base
 		auto prop = VProp();
 		prop.base = original[v].base;
 
-		init_extra_vert_props(prop);
-
 		auto outVert = boost::add_vertex(prop, out);
 		mapOrigToOut.emplace(v, outVert);
 
@@ -249,8 +247,6 @@ SatGraph<VProp, EProp> ExtendedSatGraph<VProp, EProp>::create_extended_from_base
 
 		auto prop = EProp();
 		prop.base = original[e].base;
-
-		init_extra_edge_props(prop);
 
 		auto vert1 = boost::source(e, out);
 		auto vert2 = boost::target(e, out);
