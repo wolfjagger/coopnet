@@ -4,10 +4,6 @@
 
 namespace coopnet { namespace problem_util {
 
-	struct Node;
-	struct Clause;
-	class Problem;
-
 	size_t max_num_clauses_with_length(size_t num_nodes, size_t max_clause_length);
 
 	size_t max_num_clauses_with_lengths(

@@ -65,51 +65,6 @@ std::shared_ptr<Assignment> Problem::create_same_sgn_assignment(bool sgn) const 
 
 
 
-void Problem::shuffle_nodes(const NodeShuffler& shuffler) {
-
-	// Change node_vert_map to re-point the nodes
-	// Need copy and swap because we can't have duplicates
-	auto map_cpy = NodeVertMap();
-	for (auto iter = map_node_to_vert->left.begin();
-		iter != map_node_to_vert->left.end(); ++iter) {
-
-		auto old_node = iter->first;
-		auto vert = iter->second;
-		auto new_node = shuffler.nodes.at(old_node.id);
-		map_cpy.left.insert(std::make_pair(new_node, vert));
-
-	}
-	std::swap(map_cpy, *map_node_to_vert);
-
-	// Rename nodes and clauses
-	graph_util::rename_verts(prob_graph, *map_node_to_vert);
-
-}
-
-void Problem::shuffle_sgns(const SgnShuffler& shuffler) {
-
-	// Now change edge sgns
-	for (auto iter = map_node_to_vert->left.begin();
-		iter != map_node_to_vert->left.end(); ++iter) {
-
-		if (!shuffler.sgns.at(iter->first.id)) {
-
-			auto vert = iter->second;
-
-			auto edge_pair = boost::out_edges(vert, prob_graph);
-			for_each(edge_pair.first, edge_pair.second, [this](EdgeDescriptor e) {
-				prob_graph[e].base.sgn = !prob_graph[e].base.sgn;
-			});
-
-		}
-	}
-
-	// Rename nodes and clauses
-	graph_util::rename_verts(prob_graph, *map_node_to_vert);
-
-}
-		
-
 
 
 void Problem::build_graph(NodeList&& nodes, ClauseList&& clauses) {

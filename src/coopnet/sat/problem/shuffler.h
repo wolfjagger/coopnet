@@ -4,14 +4,12 @@
 #include <map>
 #include <memory>
 #include "coopnet/graph/graph.h"
-#include "problem.h"
+#include "coopnet/sat/component/component_fwd.h"
 
 
 
 namespace coopnet {
 
-	struct Node;
-	struct Literal;
 	struct Assignment;
 	class Problem;
 
@@ -64,10 +62,6 @@ namespace coopnet {
 
 		void apply_to_problem(Problem& prob) const override;
 
-
-
-		friend void Problem::shuffle_nodes(const NodeShuffler&);
-
 	};
 
 
@@ -99,11 +93,12 @@ namespace coopnet {
 
 		void apply_to_assignment(Assignment& assign) const override;
 
+		/*
+		NOTE: This will also change it for satsifiability_visitor,
+		incomplete_assignment, and anything that holds the same
+		shared_ptr. Change them too!
+		*/
 		void apply_to_problem(Problem& prob) const override;
-
-
-
-		friend void Problem::shuffle_sgns(const SgnShuffler&);
 
 	};
 
@@ -139,6 +134,11 @@ namespace coopnet {
 
 		void apply_to_assignment(Assignment& assign) const override;
 
+		/*
+		NOTE: This will also change it for satsifiability_visitor,
+		incomplete_assignment, and anything that holds the same
+		shared_ptr. Change them too!
+		*/
 		void apply_to_problem(Problem& prob) const override;
 
 	};

@@ -5,14 +5,13 @@
 #include "coopnet/graph/graph.h"
 #include "coopnet/sat/component/node.h"
 #include "coopnet/sat/component/clause.h"
+#include "shuffler.h"
 
 
 
 namespace coopnet {
 
 	struct Assignment;
-	class NodeShuffler;
-	class SgnShuffler;
 
 	class Problem {
 
@@ -98,13 +97,8 @@ namespace coopnet {
 
 
 
-		/*
-		NOTE: This will also change it for satsifiability_visitor,
-		incomplete_assignment, and anything that holds the same
-		shared_ptr. Change them too!
-		*/
-		void shuffle_nodes(const NodeShuffler& shuffler);
-		void shuffle_sgns(const SgnShuffler& shuffler);
+		friend void NodeShuffler::apply_to_problem(Problem&) const;
+		friend void SgnShuffler::apply_to_problem(Problem&) const;
 
 
 

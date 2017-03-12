@@ -4,6 +4,7 @@
 #include "alphali/util/random.h"
 #include "problem.h"
 #include "assignment.h"
+#include "coopnet/graph/graph_util.h"
 
 using namespace coopnet;
 
@@ -59,7 +60,24 @@ void NodeShuffler::apply_to_assignment(Assignment& assign) const {
 }
 
 void NodeShuffler::apply_to_problem(Problem& prob) const {
-	prob.shuffle_nodes(*this);
+
+	// Change node_vert_map to re-point the nodes
+	// Need copy and swap because we can't have duplicates
+	auto map_cpy = NodeVertMap();
+	for (auto iter = prob.map_node_to_vert->left.begin();
+		iter != prob.map_node_to_vert->left.end(); ++iter) {
+
+		auto old_node = iter->first;
+		auto vert = iter->second;
+		auto new_node = nodes.at(old_node.id);
+		map_cpy.left.insert(std::make_pair(new_node, vert));
+
+	}
+	std::swap(map_cpy, *prob.map_node_to_vert);
+
+	// Rename nodes and clauses
+	graph_util::rename_verts(prob.prob_graph, *map_node_to_vert);
+
 }
 
 
@@ -120,7 +138,29 @@ void SgnShuffler::apply_to_assignment(Assignment& assign) const {
 }
 
 void SgnShuffler::apply_to_problem(Problem& prob) const {
-	prob.shuffle_sgns(*this);
+
+	// Change edge sgns
+
+	auto& prob_graph = prob.prob_graph;
+
+	for (auto iter = prob.map_node_to_vert->left.begin();
+		iter != prob.map_node_to_vert->left.end(); ++iter) {
+
+		if (!sgns.at(iter->first.id)) {
+
+			auto vert = iter->second;
+
+			auto edge_pair = boost::out_edges(vert, prob_graph);
+			for_each(edge_pair.first, edge_pair.second, [&prob_graph](EdgeDescriptor e) {
+				prob_graph[e].base.sgn = !prob_graph[e].base.sgn;
+			});
+
+		}
+	}
+
+	// Rename nodes and clauses
+	graph_util::rename_verts(prob_graph, *map_node_to_vert);
+
 }
 
 
