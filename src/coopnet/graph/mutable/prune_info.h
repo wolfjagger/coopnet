@@ -4,7 +4,7 @@
 #include <stack>
 #include "boost/logic/tribool.hpp"
 #include "boost/variant.hpp"
-#include "graph.h"
+#include "coopnet/graph/graph.h"
 
 
 

@@ -14,8 +14,6 @@ namespace coopnet {
 
 	private:
 
-		DPLLColorPropMap colorPropMap;
-
 		// Queue for remaining grey nodes to color black
 		boost::queue<VertDescriptor> greyBuffer;
 

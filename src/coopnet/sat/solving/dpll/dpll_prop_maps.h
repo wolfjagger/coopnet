@@ -1,6 +1,6 @@
 #pragma once
 
-#include "coopnet/graph/mutable_graph.h"
+#include "coopnet/graph/mutable/mutable_graph.h"
 #include "dpll_status.h"
 
 
@@ -11,12 +11,10 @@ namespace coopnet {
 		mutable struct DPLL {
 			DPLLVertStatus status;
 		} dpll;
-		mutable default_color_type color;
 
 		DPLLVProp() :
 			MutableSatVProp(),
-			dpll{DPLLVertStatus::Default},
-			color(default_color_type::black_color) { }
+			dpll{DPLLVertStatus::Default} { }
 
 	};
 
@@ -37,8 +35,4 @@ namespace coopnet {
 
 	using DPLLExtSatGraph = ExtendedSatGraph<DPLLVProp, DPLLEProp>;
 	
-
-
-	using DPLLColorPropMap
-		= boost::property_map<DPLLSatGraph, default_color_type DPLLVProp::*>::type;
 }

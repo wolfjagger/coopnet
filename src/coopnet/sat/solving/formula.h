@@ -4,7 +4,7 @@
 #include "coopnet/sat/visitor/visit.h"
 #include "coopnet/sat/problem/assignment.h"
 #include "coopnet/sat/problem/problem.h"
-#include "coopnet/graph/mutable_graph.h"
+#include "coopnet/graph/mutable/mutable_graph.h"
 #include "node_choice.h"
 
 
@@ -24,6 +24,7 @@ namespace coopnet {
 	protected:
 
 		ExtendedGraph extendedGraph;
+		SatColorPropMap<Graph> colorPropMap;
 
 	public:
 

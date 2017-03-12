@@ -1,6 +1,6 @@
 #pragma once
 
-#include "graph_util.h"
+#include "coopnet/graph/graph_util.h"
 #include "prune_info.h"
 
 

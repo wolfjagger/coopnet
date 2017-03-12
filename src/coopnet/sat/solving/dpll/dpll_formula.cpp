@@ -22,10 +22,6 @@ DPLLFormula::DPLLFormula(const Problem& prob) :
 	setUncontradictPub() {
 
 
-	colorPropMap
-		= boost::get(&DPLLVProp::color, extendedGraph.get_graph());
-
-	
 	auto vertContradictionCollab = alphali::collaborator();
 	auto edgeContradictionCollab = alphali::collaborator();
 

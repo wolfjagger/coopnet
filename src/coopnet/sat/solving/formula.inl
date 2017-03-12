@@ -5,6 +5,9 @@ Formula<VProp, EProp>::Formula(const Problem& prob) :
 	prob(std::cref(prob)),
 	extendedGraph(prob.get_graph()) {
 
+	colorPropMap
+		= boost::get(&VProp::color, extendedGraph.get_graph());
+
 }
 
 
