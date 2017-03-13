@@ -165,7 +165,7 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="sat\prob.gen.cpp" />
-    <ClCompile Include="sat\problem.test.cpp" />
+    <ClCompile Include="sat\prob.test.cpp" />
     <ClCompile Include="sat\sat.gen.cpp" />
     <ClCompile Include="sat\sat.test.cpp" />
   </ItemGroup>
