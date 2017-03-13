@@ -104,8 +104,7 @@ void ExtendedSatGraph<VProp, EProp>::reverse_to_vert(VertDescriptor v) {
 	auto done = false;
 	while (!done && !pruneStack.empty()) {
 
-		auto action = pruneStack.top();
-		pruneStack.pop();
+		auto& action = pruneStack.top();
 
 		using prune_object = PruneAction::PruneObject;
 		switch (action.type) {
@@ -156,6 +155,8 @@ void ExtendedSatGraph<VProp, EProp>::reverse_to_vert(VertDescriptor v) {
 
 		}
 		}
+
+		pruneStack.pop();
 
 	}
 
