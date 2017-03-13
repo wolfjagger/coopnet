@@ -3,8 +3,7 @@
 #include <map>
 #include <memory>
 #include "coopnet/graph/graph.h"
-#include "coopnet/sat/component/node.h"
-#include "coopnet/sat/component/clause.h"
+#include "coopnet/sat/component/component_fwd.h"
 #include "shuffler.h"
 
 
