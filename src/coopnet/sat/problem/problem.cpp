@@ -3,7 +3,7 @@
 #include "boost/graph/breadth_first_search.hpp"
 #include "coopnet/graph/graph_util.h"
 #include "coopnet/sat/solving/simple_formula.h"
-#include "coopnet/sat/visitor/satisfiability_visitor.h"
+#include "coopnet/sat/visitor/sat_collection_visitor.h"
 #include "assignment.h"
 #include "shuffler.h"
 
