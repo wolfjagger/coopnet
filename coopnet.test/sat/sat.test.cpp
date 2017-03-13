@@ -68,26 +68,3 @@ TEST_CASE("Clause", "[sat]") {
 	}
 
 }
-
-
-
-/*TEST_CASE("Assignment", "[sat]") {
-
-	SECTION("Assignment throws if initialized from incomplete_assignment with indeterminate value.") {
-
-		rc::Gen<double> gen = rc::gen::just(0.0);
-
-		auto lam = []() {
-
-			auto partial_assign
-				= *rc::gen::suchThat<sat::IncompleteAssignment>(is_ind_assignment);
-
-			RC_ASSERT_THROWS(auto assign = sat::Assignment(partial_assign));
-			
-		};
-
-		REQUIRE(rc::check(lam));
-
-	}
-
-}*/
