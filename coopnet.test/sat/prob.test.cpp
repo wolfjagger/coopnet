@@ -61,17 +61,21 @@ namespace {
 		auto pair_next = solver_next.solve(prob);
 		auto solver_rand = coopnet::DPLLSolver(DPLLNodeChoiceMode::Random);
 		auto pair_rand = solver_rand.solve(prob);
-		auto solver_most_sat = coopnet::DPLLSolver(DPLLNodeChoiceMode::MostClausesSat);
-		auto pair_most_sat = solver_most_sat.solve(prob);
+		auto solver_most_same_sat = coopnet::DPLLSolver(DPLLNodeChoiceMode::MostSameClauses);
+		auto pair_most_same_sat = solver_most_same_sat.solve(prob);
+		auto solver_most_tot_sat = coopnet::DPLLSolver(DPLLNodeChoiceMode::MostTotClauses);
+		auto pair_most_tot_sat = solver_most_tot_sat.solve(prob);
 
 		RC_ASSERT(pair_next.first == pair_rand.first);
-		RC_ASSERT(pair_next.first == pair_most_sat.first);
+		RC_ASSERT(pair_next.first == pair_most_same_sat.first);
+		RC_ASSERT(pair_next.first == pair_most_tot_sat.first);
 
 		switch (pair_next.first) {
 		case coopnet::SolutionStatus::Satisfied:
 			RC_ASSERT(prob.is_satisfied_by(pair_next.second));
 			RC_ASSERT(prob.is_satisfied_by(pair_rand.second));
-			RC_ASSERT(prob.is_satisfied_by(pair_most_sat.second));
+			RC_ASSERT(prob.is_satisfied_by(pair_most_same_sat.second));
+			RC_ASSERT(prob.is_satisfied_by(pair_most_tot_sat.second));
 			break;
 		case coopnet::SolutionStatus::Unsatisfiable:
 			// Note this does not assure it is truly unsatisfiable

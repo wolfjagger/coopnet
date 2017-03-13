@@ -200,7 +200,6 @@
     <ClCompile Include="src\coopnet\sat\solving\dpll\dpll_solver.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\dpll\visitor\dpll_visitor.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\solver.cpp" />
-    <ClCompile Include="src\coopnet\sat\visitor\choose_max_clauses_visitor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\coopnet\graph\bgl_inc.h" />

@@ -9,7 +9,7 @@
 namespace coopnet {
 
 	enum class DPLLNodeChoiceMode {
-		Next, Random, MostClausesSat
+		Next, Random, MostSameClauses, MostTotClauses
 	};
 	
 
@@ -22,8 +22,10 @@ namespace coopnet {
 			return std::make_unique<NextNodeChooser<DPLLFormula>>();
 		case DPLLNodeChoiceMode::Random:
 			return std::make_unique<RandNodeChooser<DPLLFormula>>();
-		case DPLLNodeChoiceMode::MostClausesSat:
-			return std::make_unique<MaxClauseNodeChooser<DPLLFormula>>();
+		case DPLLNodeChoiceMode::MostSameClauses:
+			return std::make_unique<MaxSameClauseNodeChooser<DPLLFormula>>();
+		case DPLLNodeChoiceMode::MostTotClauses:
+			return std::make_unique<MaxTotClauseNodeChooser<DPLLFormula>>();
 		default:
 			throw std::exception("Unknown DPLL node choice mode.");
 		}

@@ -56,7 +56,16 @@ namespace coopnet {
 
 
 	template<class ConcreteFormula>
-	class MaxClauseNodeChooser : public NodeChooser<ConcreteFormula> {
+	class MaxSameClauseNodeChooser : public NodeChooser<ConcreteFormula> {
+
+	protected:
+
+		VertChoice do_choose(const ConcreteFormula& form) override;
+
+	};
+
+	template<class ConcreteFormula>
+	class MaxTotClauseNodeChooser : public NodeChooser<ConcreteFormula> {
 
 	protected:
 

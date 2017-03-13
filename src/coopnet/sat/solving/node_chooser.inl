@@ -72,10 +72,22 @@ auto RandNodeChooser<ConcreteFormula>::do_choose(const ConcreteFormula& form)
 
 
 template<class ConcreteFormula>
-auto MaxClauseNodeChooser<ConcreteFormula>::do_choose(const ConcreteFormula& form)
+auto MaxSameClauseNodeChooser<ConcreteFormula>::do_choose(const ConcreteFormula& form)
     -> VertChoice {
 
-	auto visitor = ChooseMaxClausesVisitor();
+	auto visitor = ChooseMaxSameClausesVisitor();
+
+	form.visit_active_graph(visitor);
+
+	return visitor.retreive_choice();
+
+}
+
+template<class ConcreteFormula>
+auto MaxTotClauseNodeChooser<ConcreteFormula>::do_choose(const ConcreteFormula& form)
+-> VertChoice {
+
+	auto visitor = ChooseMaxTotClausesVisitor();
 
 	form.visit_active_graph(visitor);
 
