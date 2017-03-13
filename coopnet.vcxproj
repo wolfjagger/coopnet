@@ -235,7 +235,7 @@
     <ClInclude Include="src\coopnet\sat\solving\dpll\dpll_solver.h" />
     <ClInclude Include="src\coopnet\sat\solving\dpll\dpll_status.h" />
     <ClInclude Include="src\coopnet\sat\solving\dpll\visitor\dpll_visitor.h" />
-    <ClInclude Include="src\coopnet\sat\visitor\satisfiability_visitor.h" />
+    <ClInclude Include="src\coopnet\sat\visitor\sat_collection_visitor.h" />
     <ClInclude Include="src\coopnet\sat\solving\solver.h" />
   </ItemGroup>
   <ItemGroup>
