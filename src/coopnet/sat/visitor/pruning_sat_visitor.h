@@ -8,7 +8,7 @@ namespace coopnet {
 
 	template<class ImplVisitor>
 	struct PruningSatVertVisitor :
-		public PruneSatVertVisitor<PruningSatVertVisitor<ImplVisitor>> {
+		public PrunedSatVertVisitor<PruningSatVertVisitor<ImplVisitor>> {
 
 	private:
 

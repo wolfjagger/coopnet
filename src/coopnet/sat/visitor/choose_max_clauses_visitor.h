@@ -8,7 +8,7 @@
 namespace coopnet {
 
 	class ChooseMaxClausesVisitor :
-		public PruneSatVertVisitor<ChooseMaxClausesVisitor> {
+		public PrunedSatVertVisitor<ChooseMaxClausesVisitor> {
 
 	public:
 		using event_filter = boost::on_examine_vertex;

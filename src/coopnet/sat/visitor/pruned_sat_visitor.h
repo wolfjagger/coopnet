@@ -9,14 +9,14 @@
 namespace coopnet {
 
 	template<class ImplVisitor>
-	struct PruneSatVertVisitor :
-		public boost::base_visitor<PruneSatVertVisitor<ImplVisitor>> {
+	struct PrunedSatVertVisitor :
+		public boost::base_visitor<PrunedSatVertVisitor<ImplVisitor>> {
 
 		// Vertex visitor, so make sure this is an vertex filter.
 
 	private:
 
-		using Me = PruneSatVertVisitor<ImplVisitor>;
+		using Me = PrunedSatVertVisitor<ImplVisitor>;
 
 	public:
 
@@ -111,7 +111,7 @@ namespace coopnet {
 
 	private:
 
-		using Me = PruneSatVertVisitor<ImplVisitor>;
+		using Me = PrunedSatVertVisitor<ImplVisitor>;
 
 	public:
 
