@@ -65,12 +65,11 @@ void DPLLVertVisitor::dpll_node_event(
 		} else {
 
 			auto edges_pair = boost::out_edges(node, g);
+
 			auto constrain_node_fcn = [&g](EdgeDescriptor e) {
 				return g[e].dpll.status == DPLLEdgeStatus::ConstrainNode;
 			};
-
-			auto constraining_edge = std::find_if(
-				edges_pair.first, edges_pair.second, constrain_node_fcn);
+			auto constraining_edge = find_if_active_edge(node, g, constrain_node_fcn);
 
 			// If any edge is set to constrain the node, constrain it
 			//  (select_node will check for multiple conflicting constraints)
