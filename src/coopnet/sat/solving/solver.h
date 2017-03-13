@@ -24,14 +24,12 @@ namespace coopnet {
 
 	public:
 
-		Solver();
+		Solver() = default;
 
 		Solver(const Solver& other) = delete;
 		Solver& operator=(const Solver& other) = delete;
 		Solver(Solver&& other) = default;
 		Solver& operator=(Solver&& other) = default;
-
-		~Solver();
 
 		virtual SolveReturn solve(const Problem& prob) = 0;
 
@@ -42,13 +40,6 @@ namespace coopnet {
 	class CompleteSolver : public Solver {
 
 	public:
-
-		CompleteSolver();
-
-		CompleteSolver(CompleteSolver&& other) = default;
-		CompleteSolver& operator=(CompleteSolver&& other) = default;
-
-		~CompleteSolver();
 
 		SolveReturn solve(const Problem& prob) override;
 
@@ -63,13 +54,6 @@ namespace coopnet {
 	class IncompleteSolver : public Solver {
 
 	public:
-
-		IncompleteSolver();
-
-		IncompleteSolver(IncompleteSolver&& other) = default;
-		IncompleteSolver& operator=(IncompleteSolver&& other) = default;
-
-		~IncompleteSolver();
 
 		SolveReturn solve(const Problem& prob) override;
 

@@ -4,25 +4,6 @@ using namespace coopnet;
 
 
 
-Solver::Solver() {
-
-}
-
-Solver::~Solver() {
-
-}
-
-
-
-CompleteSolver::CompleteSolver() {
-
-}
-
-CompleteSolver::~CompleteSolver() {
-
-}
-
-
 auto CompleteSolver::solve(const Problem& prob) -> SolveReturn {
 	
 	auto solution = do_solve(prob);
@@ -34,15 +15,6 @@ auto CompleteSolver::solve(const Problem& prob) -> SolveReturn {
 
 }
 
-
-
-IncompleteSolver::IncompleteSolver() {
-
-}
-
-IncompleteSolver::~IncompleteSolver() {
-
-}
 
 
 auto IncompleteSolver::solve(const Problem& prob) -> SolveReturn {
