@@ -18,7 +18,7 @@ namespace coopplot {
 		auto num_ratios = 21;
 		auto num_average = 20;
 		auto node_choice_mode
-			= coopnet::DPLLNodeChoiceMode::MostSameClauses;
+			= coopnet::DPLLNodeChoiceMode::MostTotClauses;
 
 
 		auto timer = alphali::timer();
@@ -63,7 +63,7 @@ namespace coopplot {
 		auto num_ratios = 21;
 		auto num_average = 100;
 		auto node_choice_mode
-			= coopnet::DPLLNodeChoiceMode::MostSameClauses;
+			= coopnet::DPLLNodeChoiceMode::MostTotClauses;
 
 
 		auto timer = alphali::timer();
