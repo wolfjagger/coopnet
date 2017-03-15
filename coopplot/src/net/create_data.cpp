@@ -1,7 +1,7 @@
 #include "create_data.h"
 #include "alphali/util/timer.h"
 #include "coopnet/sat/problem/problem.h"
-#include "coopnet/sat/problem/problem_factory.h"
+#include "coopnet/sat/problem/creation/problem_factory.h"
 #include "coopnet/sat/solving/dpll/dpll_solver.h"
 
 using namespace coopnet;

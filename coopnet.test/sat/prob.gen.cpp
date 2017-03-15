@@ -1,5 +1,5 @@
 #include "prob.gen.h"
-#include "coopnet/sat/problem/problem_factory.h"
+#include "coopnet/sat/problem/creation/problem_factory.h"
 #include "coopnet/sat/problem/problem_util.h"
 #include "sat.gen.h"
 

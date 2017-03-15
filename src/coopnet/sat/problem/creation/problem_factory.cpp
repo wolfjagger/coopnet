@@ -3,8 +3,8 @@
 #include "alphali/util/random.h"
 #include "coopnet/sat/component/node.h"
 #include "coopnet/sat/component/clause.h"
-#include "problem.h"
-#include "problem_util.h"
+#include "coopnet/sat/problem/problem.h"
+#include "coopnet/sat/problem/problem_util.h"
 
 
 

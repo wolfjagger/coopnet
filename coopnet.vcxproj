@@ -186,7 +186,7 @@
     <ClCompile Include="src\coopnet\sat\component\node.cpp" />
     <ClCompile Include="src\coopnet\sat\problem\shuffler.cpp" />
     <ClCompile Include="src\coopnet\sat\problem\problem.cpp" />
-    <ClCompile Include="src\coopnet\sat\problem\problem_factory.cpp" />
+    <ClCompile Include="src\coopnet\sat\problem\creation\problem_factory.cpp" />
     <ClCompile Include="src\coopnet\sat\problem\problem_util.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\dpll\dpll_formula.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\dpll\visitor\dpll_edge_visitor.cpp" />
@@ -214,7 +214,7 @@
     <ClInclude Include="src\coopnet\graph\graph.h" />
     <ClInclude Include="src\coopnet\sat\problem\shuffler.h" />
     <ClInclude Include="src\coopnet\sat\problem\problem.h" />
-    <ClInclude Include="src\coopnet\sat\problem\problem_factory.h" />
+    <ClInclude Include="src\coopnet\sat\problem\creation\problem_factory.h" />
     <ClInclude Include="src\coopnet\sat\problem\problem_util.h" />
     <ClInclude Include="src\coopnet\sat\solving\dpll\dpll_node_chooser.h" />
     <ClInclude Include="src\coopnet\sat\solving\dpll\dpll_prop_maps.h" />
