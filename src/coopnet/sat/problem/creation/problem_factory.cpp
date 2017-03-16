@@ -8,137 +8,247 @@
 
 
 
-namespace coopnet {
+namespace coopnet { namespace problem_factory {
 
 	using alphali::take_chance;
 
-	constexpr auto escape_num = 20;
+	constexpr auto escapeNum = 20;
 
 	namespace {
 
 		unsigned int calc_max_num_clauses(
-			unsigned int num_nodes, unsigned int num_clauses,
-			unsigned int clause_len = 3) {
+			unsigned int numNodes, unsigned int numClauses,
+			unsigned int clauseLen = 3) {
 
 			// 3-SAT and expecting no duplicates, so need at least three literals.
-			if (num_nodes < clause_len)
+			if (numNodes < clauseLen)
 				throw std::exception("Not enough nodes to construct a clause.");
 
-			auto max_num_clauses
+			auto maxNumClauses
 				= static_cast<unsigned int>(
-					problem_util::max_num_clauses_with_length(num_nodes, 3));
+					problem_util::max_num_clauses_with_length(numNodes, 3));
 
-			return std::min(max_num_clauses, num_clauses);
+			return std::min(maxNumClauses, numClauses);
 
 		}
 
 
-		Problem generate_3sat_problem(
-			unsigned int num_nodes, unsigned int num_clauses,
-			float prob0, float prob1, float prob2) {
+		template<class LitVecGenerator>
+		Problem gen_problem(
+			unsigned int numNodes, unsigned int numClauses,
+			LitVecGenerator litVecGen) {
 
-			auto max_num_clauses
-				= calc_max_num_clauses(num_nodes, num_clauses);
+			auto maxNumClauses
+				= calc_max_num_clauses(numNodes, numClauses);
 
 			auto clauses = std::vector<Clause>();
 
-			for (unsigned int clause_idx = 0;
-				clause_idx < max_num_clauses; ++clause_idx) {
+			for (unsigned int clauseIdx = 0;
+				clauseIdx < maxNumClauses; ++clauseIdx) {
 
-				// Generate a clause by getting three distinct nodes randomly
-				//  and flip a coin for each literals sgn.
-				auto nums = alphali::rand_vec_leq(num_nodes-1, 3);
-				clauses.emplace_back(Clause{
-					Literal(unsigned(nums[0]), take_chance(prob0)),
-					Literal(unsigned(nums[1]), take_chance(prob1)),
-					Literal(unsigned(nums[2]), take_chance(prob2)),
-				});
+				auto lits = litVecGen();
+				clauses.emplace_back(Clause(lits.begin(), lits.end()));
 
 			}
 
-			return Problem(num_nodes, clauses.begin(), clauses.end());
+			return Problem(numNodes, clauses.begin(), clauses.end());
 
 		}
 
-		Problem generate_disconnected_3sat_problem(
-			unsigned num_nodes1, unsigned num_nodes2,
-			unsigned num_clauses1, unsigned num_clauses2,
-			float prob0, float prob1, float prob2) {
+
+		template<class LitVecGenerator1, class LitVecGenerator2>
+		Problem gen_disconnected_problem(
+			unsigned numNodes1, unsigned numNodes2,
+			unsigned numClauses1, unsigned numClauses2,
+			LitVecGenerator1 litVecGen1, LitVecGenerator2 litVecGen2) {
 
 			auto clauses = std::vector<coopnet::Clause>();
 
-			auto max_num_clauses1
-				= calc_max_num_clauses(num_nodes1, num_clauses1);
+			auto maxNumClauses1
+				= calc_max_num_clauses(numNodes1, numClauses1);
 
-			for (unsigned int clause_idx = 0;
-				clause_idx < max_num_clauses1; ++clause_idx) {
+			for (unsigned int clauseIdx = 0;
+				clauseIdx < maxNumClauses1; ++clauseIdx) {
 
-				auto nums = alphali::rand_vec_leq(num_nodes1-1, 3);
-				clauses.emplace_back(Clause{
-					Literal(unsigned(nums[0]), take_chance(prob0)),
-					Literal(unsigned(nums[1]), take_chance(prob1)),
-					Literal(unsigned(nums[2]), take_chance(prob2)),
-				});
+				auto lits = litVecGen1();
+				clauses.emplace_back(Clause(lits.begin(), lits.end()));
 
 			}
 
-			auto max_num_clauses2
-				= calc_max_num_clauses(num_nodes2, num_clauses2);
+			auto maxNumClauses2
+				= calc_max_num_clauses(numNodes2, numClauses2);
 
-			for (unsigned int clause_idx = 0;
-				clause_idx < max_num_clauses2; ++clause_idx) {
+			for (unsigned int clauseIdx = 0;
+				clauseIdx < maxNumClauses2; ++clauseIdx) {
 
-				auto nums = alphali::rand_vec_inclusive(
-					num_nodes1, num_nodes1 + num_nodes2 - 1, 3);
-				clauses.emplace_back(Clause{
-					Literal(unsigned(nums[0]), take_chance(prob0)),
-					Literal(unsigned(nums[1]), take_chance(prob1)),
-					Literal(unsigned(nums[2]), take_chance(prob2)),
-				});
+				auto lits = litVecGen2();
+				clauses.emplace_back(Clause(lits.begin(), lits.end()));
 
 			}
 
-			return Problem(num_nodes1+num_nodes2,
+			return Problem(numNodes1+numNodes2,
 				clauses.begin(), clauses.end());
 
 		}
 
 	}
 
-	Problem generate_solvable_3sat_problem(
-		unsigned num_nodes, unsigned num_clauses,
-		bool assignment_sgn) {
 
-		auto prob1 = assignment_sgn ? 1.f : 0.f;
-		return generate_3sat_problem(
-			num_nodes, num_clauses, prob1, 0.5, 0.5);
 
-	}
+	Problem solvable_3sat_problem(
+		unsigned numNodes, unsigned numClauses,
+		bool assignmentSgn) {
 
-	Problem generate_disconnected_solvable_3sat_problem(
-		unsigned num_nodes1, unsigned num_nodes2,
-		unsigned num_clauses1, unsigned num_clauses2,
-		bool assignment_sgn) {
+		// First node always solvable with assignmentSgn
+		auto prob0 = assignmentSgn ? 1.0 : 0.0;
+		auto prob1 = 0.5;
+		auto prob2 = 0.5;
 
-		auto prob1 = assignment_sgn ? 1.f : 0.f;
-		return generate_disconnected_3sat_problem(
-			num_nodes1, num_nodes2, num_clauses1, num_clauses2, prob1, 0.5, 0.5);
+		auto litVecGen = [numNodes, prob0, prob1, prob2]() {
+			auto nums = alphali::rand_vec_leq(numNodes - 1, 3);
+			return std::vector<Literal> {
+				Literal(unsigned(nums[0]), take_chance(prob0)),
+				Literal(unsigned(nums[1]), take_chance(prob1)),
+				Literal(unsigned(nums[2]), take_chance(prob2))
+			};
+		};
 
-	}
-
-	Problem generate_random_3sat_problem(unsigned num_nodes, unsigned num_clauses) {
-
-		return generate_3sat_problem(num_nodes, num_clauses, 0.5, 0.5, 0.5);
+		return gen_problem(numNodes, numClauses, litVecGen);
 
 	}
 
-	Problem generate_disconnected_random_3sat_problem(
-		unsigned num_nodes1, unsigned num_nodes2,
-		unsigned num_clauses1, unsigned num_clauses2) {
+	Problem disconnected_solvable_3sat_problem(
+		unsigned numNodes1, unsigned numNodes2,
+		unsigned numClauses1, unsigned numClauses2,
+		bool assignmentSgn) {
 
-		return generate_disconnected_3sat_problem(
-			num_nodes1, num_nodes2, num_clauses1, num_clauses2, 0.5, 0.5, 0.5);
+		// First node always solvable with assignmentSgn
+		auto prob0 = assignmentSgn ? 1.0 : 0.0;
+		auto prob1 = 0.5;
+		auto prob2 = 0.5;
+
+		auto litVecGen1 = [numNodes1, prob0, prob1, prob2]() {
+			auto nums = alphali::rand_vec_leq(numNodes1 - 1, 3);
+			return std::vector<Literal> {
+				Literal(unsigned(nums[0]), take_chance(prob0)),
+				Literal(unsigned(nums[1]), take_chance(prob1)),
+				Literal(unsigned(nums[2]), take_chance(prob2))
+			};
+		};
+
+		auto litVecGen2 = [numNodes1, numNodes2, prob0, prob1, prob2]() {
+			auto nums = alphali::rand_vec_inclusive(
+				numNodes1, numNodes1 + numNodes2 - 1, 3);
+			return std::vector<Literal> {
+				Literal(unsigned(nums[0]), take_chance(prob0)),
+				Literal(unsigned(nums[1]), take_chance(prob1)),
+				Literal(unsigned(nums[2]), take_chance(prob2))
+			};
+		};
+
+		return gen_disconnected_problem(
+			numNodes1, numNodes2, numClauses1, numClauses2,
+			litVecGen1, litVecGen2);
 
 	}
 
-}
+
+
+	Problem random_3sat_problem(unsigned numNodes, unsigned numClauses) {
+
+		// All nodes have random sgn
+		auto prob0 = 0.5;
+		auto prob1 = 0.5;
+		auto prob2 = 0.5;
+
+		auto litVecGen = [numNodes, prob0, prob1, prob2]() {
+			auto nums = alphali::rand_vec_leq(numNodes - 1, 3);
+			return std::vector<Literal> {
+				Literal(unsigned(nums[0]), take_chance(prob0)),
+				Literal(unsigned(nums[1]), take_chance(prob1)),
+				Literal(unsigned(nums[2]), take_chance(prob2))
+			};
+		};
+
+		return gen_problem(numNodes, numClauses, litVecGen);
+
+	}
+
+	Problem disconnected_random_3sat_problem(
+		unsigned numNodes1, unsigned numNodes2,
+		unsigned numClauses1, unsigned numClauses2) {
+
+		// All nodes have random sgn
+		auto prob0 = 0.5;
+		auto prob1 = 0.5;
+		auto prob2 = 0.5;
+
+		auto litVecGen1 = [numNodes1, prob0, prob1, prob2]() {
+			auto nums = alphali::rand_vec_leq(numNodes1 - 1, 3);
+			return std::vector<Literal> {
+				Literal(unsigned(nums[0]), take_chance(prob0)),
+				Literal(unsigned(nums[1]), take_chance(prob1)),
+				Literal(unsigned(nums[2]), take_chance(prob2))
+			};
+		};
+
+		auto litVecGen2 = [numNodes1, numNodes2, prob0, prob1, prob2]() {
+			auto nums = alphali::rand_vec_inclusive(
+				numNodes1, numNodes1 + numNodes2 - 1, 3);
+			return std::vector<Literal> {
+				Literal(unsigned(nums[0]), take_chance(prob0)),
+				Literal(unsigned(nums[1]), take_chance(prob1)),
+				Literal(unsigned(nums[2]), take_chance(prob2))
+			};
+		};
+
+		return gen_disconnected_problem(
+			numNodes1, numNodes2, numClauses1, numClauses2,
+			litVecGen1, litVecGen2);
+
+	}
+
+
+
+	Problem random_3sat_problem_with_1D_metric(
+		unsigned numNodes, unsigned numClauses,
+		double stdDev) {
+
+		// All nodes have random sgn
+		auto prob0 = 0.5;
+		auto prob1 = 0.5;
+		auto prob2 = 0.5;
+
+		// Give each node an "x value" between 0 and 1,
+		//  representing placement in metric space.
+		using fcn_pair = std::pair<unsigned, double>;
+		auto nodeXVec = std::vector<fcn_pair>();
+		nodeXVec.reserve(numNodes);
+		for(unsigned node=0; node<numNodes; ++node) {
+			nodeXVec.emplace_back(node, alphali::unit_rand());
+		}
+
+		// Sort the vector by x value
+		std::sort(nodeXVec.begin(), nodeXVec.end(), [](const fcn_pair& p1, const fcn_pair& p2) {
+			return p1.second < p2.second;
+		});
+
+		auto litVecGen = [nodeXVec{std::move(nodeXVec)}, prob0, prob1, prob2]() {
+
+			// Choose set of nodes based on distribution favoring clusters:
+			//  P ~ exp(1/(2*stdDev) * (sum_i x_i^2 - 3*\mu_{x_1,x_2,x_3}^2))
+			//auto nums = alphali::rand_vec_leq(numNodes - 1, 3);
+
+			return std::vector<Literal> {
+				/*Literal(unsigned(nums[0]), take_chance(prob0)),
+				Literal(unsigned(nums[1]), take_chance(prob1)),
+				Literal(unsigned(nums[2]), take_chance(prob2))*/
+			};
+
+		};
+
+		return gen_problem(numNodes, numClauses, litVecGen);
+
+	}
+
+} }

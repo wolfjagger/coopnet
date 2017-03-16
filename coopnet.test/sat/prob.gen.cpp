@@ -142,7 +142,7 @@ namespace rc {
 			return gen::map(num_clauses_gen,
 				[num_nodes, assignment_sgn](unsigned int num_clauses) {
 
-				return coopnet::generate_solvable_3sat_problem(
+				return coopnet::problem_factory::solvable_3sat_problem(
 					num_nodes, num_clauses, assignment_sgn);
 
 			});
@@ -168,7 +168,7 @@ namespace rc {
 		auto sgn_gen = rc::gen::just(assignment_sgn);
 
 		return gen::apply(
-			coopnet::generate_disconnected_solvable_3sat_problem,
+			coopnet::problem_factory::disconnected_solvable_3sat_problem,
 			num_nodes_gen1, num_nodes_gen2,
 			num_clauses_gen1, num_clauses_gen2, sgn_gen);
 
@@ -184,7 +184,7 @@ namespace rc {
 			num_clauses.first, num_clauses.second+1);
 
 		return gen::apply(
-			coopnet::generate_random_3sat_problem,
+			coopnet::problem_factory::random_3sat_problem,
 			num_nodes_gen, num_clauses_gen);
 
 	}
