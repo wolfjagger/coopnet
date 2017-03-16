@@ -34,4 +34,10 @@ namespace rc {
 	GenProb random_prob_gen(
 		MinMax num_nodes, MinMax num_clauses);
 
+	GenProb barabasi_albert_prob_gen(
+		MinMax num_nodes, MinMax num_clauses);
+
+	GenProb watts_strogatz_prob_gen(
+		MinMax num_nodes, MinMax num_clauses);
+
 }

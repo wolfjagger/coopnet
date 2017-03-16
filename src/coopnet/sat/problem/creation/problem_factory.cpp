@@ -33,10 +33,27 @@ namespace coopnet { namespace problem_factory {
 		}
 
 
+
+		auto default_lit_generator(
+			unsigned numNodes, double prob0, double prob1, double prob2) {
+
+			return [numNodes, prob0, prob1, prob2]() {
+				auto nums = alphali::rand_vec_leq(numNodes - 1, 3);
+				return std::vector<Literal> {
+					Literal(unsigned(nums[0]), take_chance(prob0)),
+					Literal(unsigned(nums[1]), take_chance(prob1)),
+					Literal(unsigned(nums[2]), take_chance(prob2))
+				};
+			};
+
+		}
+
+
+
 		template<class LitVecGenerator>
-		Problem gen_problem(
+		std::vector<Clause> gen_list_clauses(
 			unsigned int numNodes, unsigned int numClauses,
-			LitVecGenerator litVecGen) {
+			LitVecGenerator&& litVecGen) {
 
 			auto maxNumClauses
 				= calc_max_num_clauses(numNodes, numClauses);
@@ -51,6 +68,17 @@ namespace coopnet { namespace problem_factory {
 
 			}
 
+			return clauses;
+
+		}
+
+		template<class LitVecGenerator>
+		Problem gen_problem(
+			unsigned int numNodes, unsigned int numClauses,
+			LitVecGenerator&& litVecGen) {
+
+			auto clauses = gen_list_clauses(numNodes, numClauses, litVecGen);
+
 			return Problem(numNodes, clauses.begin(), clauses.end());
 
 		}
@@ -60,34 +88,15 @@ namespace coopnet { namespace problem_factory {
 		Problem gen_disconnected_problem(
 			unsigned numNodes1, unsigned numNodes2,
 			unsigned numClauses1, unsigned numClauses2,
-			LitVecGenerator1 litVecGen1, LitVecGenerator2 litVecGen2) {
+			LitVecGenerator1&& litVecGen1, LitVecGenerator2&& litVecGen2) {
 
-			auto clauses = std::vector<coopnet::Clause>();
+			auto clauses1 = gen_list_clauses(numNodes1, numClauses1, litVecGen1);
+			auto clauses2 = gen_list_clauses(numNodes2, numClauses2, litVecGen2);
 
-			auto maxNumClauses1
-				= calc_max_num_clauses(numNodes1, numClauses1);
-
-			for (unsigned int clauseIdx = 0;
-				clauseIdx < maxNumClauses1; ++clauseIdx) {
-
-				auto lits = litVecGen1();
-				clauses.emplace_back(Clause(lits.begin(), lits.end()));
-
-			}
-
-			auto maxNumClauses2
-				= calc_max_num_clauses(numNodes2, numClauses2);
-
-			for (unsigned int clauseIdx = 0;
-				clauseIdx < maxNumClauses2; ++clauseIdx) {
-
-				auto lits = litVecGen2();
-				clauses.emplace_back(Clause(lits.begin(), lits.end()));
-
-			}
+			clauses1.insert(clauses1.end(), clauses2.begin(), clauses2.end());
 
 			return Problem(numNodes1+numNodes2,
-				clauses.begin(), clauses.end());
+				clauses1.begin(), clauses1.end());
 
 		}
 
@@ -104,16 +113,8 @@ namespace coopnet { namespace problem_factory {
 		auto prob1 = 0.5;
 		auto prob2 = 0.5;
 
-		auto litVecGen = [numNodes, prob0, prob1, prob2]() {
-			auto nums = alphali::rand_vec_leq(numNodes - 1, 3);
-			return std::vector<Literal> {
-				Literal(unsigned(nums[0]), take_chance(prob0)),
-				Literal(unsigned(nums[1]), take_chance(prob1)),
-				Literal(unsigned(nums[2]), take_chance(prob2))
-			};
-		};
-
-		return gen_problem(numNodes, numClauses, litVecGen);
+		return gen_problem(numNodes, numClauses,
+			default_lit_generator(numNodes, prob0, prob1, prob2));
 
 	}
 
@@ -127,15 +128,6 @@ namespace coopnet { namespace problem_factory {
 		auto prob1 = 0.5;
 		auto prob2 = 0.5;
 
-		auto litVecGen1 = [numNodes1, prob0, prob1, prob2]() {
-			auto nums = alphali::rand_vec_leq(numNodes1 - 1, 3);
-			return std::vector<Literal> {
-				Literal(unsigned(nums[0]), take_chance(prob0)),
-				Literal(unsigned(nums[1]), take_chance(prob1)),
-				Literal(unsigned(nums[2]), take_chance(prob2))
-			};
-		};
-
 		auto litVecGen2 = [numNodes1, numNodes2, prob0, prob1, prob2]() {
 			auto nums = alphali::rand_vec_inclusive(
 				numNodes1, numNodes1 + numNodes2 - 1, 3);
@@ -148,7 +140,8 @@ namespace coopnet { namespace problem_factory {
 
 		return gen_disconnected_problem(
 			numNodes1, numNodes2, numClauses1, numClauses2,
-			litVecGen1, litVecGen2);
+			default_lit_generator(numNodes1, prob0, prob1, prob2),
+			litVecGen2);
 
 	}
 
@@ -161,16 +154,8 @@ namespace coopnet { namespace problem_factory {
 		auto prob1 = 0.5;
 		auto prob2 = 0.5;
 
-		auto litVecGen = [numNodes, prob0, prob1, prob2]() {
-			auto nums = alphali::rand_vec_leq(numNodes - 1, 3);
-			return std::vector<Literal> {
-				Literal(unsigned(nums[0]), take_chance(prob0)),
-				Literal(unsigned(nums[1]), take_chance(prob1)),
-				Literal(unsigned(nums[2]), take_chance(prob2))
-			};
-		};
-
-		return gen_problem(numNodes, numClauses, litVecGen);
+		return gen_problem(numNodes, numClauses,
+			default_lit_generator(numNodes, prob0, prob1, prob2));
 
 	}
 
@@ -182,15 +167,6 @@ namespace coopnet { namespace problem_factory {
 		auto prob0 = 0.5;
 		auto prob1 = 0.5;
 		auto prob2 = 0.5;
-
-		auto litVecGen1 = [numNodes1, prob0, prob1, prob2]() {
-			auto nums = alphali::rand_vec_leq(numNodes1 - 1, 3);
-			return std::vector<Literal> {
-				Literal(unsigned(nums[0]), take_chance(prob0)),
-				Literal(unsigned(nums[1]), take_chance(prob1)),
-				Literal(unsigned(nums[2]), take_chance(prob2))
-			};
-		};
 
 		auto litVecGen2 = [numNodes1, numNodes2, prob0, prob1, prob2]() {
 			auto nums = alphali::rand_vec_inclusive(
@@ -204,12 +180,14 @@ namespace coopnet { namespace problem_factory {
 
 		return gen_disconnected_problem(
 			numNodes1, numNodes2, numClauses1, numClauses2,
-			litVecGen1, litVecGen2);
+			default_lit_generator(numNodes1, prob0, prob1, prob2),
+			litVecGen2);
 
 	}
 
 
 
+	// BROKEN
 	Problem random_3sat_problem_with_1D_metric(
 		unsigned numNodes, unsigned numClauses,
 		double stdDev) {
@@ -229,7 +207,8 @@ namespace coopnet { namespace problem_factory {
 		}
 
 		// Sort the vector by x value
-		std::sort(nodeXVec.begin(), nodeXVec.end(), [](const fcn_pair& p1, const fcn_pair& p2) {
+		std::sort(nodeXVec.begin(), nodeXVec.end(),
+			[](const fcn_pair& p1, const fcn_pair& p2) {
 			return p1.second < p2.second;
 		});
 
@@ -248,6 +227,178 @@ namespace coopnet { namespace problem_factory {
 		};
 
 		return gen_problem(numNodes, numClauses, litVecGen);
+
+	}
+
+
+
+	Problem barabasi_albert_3sat_problem(
+		unsigned numNodes, unsigned numClauses) {
+
+		// All nodes have random sgn
+		auto prob0 = 0.5;
+		auto prob1 = 0.5;
+		auto prob2 = 0.5;
+
+		// Set up a vector of node degrees
+		auto nodeDegree = std::vector<unsigned>(numNodes);
+		std::fill(nodeDegree.begin(), nodeDegree.end(), 0);
+		auto totDegree = numNodes;
+
+		// Generator for Barabasi-Albert is somewhat complicated.
+		//  It takes a list of degrees and links clauses to nodes in proportion to (degree+1).
+		auto litVecGen
+			= [nodeDegree{ std::move(nodeDegree) }, totDegree, prob0, prob1, prob2]() mutable {
+
+			// Generate three unique numbers
+			auto nums = std::vector<int>(3);
+			for (auto i = 0; i < nums.size(); ++i) {
+
+				while (true) {
+					
+					// Accumulate node degrees (+1) until we reach a threshold.
+					//  This should give preference in proportion to (degree+1).
+					auto accumulatedDegree = 0;
+					auto accumulatedDegreeEnd = alphali::rand_leq(totDegree - 1);
+
+					auto newNum = 0;
+					for (auto num = 0; num < nodeDegree.size(); ++num) {
+						accumulatedDegree += nodeDegree[num] + 1;
+						if (accumulatedDegree > accumulatedDegreeEnd) {
+							newNum = num;
+							break;
+						}
+					}
+
+					// Check the new node is unique
+					auto unique = true;
+					for (auto j = 0; j < i; ++j) {
+						if (newNum == nums[j]) unique = false;
+					}
+
+					if (unique) {
+						nums[i] = newNum;
+						break;
+					}
+
+				}
+
+			}
+
+			// Now update degrees for each of the nums.
+			for(auto num : nums) {
+				++nodeDegree[num];
+				++totDegree;
+			}
+
+			// Finally, return the literal list.
+			return std::vector<Literal> {
+				Literal(unsigned(nums[0]), take_chance(prob0)),
+				Literal(unsigned(nums[1]), take_chance(prob1)),
+				Literal(unsigned(nums[2]), take_chance(prob2))
+			};
+
+		};
+
+		return gen_problem(numNodes, numClauses, litVecGen);
+
+	}
+
+
+
+	// Generates 3SAT problem with large clustering, drawing inspiration from
+	//  the Watts-Strogatz model: generate a circulant graph then rewire.
+	// We will generate a 3sat problem with clauses connecting nearby nodes (circulant),
+	//  then rewire each clause's edges with some probability.
+	Problem watts_strogatz_3sat_problem(
+		unsigned numNodes, unsigned numClauses,
+		double rewire_chance) {
+
+		// All nodes have random sgn
+		auto prob0 = 0.5;
+		auto prob1 = 0.5;
+		auto prob2 = 0.5;
+
+		// Generate a list of clauses first that just give a ~circulant graph.
+		auto ratio = double(numNodes)/numClauses;
+		auto currentClause = 0;
+		auto litVecGen
+			= [currentClause, ratio, numNodes, prob0, prob1, prob2]() mutable {
+
+			auto pseudoNode = currentClause*ratio;
+			auto currentNode = unsigned(std::floor(pseudoNode));
+			auto subNode = unsigned(std::floor((pseudoNode - currentNode) / ratio));
+
+			// Link up currentNode, currentNode+1, currentNode+2+subNode
+			auto nums = std::vector<unsigned>(3);
+			nums[0] = currentNode;
+			nums[1] = currentNode + 1;
+			nums[2] = currentNode + 2 + subNode;
+
+			// Fix problems: >= numNodes and duplicates
+			for (auto numIter = nums.begin(); numIter != nums.end(); ++numIter) {
+
+				auto& num = *numIter;
+				auto needToCheck = true;
+				while(needToCheck) {
+
+					needToCheck = false;
+
+					// If too large, wrap around
+					while (num >= numNodes) {
+						num -= numNodes;
+						needToCheck = true;
+					}
+
+					// If already in clause before, index by 1
+					while (std::find(nums.begin(), numIter, num) != numIter) {
+						num += 1;
+						needToCheck = true;
+					}
+
+				}
+
+			}
+
+			// Go to next clause
+			++currentClause;
+
+			// Finally, return the literal list.
+			return std::vector<Literal> {
+				Literal(unsigned(nums[0]), take_chance(prob0)),
+				Literal(unsigned(nums[1]), take_chance(prob1)),
+				Literal(unsigned(nums[2]), take_chance(prob2))
+			};
+
+		};
+
+		// Generate circulant clauses
+		auto clauses = gen_list_clauses(numNodes, numClauses, litVecGen);
+
+		// Now for each node in the clause, give a chance to rewire
+		for (auto& c : clauses) {
+			auto& lits = c.literals();
+			for (auto& lit : lits) {
+				
+				auto rand = alphali::unit_rand();
+				if (rand <= rewire_chance) {
+
+					auto& oldNode = lit.first.id;
+
+					auto newNode = alphali::rand_leq(numNodes-1);
+					while (newNode != oldNode && std::any_of(lits.begin(), lits.end(),
+						[newNode](std::pair<Node, bool> l) { return l.first.id == newNode; })) {
+						newNode = alphali::rand_leq(numNodes-1);
+					}
+
+					oldNode = newNode;
+
+				}
+
+			}
+		}
+
+		return Problem(numNodes, clauses.begin(), clauses.end());
 
 	}
 

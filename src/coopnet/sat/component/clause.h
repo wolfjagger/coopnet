@@ -36,6 +36,10 @@ namespace coopnet {
 
 
 
+		LitStorage& literals() {
+			return lits;
+		}
+
 		const LitStorage& literals() const {
 			return lits;
 		}

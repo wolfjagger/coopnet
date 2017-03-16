@@ -52,9 +52,4 @@ namespace rc {
 		static Gen<coopnet::Assignment> arbitrary();
 	};
 
-/*	template<>
-	struct Arbitrary<sat::IncompleteAssignment> {
-		static Gen<sat::IncompleteAssignment> arbitrary();
-	};*/
-
 }

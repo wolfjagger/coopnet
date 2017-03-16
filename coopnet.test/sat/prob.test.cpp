@@ -132,11 +132,43 @@ TEST_CASE("Problem assignment verification", "[sat]") {
 		
 	}
 
-	SECTION("Random problems give correct assignments if solvable and node choice doesn't matter.") {
+	SECTION("Random problems give correct assignments if solvable, and node choice doesn't matter.") {
 		
 		auto lam = []() {
 
 			auto prob = *rc::random_prob_gen(
+				std::make_pair(3, 10),
+				std::make_pair(1, 50));
+
+			lam_dpll_unknown_all(prob);
+
+		};
+
+		REQUIRE(rc::check(lam));
+
+	}
+
+	SECTION("Barabasi-Albert problems give correct assignments if solvable, and node choice doesn't matter.") {
+
+		auto lam = []() {
+
+			auto prob = *rc::barabasi_albert_prob_gen(
+				std::make_pair(3, 10),
+				std::make_pair(1, 50));
+
+			lam_dpll_unknown_all(prob);
+
+		};
+
+		REQUIRE(rc::check(lam));
+
+	}
+
+	SECTION("Watts-Strogatz problems give correct assignments if solvable, and node choice doesn't matter.") {
+
+		auto lam = []() {
+
+			auto prob = *rc::watts_strogatz_prob_gen(
 				std::make_pair(3, 10),
 				std::make_pair(1, 50));
 
@@ -154,7 +186,7 @@ TEST_CASE("Problem assignment verification", "[sat]") {
 
 TEST_CASE("Literal shuffle", "[sat]") {
 
-	SECTION("problem invariants unaffected by literal shuffling") {
+	SECTION("Problem invariants unaffected by literal shuffling") {
 
 		auto lam = []() {
 

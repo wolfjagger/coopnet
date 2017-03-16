@@ -81,14 +81,3 @@ Gen<coopnet::Assignment> Arbitrary<coopnet::Assignment>::arbitrary() {
 	return gen::build<coopnet::Assignment>(
 		gen::set(&coopnet::Assignment::data));
 }
-
-/*Gen<sat::IncompleteAssignment>
-Arbitrary<sat::IncompleteAssignment>::arbitrary() {
-
-	return gen::build<sat::IncompleteAssignment>(
-		gen::set(&sat::IncompleteAssignment::data,
-			gen::container<sat::IncompleteAssignment::Map>(
-				gen::arbitrary<sat::VertDescriptor>(),
-				gen::arbitrary<boost::logic::tribool>())));
-	
-}*/

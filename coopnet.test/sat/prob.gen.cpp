@@ -189,4 +189,33 @@ namespace rc {
 
 	}
 
+	GenProb barabasi_albert_prob_gen(
+		MinMax num_nodes, MinMax num_clauses) {
+
+		auto num_nodes_gen = rc::gen::inRange<unsigned int>(
+			num_nodes.first, num_nodes.second + 1);
+		auto num_clauses_gen = rc::gen::inRange<unsigned int>(
+			num_clauses.first, num_clauses.second + 1);
+
+		return gen::apply(
+			coopnet::problem_factory::barabasi_albert_3sat_problem,
+			num_nodes_gen, num_clauses_gen);
+
+	}
+
+	GenProb watts_strogatz_prob_gen(
+		MinMax num_nodes, MinMax num_clauses) {
+
+		auto num_nodes_gen = rc::gen::inRange<unsigned int>(
+			num_nodes.first, num_nodes.second + 1);
+		auto num_clauses_gen = rc::gen::inRange<unsigned int>(
+			num_clauses.first, num_clauses.second + 1);
+		auto rewire_chance_gen = rc::gen::just(0.3);
+
+		return gen::apply(
+			coopnet::problem_factory::watts_strogatz_3sat_problem,
+			num_nodes_gen, num_clauses_gen, rewire_chance_gen);
+
+	}
+
 }
