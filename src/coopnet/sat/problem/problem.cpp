@@ -1,5 +1,6 @@
 #include "problem.h"
 #include <queue>
+#include "boost/property_map/transform_value_property_map.hpp"
 #include "boost/graph/breadth_first_search.hpp"
 #include "coopnet/graph/graph_util.h"
 #include "coopnet/sat/solving/simple_formula.h"
@@ -14,15 +15,33 @@ using namespace coopnet;
 namespace {
 
 	boost::dynamic_properties generate_dyn_props(
-		BaseSatGraph& prob_graph) {
+		BaseSatGraph& probGraph) {
 
-		boost::dynamic_properties dyn_props;
+		boost::dynamic_properties dynProps;
 
 		// Generate dynamic_properties
-		auto base_map = get(&BaseSatVProp::base, prob_graph);
-		dyn_props.property("basic properties", base_map);
 
-		return dyn_props;
+		auto baseVertMap = get(&BaseSatVProp::base, probGraph);
+
+		auto kindLam = [](BaseSatVProp::Base& base) { return base.kind; };
+		auto kindMap = boost::transform_value_property_map<decltype(kindLam), decltype(baseVertMap)>(
+			kindLam, baseVertMap);
+		dynProps.property("Kind", kindMap);
+
+		auto nameLam = [](BaseSatVProp::Base& base) { return base.name; };
+		auto nameMap = boost::transform_value_property_map<decltype(nameLam), decltype(baseVertMap)>(
+			nameLam, baseVertMap);
+		dynProps.property("Name", nameMap);
+
+
+		auto baseEdgeMap = get(&BaseSatEProp::base, probGraph);
+
+		auto sgnLam = [](BaseSatEProp::Base& base) { return base.sgn; };
+		auto sgnMap = boost::transform_value_property_map<decltype(sgnLam), decltype(baseEdgeMap)>(
+			sgnLam, baseEdgeMap);
+		dynProps.property("Sign", sgnMap);
+
+		return dynProps;
 
 	}
 
@@ -33,16 +52,16 @@ namespace {
 ClauseSatisfiability Problem::clause_satisfiability_for(
 	std::shared_ptr<const Assignment> assign) const {
 
-	auto satisfiability_collector
+	auto satisfiabilityCollector
 		= SatCollectionVisitor(*this, assign);
 
 	auto form = SimpleFormula(*this);
 	
 	auto& g = form.graph();
 	auto components = graph_util::calculate_connected_components(g);
-	visit_sat_graph(satisfiability_collector, g, components.cbegin(), components.cend());
+	visit_sat_graph(satisfiabilityCollector, g, components.cbegin(), components.cend());
 	
-	return *satisfiability_collector.satisfiability;
+	return *satisfiabilityCollector.satisfiability;
 	
 }
 
@@ -51,14 +70,14 @@ ClauseSatisfiability Problem::clause_satisfiability_for(
 std::shared_ptr<Assignment> Problem::create_same_sgn_assignment(bool sgn) const {
 
 	// Should be satisfied by an assignment of all true
-	auto map_assign = std::map<Node, bool>();
-	for(auto pair : map_node_to_vert->left) {
+	auto mapAssign = std::map<Node, bool>();
+	for(auto pair : mapNodeToVert->left) {
 		auto node = pair.first;
-		map_assign.emplace(node, sgn);
+		mapAssign.emplace(node, sgn);
 	}
 
 	auto assign = std::make_shared<coopnet::Assignment>();
-	assign->data = std::move(map_assign);
+	assign->data = std::move(mapAssign);
 	return assign;
 	
 }
@@ -69,13 +88,13 @@ std::shared_ptr<Assignment> Problem::create_same_sgn_assignment(bool sgn) const 
 
 void Problem::build_graph(NodeList&& nodes, ClauseList&& clauses) {
 
-	num_nodes = nodes.size();
-	num_clauses = clauses.size();
+	numNodes = nodes.size();
+	numClauses = clauses.size();
 
-	prob_graph = BaseSatGraph();
+	probGraph = BaseSatGraph();
 
 	// Temp map to connect node-clause edges
-	map_node_to_vert = std::make_shared<NodeVertMap>();
+	mapNodeToVert = std::make_shared<NodeVertMap>();
 
 	// Add all nodes in sequence to graph
 	for(auto node_to_add : nodes) {
@@ -85,9 +104,9 @@ void Problem::build_graph(NodeList&& nodes, ClauseList&& clauses) {
 		prop.base.kind = BaseSatVProp::Node;
 		prop.base.name = graph_util::node_name(node_to_add);
 
-		auto node_vert = boost::add_vertex(prop, prob_graph);
+		auto nodeVert = boost::add_vertex(prop, probGraph);
 
-		map_node_to_vert->insert(NodeVertMap::value_type(node_to_add, node_vert));
+		mapNodeToVert->insert(NodeVertMap::value_type(node_to_add, nodeVert));
 
 	}
 
@@ -100,18 +119,18 @@ void Problem::build_graph(NodeList&& nodes, ClauseList&& clauses) {
 		prop.base.kind = BaseSatVProp::Clause;
 		prop.base.name = graph_util::clause_name(clause_to_add);
 
-		auto clause_vert = boost::add_vertex(prop, prob_graph);
+		auto clauseVert = boost::add_vertex(prop, probGraph);
 		
 		for(auto& lit : clause_to_add.literals()) {
 
 			// Add node in clause as edge to graph
 			//TODO: Add error handling for if node not in map.
-			auto node_vert = map_node_to_vert->left.at(lit.first);
+			auto nodeVert = mapNodeToVert->left.at(lit.first);
 
 			auto prop = BaseSatGraph::edge_property_type();
 			prop.base.sgn = lit.second;
 
-			auto desc_pair = boost::add_edge(node_vert, clause_vert, prop, prob_graph);
+			auto desc_pair = boost::add_edge(nodeVert, clauseVert, prop, probGraph);
 			if (!desc_pair.second) std::exception("Failed to add edge to graph.");
 
 		}
@@ -119,7 +138,7 @@ void Problem::build_graph(NodeList&& nodes, ClauseList&& clauses) {
 	}
 
 
-	dyn_props = generate_dyn_props(prob_graph);
+	dynProps = generate_dyn_props(probGraph);
 
 }
 
@@ -132,8 +151,8 @@ std::ostream& coopnet::operator<<(std::ostream& os, const Problem& prob) {
 	os << "problem:" << std::endl;
 
 	const auto& g = prob.get_graph();
-	auto vert_pair = boost::vertices(prob.get_graph());
-	for (auto vert = vert_pair.first; vert != vert_pair.second; ++vert) {
+	auto vertPair = boost::vertices(prob.get_graph());
+	for (auto vert = vertPair.first; vert != vertPair.second; ++vert) {
 		const auto& prop = g[*vert];
 		os << prop.base.kind << prop.base.name << std::endl;
 	}

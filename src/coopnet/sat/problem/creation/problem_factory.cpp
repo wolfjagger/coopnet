@@ -332,8 +332,8 @@ namespace coopnet { namespace problem_factory {
 			// Link up currentNode, currentNode+1, currentNode+2+subNode
 			auto nums = std::vector<unsigned>(3);
 			nums[0] = currentNode;
-			nums[1] = currentNode + 1;
-			nums[2] = currentNode + 2 + subNode;
+			nums[1] = currentNode + alphali::rand_inclusive(1, subNode+1);
+			nums[2] = currentNode + subNode+2;
 
 			// Fix problems: >= numNodes and duplicates
 			for (auto numIter = nums.begin(); numIter != nums.end(); ++numIter) {

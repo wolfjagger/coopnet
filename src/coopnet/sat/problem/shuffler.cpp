@@ -14,22 +14,22 @@ using namespace coopnet;
 NodeShuffler::NodeShuffler(const Problem& prob) {
 
 	nodes = std::vector<Node>();
-	auto num_nodes = prob.get_num_nodes();
-	nodes.reserve(num_nodes);
-	for (unsigned int i = 0; i < num_nodes; ++i) {
+	auto numNodes = prob.get_num_nodes();
+	nodes.reserve(numNodes);
+	for (unsigned int i = 0; i < numNodes; ++i) {
 		nodes.emplace_back(i);
 	}
 
-	map_node_to_vert = prob.get_node_vert_map();
+	mapNodeToVert = prob.get_node_vert_map();
 
 	shuffle();
 
 }
 
-NodeShuffler::NodeShuffler(const Problem& prob, std::vector<Node> shuffle_nodes) {
+NodeShuffler::NodeShuffler(const Problem& prob, std::vector<Node> shuffleNodes) {
 
-	nodes = std::move(shuffle_nodes);
-	map_node_to_vert = prob.get_node_vert_map();
+	nodes = std::move(shuffleNodes);
+	mapNodeToVert = prob.get_node_vert_map();
 
 }
 
@@ -64,8 +64,8 @@ void NodeShuffler::apply_to_problem(Problem& prob) const {
 	// Change node_vert_map to re-point the nodes
 	// Need copy and swap because we can't have duplicates
 	auto map_cpy = NodeVertMap();
-	for (auto iter = prob.map_node_to_vert->left.begin();
-		iter != prob.map_node_to_vert->left.end(); ++iter) {
+	for (auto iter = prob.mapNodeToVert->left.begin();
+		iter != prob.mapNodeToVert->left.end(); ++iter) {
 
 		auto old_node = iter->first;
 		auto vert = iter->second;
@@ -73,10 +73,10 @@ void NodeShuffler::apply_to_problem(Problem& prob) const {
 		map_cpy.left.insert(std::make_pair(new_node, vert));
 
 	}
-	std::swap(map_cpy, *prob.map_node_to_vert);
+	std::swap(map_cpy, *prob.mapNodeToVert);
 
 	// Rename nodes and clauses
-	graph_util::rename_verts(prob.prob_graph, *map_node_to_vert);
+	graph_util::rename_verts(prob.probGraph, *mapNodeToVert);
 
 }
 
@@ -85,22 +85,22 @@ void NodeShuffler::apply_to_problem(Problem& prob) const {
 SgnShuffler::SgnShuffler(const Problem& prob) {
 
 	sgns = std::vector<bool>();
-	auto num_nodes = prob.get_num_nodes();
-	sgns.reserve(num_nodes);
-	for (size_t i = 0; i < num_nodes; ++i) {
+	auto numNodes = prob.get_num_nodes();
+	sgns.reserve(numNodes);
+	for (size_t i = 0; i < numNodes; ++i) {
 		sgns.emplace_back(true);
 	}
 
-	map_node_to_vert = prob.get_node_vert_map();
+	mapNodeToVert = prob.get_node_vert_map();
 
 	shuffle();
 
 }
 
-SgnShuffler::SgnShuffler(const Problem& prob, std::vector<bool> shuffle_sgns) {
+SgnShuffler::SgnShuffler(const Problem& prob, std::vector<bool> shuffleSgns) {
 
-	sgns = std::move(shuffle_sgns);
-	map_node_to_vert = prob.get_node_vert_map();
+	sgns = std::move(shuffleSgns);
+	mapNodeToVert = prob.get_node_vert_map();
 
 }
 
@@ -141,25 +141,25 @@ void SgnShuffler::apply_to_problem(Problem& prob) const {
 
 	// Change edge sgns
 
-	auto& prob_graph = prob.prob_graph;
+	auto& probGraph = prob.probGraph;
 
-	for (auto iter = prob.map_node_to_vert->left.begin();
-		iter != prob.map_node_to_vert->left.end(); ++iter) {
+	for (auto iter = prob.mapNodeToVert->left.begin();
+		iter != prob.mapNodeToVert->left.end(); ++iter) {
 
 		if (!sgns.at(iter->first.id)) {
 
 			auto vert = iter->second;
 
-			auto edge_pair = boost::out_edges(vert, prob_graph);
-			for_each(edge_pair.first, edge_pair.second, [&prob_graph](EdgeDescriptor e) {
-				prob_graph[e].base.sgn = !prob_graph[e].base.sgn;
+			auto edge_pair = boost::out_edges(vert, probGraph);
+			for_each(edge_pair.first, edge_pair.second, [&probGraph](EdgeDescriptor e) {
+				probGraph[e].base.sgn = !probGraph[e].base.sgn;
 			});
 
 		}
 	}
 
 	// Rename nodes and clauses
-	graph_util::rename_verts(prob_graph, *map_node_to_vert);
+	graph_util::rename_verts(probGraph, *mapNodeToVert);
 
 }
 
