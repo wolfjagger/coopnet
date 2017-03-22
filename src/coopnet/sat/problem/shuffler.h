@@ -38,14 +38,14 @@ namespace coopnet {
 	private:
 
 		std::vector<Node> nodes;
-		std::shared_ptr<const NodeVertMap> map_node_to_vert;
+		std::shared_ptr<const NodeVertMap> mapNodeToVert;
 
 	public:
 
 		// Note: shuffles on creation
 		NodeShuffler(const Problem& prob);
 
-		NodeShuffler(const Problem& prob, std::vector<Node> shuffle_nodes);
+		NodeShuffler(const Problem& prob, std::vector<Node> shuffleNodes);
 
 
 
@@ -71,14 +71,14 @@ namespace coopnet {
 	private:
 
 		std::vector<bool> sgns;
-		std::shared_ptr<const NodeVertMap> map_node_to_vert;
+		std::shared_ptr<const NodeVertMap> mapNodeToVert;
 
 	public:
 
 		// Note: shuffles on creation
 		SgnShuffler(const Problem& prob);
 
-		SgnShuffler(const Problem& prob, std::vector<bool> shuffle_sgns);
+		SgnShuffler(const Problem& prob, std::vector<bool> shuffleSgns);
 
 
 

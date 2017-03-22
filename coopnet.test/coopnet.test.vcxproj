@@ -164,6 +164,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="sat\general.gen.cpp" />
     <ClCompile Include="sat\prob.gen.cpp" />
     <ClCompile Include="sat\prob.test.cpp" />
     <ClCompile Include="sat\sat.gen.cpp" />
@@ -171,6 +172,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="catch.hpp" />
+    <ClInclude Include="sat\general.gen.h" />
     <ClInclude Include="sat\mock_sat_visitor.h" />
     <ClInclude Include="sat\prob.gen.h" />
     <ClInclude Include="sat\rc_printing.h" />

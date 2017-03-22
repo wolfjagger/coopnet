@@ -22,40 +22,40 @@ namespace coopnet {
 		//  the clause. Perhaps along a semi-metric?
 
 		// Cache number of nodes and clauses
-		size_t num_nodes;
-		size_t num_clauses;
+		size_t numNodes;
+		size_t numClauses;
 
 		// Graph and properties
-		BaseSatGraph prob_graph;
-		boost::dynamic_properties dyn_props;
+		BaseSatGraph probGraph;
+		boost::dynamic_properties dynProps;
 
 		// Map node with id to vertex_descriptor
-		std::shared_ptr<NodeVertMap> map_node_to_vert;
+		std::shared_ptr<NodeVertMap> mapNodeToVert;
 
 	public:
 
 		template<typename Iterator>
-		Problem(size_t init_num_nodes,
-			Iterator clause_init_beg, Iterator clause_init_end) {
+		Problem(size_t initNumNodes,
+			Iterator clauseInitBeg, Iterator clauseInitEnd) {
 
-			auto nodes = create_nodes(init_num_nodes);
-			auto clauses = ClauseList(clause_init_beg, clause_init_end);
+			auto nodes = create_nodes(initNumNodes);
+			auto clauses = ClauseList(clauseInitBeg, clauseInitEnd);
 
 			build_graph(std::move(nodes), std::move(clauses));
 			
 		}
 
 		template<typename Iterator>
-		Problem(Iterator clause_init_beg, Iterator clause_init_end) {
+		Problem(Iterator clauseInitBeg, Iterator clauseInitEnd) {
 
-			auto init_num_nodes
-				= std::max_element(clause_init_beg, clause_init_end,
+			auto initNumNodes
+				= std::max_element(clauseInitBeg, clauseInitEnd,
 				[](const Clause& c) {
 				return std::max_element(c.nodes().cbegin, c.nodes().cend());
 			});
 
-			auto nodes = create_nodes(init_num_nodes);
-			auto clauses = ClauseList(clause_init_beg, clause_init_end);
+			auto nodes = create_nodes(initNumNodes);
+			auto clauses = ClauseList(clauseInitBeg, clauseInitEnd);
 
 			build_graph(std::move(nodes), std::move(clauses));
 			
@@ -72,7 +72,7 @@ namespace coopnet {
 			return clause_satisfiability_for(assign).clauses_satisfied.size();
 		}
 		size_t num_unsatisfied_by(std::shared_ptr<const Assignment> assign) const {
-			return num_clauses - num_satisfied_by(assign);
+			return numClauses - num_satisfied_by(assign);
 		}
 
 		bool is_satisfied_by(std::shared_ptr<const Assignment> assign) const {
@@ -83,16 +83,16 @@ namespace coopnet {
 
 
 
-		const BaseSatGraph& get_graph() const { return prob_graph; }
-		const boost::dynamic_properties& get_properties() const { return dyn_props; }
+		const BaseSatGraph& get_graph() const { return probGraph; }
+		const boost::dynamic_properties& get_properties() const { return dynProps; }
 
 		std::shared_ptr<const NodeVertMap> get_node_vert_map() const {
-			return map_node_to_vert;
+			return mapNodeToVert;
 		}
 
-		auto get_num_nodes() const { return num_nodes; }
-		auto get_num_clauses() const { return num_clauses; }
-		auto get_num_verts() const { return num_nodes + num_clauses; }
+		auto get_num_nodes() const { return numNodes; }
+		auto get_num_clauses() const { return numClauses; }
+		auto get_num_verts() const { return numNodes + numClauses; }
 
 
 
