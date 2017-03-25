@@ -1,7 +1,6 @@
 #pragma once
 
 #include "alphali/containers/random_iterator.h"
-#include "alphali/util/random.h"
 #include "boost/logic/tribool.hpp"
 #include "boost/optional.hpp"
 #include "coopnet/graph/graph.h"

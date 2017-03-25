@@ -1,7 +1,6 @@
 #pragma once
 
 #include <stack>
-#include "coopnet/sat/component/node.h"
 #include "coopnet/sat/solving/solver.h"
 #include "coopnet/graph/graph.h"
 #include "walk_node_chooser.h"
@@ -18,7 +17,7 @@ namespace coopnet {
 
 		std::unique_ptr<WalkFormula> formula;
 
-		std::unique_ptr<NodeChooser<WalkFormula>> nodeChooser;
+		std::unique_ptr<WalkNodeChooser> nodeChooser;
 
 		unsigned int retryCount;
 		unsigned int maxNumSteps;

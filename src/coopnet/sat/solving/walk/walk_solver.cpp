@@ -38,7 +38,7 @@ namespace {
 
 
 WalkSolver::WalkSolver(WalkNodeChoiceMode mode, unsigned int triesUntilFail) :
-	nodeChooser(create_walk_node_chooser(mode)),
+	nodeChooser(WalkNodeChooser::create(mode)),
 	retryCount(triesUntilFail) {
 
 }
@@ -96,7 +96,7 @@ void WalkSolver::find_assignment() {
 	unsigned int numSteps = 0;
 	while (numSteps < maxNumSteps) {
 
-		auto nodeToFlip = CHOOSE_NODE;
+		auto nodeToFlip = nodeChooser->choose(*formula);
 
 		formula->flip_node(nodeToFlip);
 		if (formula->is_SAT_cached()) break;
