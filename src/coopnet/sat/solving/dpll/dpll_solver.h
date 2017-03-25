@@ -37,7 +37,7 @@ namespace coopnet {
 	
 	protected:
 		
-		virtual SolveReturn do_solve(const Problem& prob) override;
+		virtual Solution do_solve(const Problem& prob) override;
 
 	private:
 

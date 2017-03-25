@@ -2,25 +2,16 @@
 
 #include <memory>
 #include "node_choice.h"
+#include "solution.h"
 
 
 
 namespace coopnet {
 
-	struct Assignment;
 	class Problem;
-
-	enum class SolutionStatus {
-		Satisfied, Unsatisfiable, Undetermined
-	};
-
 
 	// Interface for SAT solvers
 	class Solver {
-
-	public:
-
-		using SolveReturn = std::pair<SolutionStatus, std::shared_ptr<Assignment>>;
 
 	public:
 
@@ -31,7 +22,7 @@ namespace coopnet {
 		Solver(Solver&& other) = default;
 		Solver& operator=(Solver&& other) = default;
 
-		virtual SolveReturn solve(const Problem& prob) = 0;
+		virtual Solution solve(const Problem& prob) = 0;
 
 	};
 
@@ -41,11 +32,11 @@ namespace coopnet {
 
 	public:
 
-		SolveReturn solve(const Problem& prob) override;
+		Solution solve(const Problem& prob) override;
 
 	protected:
 
-		virtual SolveReturn do_solve(const Problem& prob) = 0;
+		virtual Solution do_solve(const Problem& prob) = 0;
 
 	};
 
@@ -55,11 +46,11 @@ namespace coopnet {
 
 	public:
 
-		SolveReturn solve(const Problem& prob) override;
+		Solution solve(const Problem& prob) override;
 
 	protected:
 		
-		virtual SolveReturn try_single_solve(const Problem& prob) = 0;
+		virtual Solution try_single_solve(const Problem& prob) = 0;
 
 		virtual unsigned int retry_count() const = 0;
 

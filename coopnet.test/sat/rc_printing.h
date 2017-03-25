@@ -11,7 +11,9 @@
 
 
 namespace rc { namespace detail {
-		
+
+	using coopnet::operator<<;
+	
 	inline std::ostream& operator<<(
 		std::ostream& os, const coopnet::Node& n) {
 		return os << n.id;
@@ -44,48 +46,6 @@ namespace rc { namespace detail {
 			os << "I";
 		}
 		return os;
-	}
-
-
-	inline std::ostream& operator<<(
-		std::ostream& os, const coopnet::Assignment& assign) {
-		os << "assignment:" << std::endl;
-		for (auto iter = assign.data.cbegin();
-			iter != assign.data.cend(); ++iter) {
-			os << " k" << iter->first << " v" << iter->second ? " T" : " F";
-		}
-		return os << std::endl;
-	}
-		
-	/*inline std::ostream& operator<<(
-		std::ostream& os, const sat::IncompleteAssignment& assign) {
-		os << "incomplete_assignment:" << std::endl;
-		for (auto iter = assign.data.cbegin();
-			iter != assign.data.cend(); ++iter) {
-			os << " k" << iter->first << " v" << iter->second;
-		}
-		return os << std::endl;
-	}*/
-
-
-
-	inline std::ostream& operator<<(
-		std::ostream& os, coopnet::SolutionStatus status) {
-
-		switch (status) {
-		case coopnet::SolutionStatus::Satisfied:
-			os << "Satisfied";
-			break;
-		case coopnet::SolutionStatus::Unsatisfiable:
-			os << "Unsatisfiable";
-			break;
-		case coopnet::SolutionStatus::Undetermined:
-			os << "Undetermined";
-			break;
-		}
-
-		return os;
-
 	}
 
 }}

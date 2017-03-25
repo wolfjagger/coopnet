@@ -29,4 +29,16 @@ namespace coopnet {
 
 	DEFINE_EXTRA_OPS(Assignment);
 
+
+
+	inline std::ostream& operator<<(
+		std::ostream& os, const coopnet::Assignment& assign) {
+		os << "assignment:" << std::endl;
+		for (auto iter = assign.data.cbegin();
+			iter != assign.data.cend(); ++iter) {
+			os << " k" << iter->first.id << " v" << iter->second ? " T" : " F";
+		}
+		return os << std::endl;
+	}
+
 }
