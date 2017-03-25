@@ -46,9 +46,9 @@ namespace {
 		auto solver = coopnet::DPLLSolver(DPLLNodeChoiceMode::Next);
 		auto pair = solver.solve(prob);
 
-		RC_ASSERT(pair.first == coopnet::SolutionStatus::Satisfied);
+		RC_ASSERT(pair.status == coopnet::SolutionStatus::Satisfied);
 
-		auto assign_dpll = pair.second;
+		auto assign_dpll = pair.assignment;
 		RC_ASSERT(assign_dpll);
 
 		RC_ASSERT(prob.is_satisfied_by(assign_dpll));
@@ -66,18 +66,21 @@ namespace {
 		auto solver_most_tot_sat = coopnet::DPLLSolver(DPLLNodeChoiceMode::MostTotClauses);
 		auto pair_most_tot_sat = solver_most_tot_sat.solve(prob);
 
-		RC_ASSERT(pair_next.first == pair_rand.first);
-		RC_ASSERT(pair_next.first == pair_most_same_sat.first);
-		RC_ASSERT(pair_next.first == pair_most_tot_sat.first);
+		RC_ASSERT(pair_next.status == pair_rand.status);
+		RC_ASSERT(pair_next.status == pair_most_same_sat.status);
+		RC_ASSERT(pair_next.status == pair_most_tot_sat.status);
 
-		switch (pair_next.first) {
+		switch (pair_next.status) {
 		case coopnet::SolutionStatus::Satisfied:
-			RC_ASSERT(prob.is_satisfied_by(pair_next.second));
-			RC_ASSERT(prob.is_satisfied_by(pair_rand.second));
-			RC_ASSERT(prob.is_satisfied_by(pair_most_same_sat.second));
-			RC_ASSERT(prob.is_satisfied_by(pair_most_tot_sat.second));
+			RC_ASSERT(prob.is_satisfied_by(pair_next.assignment));
+			RC_ASSERT(prob.is_satisfied_by(pair_rand.assignment));
+			RC_ASSERT(prob.is_satisfied_by(pair_most_same_sat.assignment));
+			RC_ASSERT(prob.is_satisfied_by(pair_most_tot_sat.assignment));
 			break;
-		case coopnet::SolutionStatus::Unsatisfiable:
+		case coopnet::SolutionStatus::Partial:
+			RC_FAIL();
+			break;
+		case coopnet::SolutionStatus::Unsatisfied:
 			// Note this does not assure it is truly unsatisfiable
 			//  if dpll says it is.
 			break;
@@ -256,7 +259,7 @@ TEST_CASE("Literal shuffle", "[sat]") {
 			auto solution_pair2 = solver.solve(prob);
 
 			RC_ASSERT(
-				solution_pair1.first == solution_pair2.first);
+				solution_pair1.status == solution_pair2.status);
 
 		};
 

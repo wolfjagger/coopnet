@@ -44,7 +44,7 @@ namespace coopplot {
 					auto problem
 						= problem_factory::random_3sat_problem(num_nodes, num_clauses);
 					auto solution_pair = solver.solve(problem);
-					if (solution_pair.first == SolutionStatus::Satisfied)
+					if (solution_pair.status == SolutionStatus::Satisfied)
 						++num_satisfiable;
 
 					timer.stop();
@@ -55,7 +55,7 @@ namespace coopplot {
 					auto problem
 						= problem_factory::random_3sat_problem(num_nodes, num_clauses);
 					auto solution_pair = solver.solve(problem);
-					if (solution_pair.first == SolutionStatus::Satisfied)
+					if (solution_pair.status == SolutionStatus::Satisfied)
 						++num_satisfiable;
 
 				}

@@ -73,7 +73,7 @@ DPLLSolver::~DPLLSolver() {
 *  end
 */
 
-auto DPLLSolver::do_solve(const Problem& prob) -> SolveReturn {
+auto DPLLSolver::do_solve(const Problem& prob) -> Solution {
 	
 	if (DEBUG) {
 		std::cout << "Solving problem:\n";
@@ -85,17 +85,24 @@ auto DPLLSolver::do_solve(const Problem& prob) -> SolveReturn {
 
 	find_assignment();
 
+	Solution solution;
 	if (formula->is_SAT()) {
 		auto assign = Assignment(formula->create_assignment());
-		return std::make_pair(
+		solution = Solution{
 			SolutionStatus::Satisfied,
-			std::make_shared<coopnet::Assignment>(std::move(assign)));
+			std::make_shared<coopnet::Assignment>(std::move(assign)),
+			0
+		};
 	} else {
-		return std::make_pair(
-			SolutionStatus::Unsatisfiable, std::shared_ptr<coopnet::Assignment>());
+		solution = Solution{
+			SolutionStatus::Unsatisfied,
+			nullptr,
+			0
+		};
 	}
 
 	formula = nullptr;
+	return solution;
 
 }
 

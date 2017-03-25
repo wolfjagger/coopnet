@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ostream>
 #include <memory>
 #include "node_choice.h"
 
@@ -11,16 +12,25 @@ namespace coopnet {
 	class Problem;
 
 	enum class SolutionStatus {
-		Satisfied, Unsatisfiable, Undetermined
+		Satisfied, Partial, Unsatisfied, Undetermined
 	};
+
+	inline std::ostream& operator<<(
+		std::ostream& os, coopnet::SolutionStatus status);
+
+	struct Solution {
+		SolutionStatus status;
+		std::shared_ptr<Assignment> assignment;
+		unsigned int num_failed;
+	};
+
+	inline std::ostream& operator<<(
+		std::ostream& os, const Solution& solution);
+
 
 
 	// Interface for SAT solvers
 	class Solver {
-
-	public:
-
-		using SolveReturn = std::pair<SolutionStatus, std::shared_ptr<Assignment>>;
 
 	public:
 
@@ -31,7 +41,7 @@ namespace coopnet {
 		Solver(Solver&& other) = default;
 		Solver& operator=(Solver&& other) = default;
 
-		virtual SolveReturn solve(const Problem& prob) = 0;
+		virtual Solution solve(const Problem& prob) = 0;
 
 	};
 
@@ -41,11 +51,11 @@ namespace coopnet {
 
 	public:
 
-		SolveReturn solve(const Problem& prob) override;
+		Solution solve(const Problem& prob) override;
 
 	protected:
 
-		virtual SolveReturn do_solve(const Problem& prob) = 0;
+		virtual Solution do_solve(const Problem& prob) = 0;
 
 	};
 
@@ -55,11 +65,11 @@ namespace coopnet {
 
 	public:
 
-		SolveReturn solve(const Problem& prob) override;
+		Solution solve(const Problem& prob) override;
 
 	protected:
 		
-		virtual SolveReturn try_single_solve(const Problem& prob) = 0;
+		virtual Solution try_single_solve(const Problem& prob) = 0;
 
 		virtual unsigned int retry_count() const = 0;
 
