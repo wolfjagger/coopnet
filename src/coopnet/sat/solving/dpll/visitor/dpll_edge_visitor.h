@@ -1,7 +1,7 @@
 #pragma once
 
 #include "alphali/designs/pubsub/collaborator.h"
-#include "coopnet/sat/solving/dpll/dpll_prop_maps.h"
+#include "coopnet/sat/solving/dpll/dpll_prop.h"
 #include "coopnet/sat/visitor/pruning_sat_visitor.h"
 
 

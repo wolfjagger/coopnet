@@ -179,6 +179,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\coopnet\graph\graph.cpp" />
+    <ClCompile Include="src\coopnet\sat\solving\walk\visitor\walk_edge_visitor.cpp" />
+    <ClCompile Include="src\coopnet\sat\solving\walk\visitor\walk_vert_visitor.cpp" />
+    <ClCompile Include="src\coopnet\sat\solving\walk\visitor\walk_visitor.cpp" />
+    <ClCompile Include="src\coopnet\sat\solving\walk\walk_formula.cpp" />
+    <ClCompile Include="src\coopnet\sat\solving\walk\walk_solver.cpp" />
     <None Include="src\coopnet\graph\mutable\extended_graph.inl">
       <FileType>CppCode</FileType>
     </None>
@@ -217,13 +222,20 @@
     <ClInclude Include="src\coopnet\sat\problem\creation\problem_factory.h" />
     <ClInclude Include="src\coopnet\sat\problem\problem_util.h" />
     <ClInclude Include="src\coopnet\sat\solving\dpll\dpll_node_chooser.h" />
-    <ClInclude Include="src\coopnet\sat\solving\dpll\dpll_prop_maps.h" />
+    <ClInclude Include="src\coopnet\sat\solving\dpll\dpll_prop.h" />
     <ClInclude Include="src\coopnet\sat\solving\dpll\visitor\dpll_edge_visitor.h" />
     <ClInclude Include="src\coopnet\sat\solving\dpll\visitor\dpll_vert_visitor.h" />
     <ClInclude Include="src\coopnet\sat\solving\formula.h" />
     <ClInclude Include="src\coopnet\sat\solving\node_choice.h" />
     <ClInclude Include="src\coopnet\sat\solving\node_chooser.h" />
     <ClInclude Include="src\coopnet\sat\solving\solution.h" />
+    <ClInclude Include="src\coopnet\sat\solving\walk\visitor\walk_edge_visitor.h" />
+    <ClInclude Include="src\coopnet\sat\solving\walk\visitor\walk_vert_visitor.h" />
+    <ClInclude Include="src\coopnet\sat\solving\walk\visitor\walk_visitor.h" />
+    <ClInclude Include="src\coopnet\sat\solving\walk\walk_status.h" />
+    <ClInclude Include="src\coopnet\sat\solving\walk\walk_prop.h" />
+    <ClInclude Include="src\coopnet\sat\solving\walk\walk_formula.h" />
+    <ClInclude Include="src\coopnet\sat\solving\walk\walk_solver.h" />
     <ClInclude Include="src\coopnet\sat\visitor\choose_max_clauses_visitor.h" />
     <ClInclude Include="src\coopnet\sat\solving\simple_formula.h" />
     <ClInclude Include="src\coopnet\sat\visitor\pruned_sat_visitor.h" />

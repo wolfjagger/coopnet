@@ -70,7 +70,9 @@ namespace coopnet {
 
 		bool is_SAT() const;
 		IncompleteAssignment create_incomplete_assignment() const;
+		void set_incomplete_assignment(const IncompleteAssignment& assignment);
 		Assignment create_assignment() const;
+		void set_assignment(const Assignment& assignment);
 
 	};
 

@@ -51,18 +51,36 @@ bool Formula<VProp, EProp>::is_SAT() const {
 	return !extendedGraph.is_indeterminate();
 }
 
+
+
+namespace {
+	template<typename Pred>
+	void apply_to_node_vert_map(const Problem& prob, Pred&& pred) {
+		auto& node_vert_map = prob.get_node_vert_map()->left;
+		std::for_each(node_vert_map.begin(), node_vert_map.end(), std::forward<Pred>(pred));
+	}
+}
+
 template<typename VProp, typename EProp>
 IncompleteAssignment Formula<VProp, EProp>::create_incomplete_assignment() const {
 
-	auto assign = IncompleteAssignment();
-	auto copy_pred = [this, &assign](auto pair) {
-		assign.emplace(pair.second, extendedGraph.get_assignment(pair.second));
+	auto assignment = IncompleteAssignment();
+	auto copy_pred = [this, &assignment](auto pair) {
+		assignment.emplace(pair.second, extendedGraph.get_assignment(pair.second));
 	};
+	apply_to_node_vert_map(prob.get(), copy_pred);
 
-	auto& node_vert_map = prob.get().get_node_vert_map()->left;
-	std::for_each(node_vert_map.begin(), node_vert_map.end(), copy_pred);
+	return assignment;
 
-	return assign;
+}
+
+template<typename VProp, typename EProp>
+void Formula<VProp, EProp>::set_incomplete_assignment(const IncompleteAssignment& assignment) {
+
+	auto copy_pred = [this, &assignment](auto pair) {
+		extendedGraph.set_assignment(pair.second, assignment.at(pair.second));
+	};
+	apply_to_node_vert_map(prob.get(), copy_pred);
 
 }
 
@@ -73,14 +91,22 @@ Assignment Formula<VProp, EProp>::create_assignment() const {
 		throw std::exception("Incomplete assignment cannot be transformed.");
 	}
 
-	Assignment assign;
-	auto copy_pred = [this, &assign](auto pair) {
-		assign.data.emplace(pair.first, bool(extendedGraph.get_assignment(pair.second)));
+	Assignment assignment;
+	auto copy_pred = [this, &assignment](auto pair) {
+		assignment.data.emplace(pair.first, bool(extendedGraph.get_assignment(pair.second)));
 	};
+	apply_to_node_vert_map(prob.get(), copy_pred);
 
-	auto& node_vert_map = prob.get().get_node_vert_map()->left;
-	std::for_each(node_vert_map.begin(), node_vert_map.end(), copy_pred);
+	return assignment;
 
-	return assign;
+}
+
+template<typename VProp, typename EProp>
+void Formula<VProp, EProp>::set_assignment(const Assignment& assignment) {
+
+	auto copy_pred = [this, &assignment](auto pair) {
+		extendedGraph.set_assignment(pair.second, boost::tribool(assignment.at(pair.first)));
+	};
+	apply_to_node_vert_map(prob.get(), copy_pred);
 
 }

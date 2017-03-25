@@ -84,6 +84,19 @@ std::shared_ptr<Assignment> Problem::create_same_sgn_assignment(bool sgn) const 
 
 
 
+NodeList Problem::generate_node_list() const {
+
+	auto list = NodeList();
+	for (auto iter = mapNodeToVert->left.begin(); iter != mapNodeToVert->left.end(); ++iter) {
+		list.push_back(iter->first);
+	}
+
+	return list;
+
+}
+
+
+
 
 
 void Problem::build_graph(NodeList&& nodes, ClauseList&& clauses) {

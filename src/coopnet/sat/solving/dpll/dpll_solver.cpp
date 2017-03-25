@@ -2,7 +2,6 @@
 #include <iostream>
 #include "boost/logic/tribool.hpp"
 #include "coopnet/sat/problem/problem.h"
-#include "coopnet/sat/component/node.h"
 #include "dpll_formula.h"
 #include "dpll_node_chooser.h"
 

@@ -2,6 +2,7 @@
 
 #include <map>
 #include "alphali/util/operators.h"
+#include "alphali/util/random.h"
 #include "coopnet/sat/component/node.h"
 
 
@@ -28,6 +29,20 @@ namespace coopnet {
 	}
 
 	DEFINE_EXTRA_OPS(Assignment);
+
+
+
+	template<typename NodeIterator>
+	Assignment rand_assignment(NodeIterator nodeBegin, NodeIterator nodeEnd) {
+
+		Assignment assignment;
+		for (auto node = nodeBegin; node != nodeEnd; ++nodeBegin) {
+			assignment.data.emplace(*node, alphali::coin_flip());
+		}
+
+		return assignment;
+
+	}
 
 
 

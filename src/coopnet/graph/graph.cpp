@@ -14,7 +14,7 @@ std::ostream& coopnet::operator<<(std::ostream& os, const BaseSatVProp::Base& ba
 		os << "kind: Clause";
 		break;
 	}
-	os << "name: " << base.name;
+	os << " || name: " << base.name;
 	return os << std::endl;
 
 }

@@ -90,6 +90,8 @@ namespace coopnet {
 			return mapNodeToVert;
 		}
 
+		NodeList generate_node_list() const;
+
 		auto get_num_nodes() const { return numNodes; }
 		auto get_num_clauses() const { return numClauses; }
 		auto get_num_verts() const { return numNodes + numClauses; }
