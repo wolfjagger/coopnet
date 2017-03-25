@@ -223,6 +223,7 @@
     <ClInclude Include="src\coopnet\sat\solving\formula.h" />
     <ClInclude Include="src\coopnet\sat\solving\node_choice.h" />
     <ClInclude Include="src\coopnet\sat\solving\node_chooser.h" />
+    <ClInclude Include="src\coopnet\sat\solving\solution.h" />
     <ClInclude Include="src\coopnet\sat\visitor\choose_max_clauses_visitor.h" />
     <ClInclude Include="src\coopnet\sat\solving\simple_formula.h" />
     <ClInclude Include="src\coopnet\sat\visitor\pruned_sat_visitor.h" />

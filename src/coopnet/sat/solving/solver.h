@@ -1,33 +1,14 @@
 #pragma once
 
-#include <ostream>
 #include <memory>
 #include "node_choice.h"
+#include "solution.h"
 
 
 
 namespace coopnet {
 
-	struct Assignment;
 	class Problem;
-
-	enum class SolutionStatus {
-		Satisfied, Partial, Unsatisfied, Undetermined
-	};
-
-	inline std::ostream& operator<<(
-		std::ostream& os, coopnet::SolutionStatus status);
-
-	struct Solution {
-		SolutionStatus status;
-		std::shared_ptr<Assignment> assignment;
-		unsigned int num_failed;
-	};
-
-	inline std::ostream& operator<<(
-		std::ostream& os, const Solution& solution);
-
-
 
 	// Interface for SAT solvers
 	class Solver {
