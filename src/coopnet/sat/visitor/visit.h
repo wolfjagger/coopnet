@@ -1,5 +1,6 @@
 #pragma once
 
+#include "boost/graph/breadth_first_search.hpp"
 #include "coopnet/graph/graph.h"
 
 

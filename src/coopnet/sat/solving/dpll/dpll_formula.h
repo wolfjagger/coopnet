@@ -2,6 +2,7 @@
 
 #include <functional>
 #include "boost/pending/queue.hpp"
+#include "alphali/designs/pubsub/publisher.h"
 #include "coopnet/sat/solving/formula.h"
 #include "dpll_prop.h"
 
@@ -36,7 +37,7 @@ namespace coopnet {
 		DPLLFormula(DPLLFormula&& other) = default;
 		DPLLFormula& operator=(DPLLFormula&& other) = default;
 
-		~DPLLFormula() = default;
+		~DPLLFormula();
 
 
 

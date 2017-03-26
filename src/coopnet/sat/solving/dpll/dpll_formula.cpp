@@ -41,6 +41,8 @@ DPLLFormula::DPLLFormula(const Problem& prob) :
 }
 #pragma optimize("", on)
 
+DPLLFormula::~DPLLFormula() { }
+
 
 
 void DPLLFormula::set_node(NodeChoice choice) {
