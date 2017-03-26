@@ -179,9 +179,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\coopnet\graph\graph.cpp" />
-    <ClCompile Include="src\coopnet\sat\solving\walk\visitor\walk_edge_visitor.cpp" />
-    <ClCompile Include="src\coopnet\sat\solving\walk\visitor\walk_vert_visitor.cpp" />
-    <ClCompile Include="src\coopnet\sat\solving\walk\visitor\walk_visitor.cpp" />
+    <ClCompile Include="src\coopnet\sat\solving\walk\walk_visitor.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\walk\walk_formula.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\walk\walk_node_chooser.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\walk\walk_solver.cpp" />
@@ -230,9 +228,7 @@
     <ClInclude Include="src\coopnet\sat\solving\node_choice.h" />
     <ClInclude Include="src\coopnet\sat\solving\node_chooser.h" />
     <ClInclude Include="src\coopnet\sat\solving\solution.h" />
-    <ClInclude Include="src\coopnet\sat\solving\walk\visitor\walk_edge_visitor.h" />
-    <ClInclude Include="src\coopnet\sat\solving\walk\visitor\walk_vert_visitor.h" />
-    <ClInclude Include="src\coopnet\sat\solving\walk\visitor\walk_visitor.h" />
+    <ClInclude Include="src\coopnet\sat\solving\walk\walk_visitor.h" />
     <ClInclude Include="src\coopnet\sat\solving\walk\walk_node_chooser.h" />
     <ClInclude Include="src\coopnet\sat\solving\walk\walk_status.h" />
     <ClInclude Include="src\coopnet\sat\solving\walk\walk_prop.h" />

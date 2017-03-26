@@ -11,12 +11,12 @@ namespace coopnet {
 	using DPLLVisitorTuple =
 		std::pair<DPLLVertVisitor, DPLLEdgeVisitor>;
 
-	class DPLLVisitor :
+	class BfsDPLLVisitor :
 		public boost::bfs_visitor<DPLLVisitorTuple> {
 
 	public:
 
-		DPLLVisitor(
+		BfsDPLLVisitor(
 			PruneStack& pruneStack,
 			alphali::collaborator&& vertContradictionCollab,
 			alphali::collaborator&& edgeContradictionCollab,

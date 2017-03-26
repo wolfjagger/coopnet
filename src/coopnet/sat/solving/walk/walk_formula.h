@@ -1,8 +1,8 @@
 #pragma once
 
 #include <functional>
+#include "boost/graph/breadth_first_search.hpp"
 #include "coopnet/sat/solving/formula.h"
-#include "visitor/walk_visitor.h"
 #include "walk_prop.h"
 
 
@@ -10,6 +10,7 @@
 namespace coopnet {
 
 	class Problem;
+	struct BfsWalkVisitor;
 
 	class WalkFormula : public Formula<WalkVProp, WalkEProp> {
 
@@ -17,8 +18,9 @@ namespace coopnet {
 
 		// Queue for remaining grey nodes to color black
 		boost::queue<VertDescriptor> greyBuffer;
+		std::shared_ptr<unsigned int> numClausesFailed;
 
-		std::unique_ptr<WalkVisitor> walkVisitor;
+		std::unique_ptr<BfsWalkVisitor> walkVisitor;
 
 	public:
 
@@ -30,13 +32,13 @@ namespace coopnet {
 		WalkFormula(WalkFormula&& other) = default;
 		WalkFormula& operator=(WalkFormula&& other) = default;
 
-		~WalkFormula() = default;
+		~WalkFormula();
 
 
 
 		void flip_node(Node node);
 
-		bool is_SAT_cached() const;
+		bool is_SAT() const;
 
 	};
 

@@ -99,7 +99,7 @@ void WalkSolver::find_assignment() {
 		auto nodeToFlip = nodeChooser->choose(*formula);
 
 		formula->flip_node(nodeToFlip);
-		if (formula->is_SAT_cached()) break;
+		if (formula->is_SAT()) break;
 		
 	}
 

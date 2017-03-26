@@ -1,14 +1,16 @@
 #pragma once
 
 #include <functional>
+#include "boost/pending/queue.hpp"
 #include "coopnet/sat/solving/formula.h"
-#include "visitor/dpll_visitor.h"
+#include "dpll_prop.h"
 
 
 
 namespace coopnet {
 
 	class Problem;
+	class BfsDPLLVisitor;
 
 	class DPLLFormula : public Formula<DPLLVProp, DPLLEProp> {
 
@@ -22,7 +24,7 @@ namespace coopnet {
 		alphali::subscriber setContradictSub;
 		alphali::publisher setUncontradictPub;
 
-		std::unique_ptr<DPLLVisitor> pruneVisitor;
+		std::unique_ptr<BfsDPLLVisitor> pruneVisitor;
 
 	public:
 

@@ -1,6 +1,7 @@
 #include "dpll_formula.h"
 #include <iostream>
 #include "coopnet/sat/problem/problem.h"
+#include "visitor/dpll_visitor.h"
 
 using namespace coopnet;
 
@@ -31,7 +32,7 @@ DPLLFormula::DPLLFormula(const Problem& prob) :
 		[this] { set_contradicting(); });
 
 
-	pruneVisitor = std::make_unique<DPLLVisitor>(
+	pruneVisitor = std::make_unique<BfsDPLLVisitor>(
 		extendedGraph.prune_stack(),
 		std::move(vertContradictionCollab),
 		std::move(edgeContradictionCollab),

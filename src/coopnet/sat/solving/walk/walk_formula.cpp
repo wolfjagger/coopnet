@@ -1,6 +1,7 @@
 #include "walk_formula.h"
 #include <iostream>
 #include "coopnet/sat/problem/problem.h"
+#include "walk_visitor.h"
 
 using namespace coopnet;
 
@@ -14,10 +15,13 @@ namespace {
 WalkFormula::WalkFormula(const Problem& prob) :
 	Formula<WalkVProp, WalkEProp>(prob),
 	greyBuffer() {
-
-	walkVisitor = std::make_unique<WalkVisitor>();
+	
+	numClausesFailed = std::make_shared<unsigned int>();
+	walkVisitor = std::make_unique<BfsWalkVisitor>(numClausesFailed);
 
 }
+
+WalkFormula::~WalkFormula() { }
 
 
 
@@ -43,8 +47,8 @@ void WalkFormula::flip_node(Node node) {
 
 }
 
-bool WalkFormula::is_SAT_cached() const {
+bool WalkFormula::is_SAT() const {
 
-	return walkVisitor.num_failed == 0;
+	return *numClausesFailed == 0;
 
 }

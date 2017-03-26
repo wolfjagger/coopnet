@@ -30,7 +30,7 @@ namespace {
 
 
 
-DPLLVisitor::DPLLVisitor(
+BfsDPLLVisitor::BfsDPLLVisitor(
 	PruneStack& pruneStack,
 	alphali::collaborator&& vertContradictionCollab,
 	alphali::collaborator&& edgeContradictionCollab,
