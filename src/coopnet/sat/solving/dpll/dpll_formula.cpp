@@ -33,7 +33,7 @@ DPLLFormula::DPLLFormula(const Problem& prob) :
 
 
 	pruneVisitor = std::make_unique<BfsDPLLVisitor>(
-		extendedGraph.prune_stack(),
+		reversableGraph.prune_stack(),
 		std::move(vertContradictionCollab),
 		std::move(edgeContradictionCollab),
 		setContradictPub, setUncontradictPub);

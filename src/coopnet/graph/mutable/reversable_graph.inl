@@ -2,8 +2,8 @@
 
 
 template<typename VProp, typename EProp>
-ExtendedSatGraph<VProp, EProp>::ExtendedSatGraph(const BaseSatGraph& original) :
-	graph(create_extended_from_base(original)),
+ReversableSatGraph<VProp, EProp>::ReversableSatGraph(const BaseSatGraph& original) :
+	graph(create_reversable_from_base(original)),
 	pruneStack() {
 
 	connectedComponentEntryPts
@@ -17,12 +17,12 @@ ExtendedSatGraph<VProp, EProp>::ExtendedSatGraph(const BaseSatGraph& original) :
 
 
 template<typename VProp, typename EProp>
-PruneStatus ExtendedSatGraph<VProp, EProp>::get_vert_status(VertDescriptor v) const {
+PruneStatus ReversableSatGraph<VProp, EProp>::get_vert_status(VertDescriptor v) const {
 	return graph[v].mutate.status;
 }
 
 template<typename VProp, typename EProp>
-void ExtendedSatGraph<VProp, EProp>::set_vert_status(VertDescriptor v, PruneStatus newStatus) {
+void ReversableSatGraph<VProp, EProp>::set_vert_status(VertDescriptor v, PruneStatus newStatus) {
 
 	auto& oldStatus = graph[v].mutate.status;
 	if (oldStatus != newStatus) {
@@ -37,12 +37,12 @@ void ExtendedSatGraph<VProp, EProp>::set_vert_status(VertDescriptor v, PruneStat
 }
 
 template<typename VProp, typename EProp>
-PruneStatus ExtendedSatGraph<VProp, EProp>::get_edge_status(EdgeDescriptor e) const {
+PruneStatus ReversableSatGraph<VProp, EProp>::get_edge_status(EdgeDescriptor e) const {
 	return graph[e].mutate.status;
 }
 
 template<typename VProp, typename EProp>
-void ExtendedSatGraph<VProp, EProp>::set_edge_status(EdgeDescriptor e, PruneStatus newStatus) {
+void ReversableSatGraph<VProp, EProp>::set_edge_status(EdgeDescriptor e, PruneStatus newStatus) {
 
 	auto& oldStatus = graph[e].mutate.status;
 	if (oldStatus != newStatus) {
@@ -57,12 +57,12 @@ void ExtendedSatGraph<VProp, EProp>::set_edge_status(EdgeDescriptor e, PruneStat
 }
 
 template<typename VProp, typename EProp>
-boost::tribool ExtendedSatGraph<VProp, EProp>::get_assignment(VertDescriptor v) const {
+boost::tribool ReversableSatGraph<VProp, EProp>::get_assignment(VertDescriptor v) const {
 	return graph[v].mutate.assignment;
 }
 
 template<typename VProp, typename EProp>
-void ExtendedSatGraph<VProp, EProp>::set_assignment(VertDescriptor v, boost::tribool newValue) {
+void ReversableSatGraph<VProp, EProp>::set_assignment(VertDescriptor v, boost::tribool newValue) {
 
 	auto& oldValue = graph[v].mutate.assignment;
 	if (oldValue != newValue ||
@@ -79,15 +79,15 @@ void ExtendedSatGraph<VProp, EProp>::set_assignment(VertDescriptor v, boost::tri
 }
 
 template<typename VProp, typename EProp>
-bool ExtendedSatGraph<VProp, EProp>::is_indeterminate_node(VertDescriptor v) const {
+bool ReversableSatGraph<VProp, EProp>::is_indeterminate_node(VertDescriptor v) const {
 
-	return (graph[v].base.kind == MutableSatVProp::Node)
+	return (graph[v].base.kind == PruneSatVProp::Node)
 		&& (boost::indeterminate(graph[v].mutate.assignment));
 
 }
 
 template<typename VProp, typename EProp>
-bool ExtendedSatGraph<VProp, EProp>::is_indeterminate() const {
+bool ReversableSatGraph<VProp, EProp>::is_indeterminate() const {
 
 	auto vPair = boost::vertices(graph);
 	return std::any_of(vPair.first, vPair.second, [this](VertDescriptor v) {
@@ -99,7 +99,7 @@ bool ExtendedSatGraph<VProp, EProp>::is_indeterminate() const {
 
 
 template<typename VProp, typename EProp>
-void ExtendedSatGraph<VProp, EProp>::reverse_to_vert(VertDescriptor v) {
+void ReversableSatGraph<VProp, EProp>::reverse_to_vert(VertDescriptor v) {
 
 	auto done = false;
 	while (!done && !pruneStack.empty()) {
@@ -163,7 +163,7 @@ void ExtendedSatGraph<VProp, EProp>::reverse_to_vert(VertDescriptor v) {
 }
 
 template<typename VProp, typename EProp>
-void ExtendedSatGraph<VProp, EProp>::reset_prune() {
+void ReversableSatGraph<VProp, EProp>::reset_prune() {
 
 	auto vPair = boost::vertices(graph);
 	auto ePair = boost::edges(graph);
@@ -186,13 +186,13 @@ void ExtendedSatGraph<VProp, EProp>::reset_prune() {
 
 
 template<typename VProp, typename EProp>
-size_t ExtendedSatGraph<VProp, EProp>::num_connected_components() const {
+size_t ReversableSatGraph<VProp, EProp>::num_connected_components() const {
 	return numConnectedComponents;
 }
 
 template<typename VProp, typename EProp>
 const std::vector<VertDescriptor>&
-ExtendedSatGraph<VProp, EProp>::connected_component_entry_pts() const {
+ReversableSatGraph<VProp, EProp>::connected_component_entry_pts() const {
 	return connectedComponentEntryPts;
 }
 
@@ -200,7 +200,7 @@ ExtendedSatGraph<VProp, EProp>::connected_component_entry_pts() const {
 
 template<typename VProp, typename EProp>
 template<typename PruneVisitor>
-void ExtendedSatGraph<VProp, EProp>::visit(PruneVisitor& v) {
+void ReversableSatGraph<VProp, EProp>::visit(PruneVisitor& v) {
 
 	visit_sat_graph(v, graph,
 		connectedComponentEntryPts.begin(), connectedComponentEntryPts.end());
@@ -209,7 +209,7 @@ void ExtendedSatGraph<VProp, EProp>::visit(PruneVisitor& v) {
 
 template<typename VProp, typename EProp>
 template<typename PruneVisitor>
-void ExtendedSatGraph<VProp, EProp>::visit(PruneVisitor& v) const {
+void ReversableSatGraph<VProp, EProp>::visit(PruneVisitor& v) const {
 
 	visit_sat_graph(v, graph,
 		connectedComponentEntryPts.begin(), connectedComponentEntryPts.end());
@@ -222,7 +222,7 @@ void ExtendedSatGraph<VProp, EProp>::visit(PruneVisitor& v) const {
 
 
 template<typename VProp, typename EProp>
-SatGraph<VProp, EProp> ExtendedSatGraph<VProp, EProp>::create_extended_from_base(
+SatGraph<VProp, EProp> ReversableSatGraph<VProp, EProp>::create_reversable_from_base(
 	const BaseSatGraph& original) {
 
 	auto out = SatGraph<VProp, EProp>();

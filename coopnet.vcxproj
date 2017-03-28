@@ -183,7 +183,7 @@
     <ClCompile Include="src\coopnet\sat\solving\walk\walk_formula.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\walk\walk_node_chooser.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\walk\walk_solver.cpp" />
-    <None Include="src\coopnet\graph\mutable\extended_graph.inl">
+    <None Include="src\coopnet\graph\mutable\reversable_graph.inl">
       <FileType>CppCode</FileType>
     </None>
     <ClCompile Include="src\coopnet\graph\mutable\prune_info.cpp" />
@@ -208,8 +208,9 @@
   <ItemGroup>
     <ClInclude Include="src\coopnet\graph\bgl_inc.h" />
     <ClInclude Include="src\coopnet\graph\graph_util.h" />
-    <ClInclude Include="src\coopnet\graph\mutable\mutable_graph.h" />
-    <ClInclude Include="src\coopnet\graph\mutable\extended_graph.h" />
+    <ClInclude Include="src\coopnet\graph\mutable\assignable_graph.h" />
+    <ClInclude Include="src\coopnet\graph\mutable\prune_graph.h" />
+    <ClInclude Include="src\coopnet\graph\mutable\reversable_graph.h" />
     <ClInclude Include="src\coopnet\graph\mutable\prune_info.h" />
     <ClInclude Include="src\coopnet\sat\problem\assignment.h" />
     <ClInclude Include="src\coopnet\sat\component\clause.h" />

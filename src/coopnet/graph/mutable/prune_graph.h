@@ -1,18 +1,19 @@
 #pragma once
 
-#include "extended_graph.h"
+#include "coopnet/graph/graph_util.h"
+#include "prune_info.h"
 
 
 
 namespace coopnet {
 
-	struct MutableSatVProp : public BaseSatVProp {
+	struct PruneSatVProp : public BaseSatVProp {
 		mutable struct Mutable {
 			PruneStatus status;
 			boost::tribool assignment;
 		} mutate;
 
-		MutableSatVProp() :
+		PruneSatVProp() :
 			BaseSatVProp(),
 			mutate{
 			PruneStatus::Active,
@@ -20,21 +21,17 @@ namespace coopnet {
 
 	};
 
-	struct MutableSatEProp : public BaseSatEProp {
+	struct PruneSatEProp : public BaseSatEProp {
 		mutable struct Mutable {
 			PruneStatus status;
 		} mutate;
 
-		MutableSatEProp() :
+		PruneSatEProp() :
 			BaseSatEProp(),
 			mutate{PruneStatus::Active} { }
 
 	};
 
-	using MutableSatGraph = SatGraph<MutableSatVProp, MutableSatEProp>;
-
-
-
-	using PrunableSatGraph = ExtendedSatGraph<MutableSatVProp, MutableSatEProp>;
+	using PruneSatGraph = SatGraph<PruneSatVProp, PruneSatEProp>;
 
 }

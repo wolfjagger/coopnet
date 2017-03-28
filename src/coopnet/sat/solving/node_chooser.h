@@ -3,7 +3,7 @@
 #include "alphali/containers/random_iterator.h"
 #include "boost/logic/tribool.hpp"
 #include "boost/optional.hpp"
-#include "coopnet/graph/graph.h"
+#include "coopnet/graph/mutable/reversable_graph.h"
 #include "coopnet/sat/problem/assignment.h"
 #include "coopnet/sat/visitor/choose_max_clauses_visitor.h"
 #include "node_choice.h"

@@ -3,10 +3,10 @@
 template<typename VProp, typename EProp>
 Formula<VProp, EProp>::Formula(const Problem& prob) :
 	prob(std::cref(prob)),
-	extendedGraph(prob.get_graph()) {
+	reversableGraph(prob.get_graph()) {
 
 	colorPropMap
-		= boost::get(&VProp::color, extendedGraph.get_graph());
+		= boost::get(&VProp::color, reversableGraph.get_graph());
 
 }
 
@@ -16,7 +16,7 @@ template<typename VProp, typename EProp>
 void Formula<VProp, EProp>::reverse_prune_to_assignment(Node n) {
 
 	auto vert = node_vert_map().left.at(n);
-	extendedGraph.reverse_to_vert(vert);
+	reversableGraph.reverse_to_vert(vert);
 
 }
 
@@ -34,21 +34,21 @@ std::shared_ptr<const NodeVertMap> Formula<VProp, EProp>::node_vert_map_ptr() co
 
 
 template<typename VProp, typename EProp>
-auto Formula<VProp, EProp>::extended_graph() const
-    -> const ExtendedGraph& {
-	return extendedGraph;
+auto Formula<VProp, EProp>::reversable_graph() const
+    -> const ReversableGraph& {
+	return reversableGraph;
 }
 template<typename VProp, typename EProp>
 auto Formula<VProp, EProp>::graph() const 
     -> const Graph& {
-	return extendedGraph.get_graph();
+	return reversableGraph.get_graph();
 }
 
 
 
 template<typename VProp, typename EProp>
 bool Formula<VProp, EProp>::is_SAT() const {
-	return !extendedGraph.is_indeterminate();
+	return !reversableGraph.is_indeterminate();
 }
 
 
@@ -66,7 +66,7 @@ IncompleteAssignment Formula<VProp, EProp>::create_incomplete_assignment() const
 
 	auto assignment = IncompleteAssignment();
 	auto copy_pred = [this, &assignment](auto pair) {
-		assignment.emplace(pair.second, extendedGraph.get_assignment(pair.second));
+		assignment.emplace(pair.second, reversableGraph.get_assignment(pair.second));
 	};
 	apply_to_node_vert_map(prob.get(), copy_pred);
 
@@ -78,7 +78,7 @@ template<typename VProp, typename EProp>
 void Formula<VProp, EProp>::set_incomplete_assignment(const IncompleteAssignment& assignment) {
 
 	auto copy_pred = [this, &assignment](auto pair) {
-		extendedGraph.set_assignment(pair.second, assignment.at(pair.second));
+		reversableGraph.set_assignment(pair.second, assignment.at(pair.second));
 	};
 	apply_to_node_vert_map(prob.get(), copy_pred);
 
@@ -87,13 +87,13 @@ void Formula<VProp, EProp>::set_incomplete_assignment(const IncompleteAssignment
 template<typename VProp, typename EProp>
 Assignment Formula<VProp, EProp>::create_assignment() const {
 
-	if (extendedGraph.is_indeterminate()) {
+	if (reversableGraph.is_indeterminate()) {
 		throw std::exception("Incomplete assignment cannot be transformed.");
 	}
 
 	Assignment assignment;
 	auto copy_pred = [this, &assignment](auto pair) {
-		assignment.data.emplace(pair.first, bool(extendedGraph.get_assignment(pair.second)));
+		assignment.data.emplace(pair.first, bool(reversableGraph.get_assignment(pair.second)));
 	};
 	apply_to_node_vert_map(prob.get(), copy_pred);
 
@@ -105,7 +105,7 @@ template<typename VProp, typename EProp>
 void Formula<VProp, EProp>::set_assignment(const Assignment& assignment) {
 
 	auto copy_pred = [this, &assignment](auto pair) {
-		extendedGraph.set_assignment(pair.second, boost::tribool(assignment.at(pair.first)));
+		reversableGraph.set_assignment(pair.second, boost::tribool(assignment.at(pair.first)));
 	};
 	apply_to_node_vert_map(prob.get(), copy_pred);
 

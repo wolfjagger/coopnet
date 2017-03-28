@@ -4,7 +4,7 @@
 #include "coopnet/sat/visitor/visit.h"
 #include "coopnet/sat/problem/assignment.h"
 #include "coopnet/sat/problem/problem.h"
-#include "coopnet/graph/mutable/mutable_graph.h"
+#include "coopnet/graph/mutable/reversable_graph.h"
 #include "node_choice.h"
 
 
@@ -17,13 +17,13 @@ namespace coopnet {
 	private:
 
 		using Graph = SatGraph<VProp, EProp>;
-		using ExtendedGraph = ExtendedSatGraph<VProp, EProp>;
+		using ReversableGraph = ReversableSatGraph<VProp, EProp>;
 
 		std::reference_wrapper<const Problem> prob;
 
 	protected:
 
-		ExtendedGraph extendedGraph;
+		ReversableGraph reversableGraph;
 		SatColorPropMap<Graph> colorPropMap;
 
 	public:
@@ -53,7 +53,7 @@ namespace coopnet {
 
 		template<typename PruneVisitor>
 		void visit_active_graph(PruneVisitor& v) const {
-			extendedGraph.visit(v);
+			reversableGraph.visit(v);
 		}
 
 		
@@ -65,7 +65,7 @@ namespace coopnet {
 		const NodeVertMap& node_vert_map() const;
 		std::shared_ptr<const NodeVertMap> node_vert_map_ptr() const;
 
-		const ExtendedGraph& extended_graph() const;
+		const ReversableGraph& reversable_graph() const;
 		const Graph& graph() const;
 
 		bool is_SAT() const;

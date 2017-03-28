@@ -6,12 +6,12 @@
 
 namespace coopnet {
 
-	class SimpleFormula : public Formula<MutableSatVProp, MutableSatEProp> {
+	class SimpleFormula : public Formula<PruneSatVProp, PruneSatEProp> {
 
 	public:
 
 		explicit SimpleFormula(const Problem& prob) :
-			Formula<MutableSatVProp, MutableSatEProp>(prob) { }
+			Formula<PruneSatVProp, PruneSatEProp>(prob) { }
 
 	};
 
