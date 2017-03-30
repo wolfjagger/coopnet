@@ -186,7 +186,7 @@
     <None Include="src\coopnet\graph\mutable\reversable_graph.inl">
       <FileType>CppCode</FileType>
     </None>
-    <ClCompile Include="src\coopnet\graph\mutable\prune_info.cpp" />
+    <ClCompile Include="src\coopnet\graph\mutable\reverse_info.cpp" />
     <ClCompile Include="src\coopnet\sat\component\node.cpp" />
     <ClCompile Include="src\coopnet\sat\problem\shuffler.cpp" />
     <ClCompile Include="src\coopnet\sat\problem\problem.cpp" />
@@ -211,7 +211,7 @@
     <ClInclude Include="src\coopnet\graph\mutable\assignable_graph.h" />
     <ClInclude Include="src\coopnet\graph\mutable\prune_graph.h" />
     <ClInclude Include="src\coopnet\graph\mutable\reversable_graph.h" />
-    <ClInclude Include="src\coopnet\graph\mutable\prune_info.h" />
+    <ClInclude Include="src\coopnet\graph\mutable\reverse_info.h" />
     <ClInclude Include="src\coopnet\sat\problem\assignment.h" />
     <ClInclude Include="src\coopnet\sat\component\clause.h" />
     <ClInclude Include="src\coopnet\sat\component\component_fwd.h" />

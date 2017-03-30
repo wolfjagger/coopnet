@@ -29,11 +29,11 @@ void WalkFormula::flip_node(Node node) {
 
 	auto vert_node = node_vert_map().left.at(node);
 
-	graph()[vert_node].walk.status = WalkVertStatus::Flip;
+	graph()[vert_node].walkStatus = WalkVertStatus::Flip;
 
 	if (DEBUG) {
 
-		auto old_sgn = graph()[vert_node].walk.assignment;
+		auto old_sgn = graph()[vert_node].assignment;
 		auto new_sgn = !old_sgn;
 
 		std::cout << "Flip node " << node.id << " with vert " << vert_node;

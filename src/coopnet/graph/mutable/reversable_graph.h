@@ -1,10 +1,15 @@
 #pragma once
 
-#include "prune_graph.h"
+#include "coopnet/graph/graph_util.h"
+#include "reverse_info.h"
 
 
 
 namespace coopnet {
+
+	struct ReversableSatVProp : public PruneSatVProp, public AssignSatVProp { };
+	struct ReversableSatEProp : public PruneSatEProp, public AssignSatEProp { };
+
 
 	template<typename VProp, typename EProp>
 	class ReversableSatGraph {
@@ -14,7 +19,7 @@ namespace coopnet {
 		constexpr static bool DEBUG = false;
 
 		SatGraph<VProp, EProp> graph;
-		PruneStack pruneStack;
+		ReverseStack reverseStack;
 
 		// Connected components members
 		size_t numConnectedComponents;
@@ -31,8 +36,8 @@ namespace coopnet {
 		SatGraph<VProp, EProp>& get_graph() { return graph; }
 		const SatGraph<VProp, EProp>& get_graph() const { return graph; }
 
-		PruneStack& prune_stack() { return pruneStack; }
-		const PruneStack& prune_stack() const { return pruneStack; }
+		ReverseStack& reverse_stack() { return reverseStack; }
+		const ReverseStack& reverse_stack() const { return reverseStack; }
 
 
 
@@ -50,7 +55,7 @@ namespace coopnet {
 
 
 		void reverse_to_vert(VertDescriptor v);
-		void reset_prune();
+		void reset_all();
 
 
 
@@ -72,7 +77,7 @@ namespace coopnet {
 		
 	};
 
-	using RevPruneSatGraph = ReversableSatGraph<PruneSatVProp, PruneSatEProp>;
+	using BaseRevSatGraph = ReversableSatGraph<ReversableSatVProp, ReversableSatEProp>;
 
 #include "reversable_graph.inl"
 

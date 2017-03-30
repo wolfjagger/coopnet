@@ -7,24 +7,24 @@
 
 namespace coopnet {
 
-	struct DPLLVProp : public PruneSatVProp {
+	struct DPLLVProp : public ReversableSatVProp {
 		mutable struct DPLL {
 			DPLLVertStatus status;
 		} dpll;
 
 		DPLLVProp() :
-			PruneSatVProp(),
+			ReversableSatVProp(),
 			dpll{DPLLVertStatus::Default} { }
 
 	};
 
-	struct DPLLEProp : public PruneSatEProp {
+	struct DPLLEProp : public ReversableSatEProp {
 		mutable struct DPLL {
 			DPLLEdgeStatus status;
 		} dpll;
 
 		DPLLEProp() :
-			PruneSatEProp(),
+			ReversableSatEProp(),
 			dpll{DPLLEdgeStatus::Default} {}
 
 	};

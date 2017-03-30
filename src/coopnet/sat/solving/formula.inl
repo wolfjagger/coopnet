@@ -105,7 +105,7 @@ template<typename VProp, typename EProp>
 void Formula<VProp, EProp>::set_assignment(const Assignment& assignment) {
 
 	auto copy_pred = [this, &assignment](auto pair) {
-		reversableGraph.set_assignment(pair.second, boost::tribool(assignment.at(pair.first)));
+		reversableGraph.set_assignment(pair.second, boost::tribool(assignment.data.at(pair.first)));
 	};
 	apply_to_node_vert_map(prob.get(), copy_pred);
 

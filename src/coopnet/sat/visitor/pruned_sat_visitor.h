@@ -25,7 +25,7 @@ namespace coopnet {
 		void operator()(VertDescriptor v, const SatGraph& g) {
 
 			auto& prop = g[v];
-			if(prop.mutate.status == PruneStatus::Active) {
+			if(prop.pruneStatus == PruneStatus::Active) {
 
 				// Split depending on whether vert is node or clause
 				switch (prop.base.kind) {
@@ -89,7 +89,7 @@ namespace coopnet {
 
 		template<class SatGraph>
 		static bool is_active_edge(EdgeDescriptor e, const SatGraph& g) {
-			return g[e].mutate.status == PruneStatus::Active;
+			return g[e].pruneStatus == PruneStatus::Active;
 		}
 
 	private:
@@ -120,7 +120,7 @@ namespace coopnet {
 		void operator()(EdgeDescriptor e, const SatGraph& g) {
 
 			auto& prop = g[e];
-			if(prop.mutate.status == PruneStatus::Active) {
+			if(prop.pruneStatus == PruneStatus::Active) {
 				
 				// Find which vert is node and which is clause
 				auto vert_node = boost::source(e, g);

@@ -1,37 +1,46 @@
 #pragma once
 
-#include "coopnet/graph/graph_util.h"
-#include "prune_info.h"
+#include "coopnet/graph/graph.h"
 
 
 
 namespace coopnet {
 
-	struct PruneSatVProp : public BaseSatVProp {
-		mutable struct Mutable {
-			PruneStatus status;
-			boost::tribool assignment;
-		} mutate;
+	enum class PruneStatus {
+		Active, Inactive
+	};
+
+
+	struct PruneSatVProp : public virtual BaseSatVProp {
+		mutable PruneStatus pruneStatus;
 
 		PruneSatVProp() :
 			BaseSatVProp(),
-			mutate{
-			PruneStatus::Active,
-			boost::indeterminate} {}
+			pruneStatus(PruneStatus::Active) {}
 
 	};
 
-	struct PruneSatEProp : public BaseSatEProp {
-		mutable struct Mutable {
-			PruneStatus status;
-		} mutate;
+	struct PruneSatEProp : public virtual BaseSatEProp {
+		mutable PruneStatus pruneStatus;
 
 		PruneSatEProp() :
 			BaseSatEProp(),
-			mutate{PruneStatus::Active} { }
+			pruneStatus(PruneStatus::Active) {}
 
 	};
 
+
 	using PruneSatGraph = SatGraph<PruneSatVProp, PruneSatEProp>;
+
+
+	inline std::ostream& operator<<(std::ostream& os, PruneStatus status) {
+		switch (status) {
+		case PruneStatus::Active:
+			os << "Active";
+		case PruneStatus::Inactive:
+			os << "Inactive";
+		}
+		return os;
+	}
 
 }

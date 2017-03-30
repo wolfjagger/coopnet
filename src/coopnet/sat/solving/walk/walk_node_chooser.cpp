@@ -21,6 +21,8 @@ std::unique_ptr<WalkNodeChooser> WalkNodeChooser::create(WalkNodeChoiceMode mode
 	switch (mode) {
 	case WalkNodeChoiceMode::Rand:
 		return std::make_unique<RandWalkNodeChooser>();
+	default:
+		throw std::exception("Unknown walk node choice mode.");
 	}
 
 }

@@ -2,7 +2,6 @@
 
 #include <functional>
 #include "boost/pending/queue.hpp"
-#include "alphali/designs/pubsub/publisher.h"
 #include "coopnet/sat/solving/formula.h"
 #include "dpll_prop.h"
 
@@ -20,10 +19,7 @@ namespace coopnet {
 		// Queue for remaining grey nodes to color black
 		boost::queue<VertDescriptor> greyBuffer;
 
-		bool isContradicting;
-		alphali::publisher setContradictPub;
-		alphali::subscriber setContradictSub;
-		alphali::publisher setUncontradictPub;
+		std::shared_ptr<bool> isContradicting;
 
 		std::unique_ptr<BfsDPLLVisitor> pruneVisitor;
 

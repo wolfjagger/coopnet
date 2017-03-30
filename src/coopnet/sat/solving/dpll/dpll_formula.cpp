@@ -12,34 +12,18 @@ namespace {
 }
 
 
-// Optimization turned off because something about the pub-sub mechanism
-#pragma optimize("", off)
+
 DPLLFormula::DPLLFormula(const Problem& prob) :
 	Formula<DPLLVProp, DPLLEProp>(prob),
 	greyBuffer(),
-	isContradicting(false),
-	setContradictPub(),
-	setContradictSub(),
-	setUncontradictPub() {
-
-
-	auto vertContradictionCollab = alphali::collaborator();
-	auto edgeContradictionCollab = alphali::collaborator();
-
-	setContradictSub.subscribe(vertContradictionCollab,
-		[this] { set_contradicting(); });
-	setContradictSub.subscribe(edgeContradictionCollab,
-		[this] { set_contradicting(); });
+	isContradicting(std::make_shared<bool>(false)) {
 
 
 	pruneVisitor = std::make_unique<BfsDPLLVisitor>(
-		reversableGraph.prune_stack(),
-		std::move(vertContradictionCollab),
-		std::move(edgeContradictionCollab),
-		setContradictPub, setUncontradictPub);
+		reversableGraph.reverse_stack(),
+		isContradicting);
 
 }
-#pragma optimize("", on)
 
 DPLLFormula::~DPLLFormula() { }
 
@@ -69,18 +53,13 @@ void DPLLFormula::set_node(NodeChoice choice) {
 
 
 bool DPLLFormula::is_contradicting() const {
-	return isContradicting;
+	return *isContradicting;
 }
 
-// Optimization turned off because something about the pub-sub mechanism
-#pragma optimize("", off)
 void DPLLFormula::set_contradicting() {
-	isContradicting = true;
-	setContradictPub.publish();
+	*isContradicting = true;
 }
-#pragma optimize("", on)
 
 void DPLLFormula::set_uncontradicting() {
-	isContradicting = false;
-	setUncontradictPub.publish();
+	*isContradicting = false;
 }

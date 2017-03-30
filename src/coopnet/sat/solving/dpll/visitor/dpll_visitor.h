@@ -17,11 +17,8 @@ namespace coopnet {
 	public:
 
 		BfsDPLLVisitor(
-			PruneStack& pruneStack,
-			alphali::collaborator&& vertContradictionCollab,
-			alphali::collaborator&& edgeContradictionCollab,
-			alphali::publisher& mainContradictPub,
-			alphali::publisher& mainUncontradictPub);
+			ReverseStack& reverseStack,
+			std::shared_ptr<bool> isContradictingPtr);
 
 	};
 	

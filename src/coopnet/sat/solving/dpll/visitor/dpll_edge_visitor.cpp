@@ -14,20 +14,11 @@ namespace {
 
 
 DPLLEdgeVisitor::DPLLEdgeVisitor(
-	PruneStack& initPruneStack,
-	alphali::collaborator&& initContradictionCollab,
-	alphali::publisher& mainContradictPub,
-	alphali::publisher& mainUncontradictPub) :
-	PruningSatEdgeVisitor<DPLLEdgeVisitor>(initPruneStack) {
+	ReverseStack& initReverseStack,
+	std::shared_ptr<bool> isContradictingPtr) :
+	PruningSatEdgeVisitor<DPLLEdgeVisitor>(initReverseStack) {
 
-	set_uncontradicting();
-
-	contradictionCollab = std::move(initContradictionCollab);
-
-	contradictionCollab.subscribe(mainContradictPub,
-		[this]() { set_contradicting(); });
-	contradictionCollab.subscribe(mainUncontradictPub,
-		[this]() { set_uncontradicting(); });
+	isContradicting = isContradictingPtr;
 
 }
 
@@ -63,7 +54,7 @@ void DPLLEdgeVisitor::dpll_edge_event(
 
 		// If node satisfies clause, remove clause
 
-		if (g[clause].mutate.status != PruneStatus::Inactive)
+		if (g[clause].pruneStatus != PruneStatus::Inactive)
 			change_vert_status(clause, g[clause], DPLLVertStatus::Remove);
 		break;
 
@@ -72,7 +63,7 @@ void DPLLEdgeVisitor::dpll_edge_event(
 
 		// If clause constrains node, set node to sgn
 
-		if (g[node].mutate.status == PruneStatus::Active) {
+		if (g[node].pruneStatus == PruneStatus::Active) {
 
 			switch (g[node].dpll.status) {
 			case DPLLVertStatus::Default:
@@ -85,7 +76,7 @@ void DPLLEdgeVisitor::dpll_edge_event(
 
 				if (!prop.base.sgn) {
 					if (DEBUG) std::cout << "Contradict: Can't constrain node to false when already true.\n";
-					contradictionCollab.publish();
+					*isContradicting = true;
 				}
 				break;
 
@@ -93,7 +84,7 @@ void DPLLEdgeVisitor::dpll_edge_event(
 
 				if (prop.base.sgn) {
 					if (DEBUG) std::cout << "Contradict: Can't constrain node to true when already false.\n";
-					contradictionCollab.publish();
+					*isContradicting = true;
 				}
 				break;
 
@@ -124,7 +115,7 @@ void DPLLEdgeVisitor::default_edge_event(
 void DPLLEdgeVisitor::deactivate_edge(
 	EdgeDescriptor edge, const DPLLEProp& prop) {
 	change_edge_status(edge, prop, DPLLEdgeStatus::Default);
-	set_prune_status(edge, prop.mutate.status, PruneStatus::Inactive);
+	set_prune_status(edge, prop.pruneStatus, PruneStatus::Inactive);
 }
 
 
@@ -150,14 +141,4 @@ void DPLLEdgeVisitor::change_edge_status(
 		status = newStatus;
 	}
 
-}
-
-
-
-void DPLLEdgeVisitor::set_contradicting() {
-	isContradicting = true;
-}
-
-void DPLLEdgeVisitor::set_uncontradicting() {
-	isContradicting = false;
 }

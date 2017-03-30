@@ -59,7 +59,7 @@ ClauseSatisfiability Problem::clause_satisfiability_for(
 	
 	auto& g = form.graph();
 	auto components = graph_util::calculate_connected_components(g);
-	visit_sat_graph(satisfiabilityCollector, g, components.cbegin(), components.cend());
+	visit_sat_graph(g, satisfiabilityCollector, components.cbegin(), components.cend());
 	
 	return *satisfiabilityCollector.satisfiability;
 	

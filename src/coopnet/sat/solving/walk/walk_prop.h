@@ -1,32 +1,27 @@
 #pragma once
 
-#include "coopnet/graph/graph.h"
+#include "coopnet/graph/mutable/assignable_graph.h"
 #include "walk_status.h"
 
 
 
 namespace coopnet {
 
-	struct WalkVProp : public BaseSatVProp {
-		mutable struct Walk {
-			WalkVertStatus status;
-			bool assignment;
-		} walk;
+	struct WalkVProp : public AssignSatVProp {
+		mutable WalkVertStatus walkStatus;
 
 		WalkVProp() :
-			BaseSatVProp(),
-			walk{ WalkVertStatus::Default } { }
+			AssignSatVProp(),
+			walkStatus(WalkVertStatus::Default) { }
 
 	};
 
-	struct WalkEProp : public BaseSatEProp {
-		mutable struct Walk {
-			WalkEdgeStatus status;
-		} walk;
+	struct WalkEProp : public AssignSatEProp {
+		mutable WalkEdgeStatus walkStatus;
 
 		WalkEProp() :
-			BaseSatEProp(),
-			walk{ WalkEdgeStatus::Default } {}
+			AssignSatEProp(),
+			walkStatus(WalkEdgeStatus::Default) {}
 
 	};
 

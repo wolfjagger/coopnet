@@ -47,7 +47,7 @@ namespace coopnet {
 			for (auto source_vert : pruneGraph.connected_component_entry_pts())
 				sources.push_back(boost::vertex(source_vert, graph()));
 
-			visit_sat_graph(v, graph(), sources.cbegin(), sources.cend());
+			visit_sat_graph(graph(), v, sources.cbegin(), sources.cend());
 
 		}
 

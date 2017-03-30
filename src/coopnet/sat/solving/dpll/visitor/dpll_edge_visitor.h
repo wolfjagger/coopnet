@@ -1,6 +1,6 @@
 #pragma once
 
-#include "alphali/designs/pubsub/collaborator.h"
+#include <memory>
 #include "coopnet/sat/solving/dpll/dpll_prop.h"
 #include "coopnet/sat/visitor/pruning_sat_visitor.h"
 
@@ -23,23 +23,20 @@ namespace coopnet {
 
 	private:
 
-		bool isContradicting;
-		alphali::collaborator contradictionCollab;
+		std::shared_ptr<bool> isContradicting;
 
 	public:
 
 		DPLLEdgeVisitor(
-			PruneStack& initPruneStack,
-			alphali::collaborator&& initContradictionCollab,
-			alphali::publisher& mainContradictPub,
-			alphali::publisher& mainUncontradictPub);
+			ReverseStack& initReverseStack,
+			std::shared_ptr<bool> isContradictingPtr);
 
 		void edge_event(
 			const DPLLSatGraph& g, EdgeDescriptor edge,
 			const DPLLEProp& prop,
 			VertDescriptor node, VertDescriptor clause) {
 
-			if (isContradicting) {
+			if (*isContradicting) {
 				default_edge_event(g, edge, prop, node, clause);
 			} else {
 				dpll_edge_event(g, edge, prop, node, clause);
@@ -67,11 +64,6 @@ namespace coopnet {
 			VertDescriptor vert, const DPLLVProp& prop, DPLLVertStatus new_status);
 		void change_edge_status(
 			EdgeDescriptor edge, const DPLLEProp& prop, DPLLEdgeStatus new_status);
-
-
-
-		void set_contradicting();
-		void set_uncontradicting();
 
 	};
 
