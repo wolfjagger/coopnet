@@ -4,7 +4,7 @@
 #include "boost/pending/queue.hpp"
 #include "coopnet/graph/mutable/reversable_graph.h"
 #include "coopnet/sat/solving/formula.h"
-#include "coopnet/sat/solving/node_choice.h"
+#include "dpll_node_choice.h"
 #include "dpll_prop.h"
 
 
@@ -44,7 +44,7 @@ namespace coopnet {
 
 
 
-		void set_node(NodeChoice choice);
+		void set_node(DPLLNodeChoice choice);
 
 		void reverse_prune_to_assignment(Node n);
 

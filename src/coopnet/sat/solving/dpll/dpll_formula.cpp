@@ -32,7 +32,7 @@ DPLLFormula::~DPLLFormula() { }
 
 
 
-void DPLLFormula::set_node(NodeChoice choice) {
+void DPLLFormula::set_node(DPLLNodeChoice choice) {
 
 	// partial_assign set @ node_to_set=value
 	// partial_graph remove node_to_set and reduce (unit clauses

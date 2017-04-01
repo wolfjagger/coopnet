@@ -6,13 +6,13 @@
 
 namespace coopnet {
 
-	struct NodeChoice {
+	struct DPLLNodeChoice {
 		Node n;
 		bool sgn;
 	};
 
-	struct NodeDecision {
-		NodeChoice choice;
+	struct DPLLNodeChoiceBranch {
+		DPLLNodeChoice choice;
 		bool is_first_choice;
 	};
 

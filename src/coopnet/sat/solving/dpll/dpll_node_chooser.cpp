@@ -1,21 +1,28 @@
+#include "dpll_node_chooser.h"
+#include "alphali/containers/random_iterator.h"
+#include "coopnet/graph/mutable/reversable_graph.h"
+#include "coopnet/sat/visitor/choose_max_clauses_visitor.h"
+#include "dpll_formula.h"
+
+using namespace coopnet;
 
 
-template<class ConcreteFormula>
-boost::optional<NodeChoice> NodeChooser<ConcreteFormula>::choose(
-	const ConcreteFormula& form) {
+
+boost::optional<DPLLNodeChoice> DPLLNodeChooser::choose(
+	const DPLLFormula& form) {
 
 	auto& reversableGraph = form.reversable_graph();
 
 	// If none, return no node
 	if (!reversableGraph.is_indeterminate()) {
-		return boost::optional<NodeChoice>();
+		return boost::optional<DPLLNodeChoice>();
 	} else {
 
 		auto choice = do_choose(form);
 
 		auto n = form.node_vert_map().right.at(choice.first);
 
-		return NodeChoice{ n, choice.second };
+		return DPLLNodeChoice{ n, choice.second };
 
 	}
 
@@ -25,8 +32,7 @@ boost::optional<NodeChoice> NodeChooser<ConcreteFormula>::choose(
 
 
 
-template<class ConcreteFormula>
-auto NextNodeChooser<ConcreteFormula>::do_choose(const ConcreteFormula& form)
+auto NextNodeChooser::do_choose(const DPLLFormula& form)
 -> VertChoice {
 
 	auto& reversableGraph = form.reversable_graph();
@@ -50,8 +56,7 @@ namespace detail {
 	static auto rand_node_engine = std::mt19937_64(std::random_device()());
 }
 
-template<class ConcreteFormula>
-auto RandNodeChooser<ConcreteFormula>::do_choose(const ConcreteFormula& form)
+auto RandNodeChooser::do_choose(const DPLLFormula& form)
 	-> VertChoice {
 
 	auto& reversableGraph = form.reversable_graph();
@@ -71,8 +76,7 @@ auto RandNodeChooser<ConcreteFormula>::do_choose(const ConcreteFormula& form)
 
 
 
-template<class ConcreteFormula>
-auto MaxSameClauseNodeChooser<ConcreteFormula>::do_choose(const ConcreteFormula& form)
+auto MaxSameClauseNodeChooser::do_choose(const DPLLFormula& form)
     -> VertChoice {
 
 	auto visitor = ChooseMaxSameClausesVisitor();
@@ -83,8 +87,9 @@ auto MaxSameClauseNodeChooser<ConcreteFormula>::do_choose(const ConcreteFormula&
 
 }
 
-template<class ConcreteFormula>
-auto MaxTotClauseNodeChooser<ConcreteFormula>::do_choose(const ConcreteFormula& form)
+
+
+auto MaxTotClauseNodeChooser::do_choose(const DPLLFormula& form)
 -> VertChoice {
 
 	auto visitor = ChooseMaxTotClausesVisitor();

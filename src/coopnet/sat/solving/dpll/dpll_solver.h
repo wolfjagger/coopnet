@@ -18,10 +18,10 @@ namespace coopnet {
 
 		std::unique_ptr<DPLLFormula> formula;
 
-		std::unique_ptr<NodeChooser<DPLLFormula>> nodeChooser;
+		std::unique_ptr<DPLLNodeChooser> nodeChooser;
 
 		// Choice: node, sgn, first time chosen (out of two)
-		std::stack<NodeDecision> decisions;
+		std::stack<DPLLNodeChoiceBranch> decisions;
 
 	public:
 
@@ -44,7 +44,7 @@ namespace coopnet {
 		void find_assignment();
 
 		bool change_last_free_choice();
-		void reduce_with_selection(NodeDecision decision);
+		void reduce_with_selection(DPLLNodeChoiceBranch decision);
 
 	};
 

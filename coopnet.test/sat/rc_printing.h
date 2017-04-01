@@ -2,6 +2,7 @@
 
 #include <ostream>
 #include "rapidcheck.h"
+#include "boost/logic/tribool.hpp"
 #include "coopnet/sat/component/node.h"
 #include "coopnet/sat/component/clause.h"
 #include "coopnet/sat/problem/assignment.h"
