@@ -55,11 +55,8 @@ ClauseSatisfiability Problem::clause_satisfiability_for(
 	auto satisfiabilityCollector
 		= SatCollectionVisitor(*this, assign);
 
-	auto form = SimpleFormula(*this);
-	
-	auto& g = form.graph();
-	auto components = graph_util::calculate_connected_components(g);
-	visit_sat_graph(g, satisfiabilityCollector, components.cbegin(), components.cend());
+	auto components = graph_util::calculate_connected_components(probGraph);
+	visit_sat_graph(probGraph, satisfiabilityCollector, components.cbegin(), components.cend());
 	
 	return *satisfiabilityCollector.satisfiability;
 	

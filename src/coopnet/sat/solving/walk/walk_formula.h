@@ -16,10 +16,14 @@ namespace coopnet {
 
 	private:
 
+		Graph& g;
+
 		// Queue for remaining grey nodes to color black
 		boost::queue<VertDescriptor> greyBuffer;
-		std::shared_ptr<unsigned int> numClausesFailed;
+		// Color for visitation
+		SatColorPropMap<Graph> colorPropMap;
 
+		std::shared_ptr<unsigned int> numClausesFailed;
 		std::unique_ptr<BfsWalkVisitor> walkVisitor;
 
 	public:
@@ -38,7 +42,15 @@ namespace coopnet {
 
 		void flip_node(Node node);
 
-		bool is_SAT() const;
+		bool is_SAT() const override;
+		Assignment create_assignment() const override;
+		void set_assignment(const Assignment& assignment) override;
+
+		const Graph& graph() const override;
+
+	protected:
+
+		Graph& graph() override;
 
 	};
 

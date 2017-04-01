@@ -3,7 +3,7 @@
 
 template<typename VProp, typename EProp>
 ReversableSatGraph<VProp, EProp>::ReversableSatGraph(const BaseSatGraph& original) :
-	graph(create_reversable_from_base(original)),
+	graph(graph_util::create_default_concrete_graph<VProp, EProp>(original)),
 	reverseStack() {
 
 	connectedComponentEntryPts
@@ -213,49 +213,5 @@ void ReversableSatGraph<VProp, EProp>::visit(PruneVisitor& v) const {
 
 	visit_sat_graph(graph, v,
 		connectedComponentEntryPts.begin(), connectedComponentEntryPts.end());
-
-}
-
-
-
-
-
-
-template<typename VProp, typename EProp>
-SatGraph<VProp, EProp> ReversableSatGraph<VProp, EProp>::create_reversable_from_base(
-	const BaseSatGraph& original) {
-
-	auto out = SatGraph<VProp, EProp>();
-
-	auto vPair = boost::vertices(original);
-	auto ePair = boost::edges(original);
-
-	auto mapOrigToOut = std::map<VertDescriptor, VertDescriptor>();
-
-	std::for_each(vPair.first, vPair.second,
-		[&out, &original, &mapOrigToOut](VertDescriptor v) {
-
-		auto prop = VProp();
-		prop.base = original[v].base;
-
-		auto outVert = boost::add_vertex(prop, out);
-		mapOrigToOut.emplace(v, outVert);
-
-	});
-
-	std::for_each(ePair.first, ePair.second,
-		[&out, &original, &mapOrigToOut](EdgeDescriptor e) {
-
-		auto prop = EProp();
-		prop.base = original[e].base;
-
-		auto vert1 = boost::source(e, out);
-		auto vert2 = boost::target(e, out);
-
-		boost::add_edge(vert1, vert2, prop, out);
-
-	});
-
-	return out;
 
 }

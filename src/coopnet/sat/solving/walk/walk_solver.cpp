@@ -13,26 +13,6 @@ namespace {
 
 	constexpr bool DEBUG = false;
 
-	void DEBUG_print_assignment(const WalkFormula& formula) {
-		if (DEBUG) {
-			auto print_pred =
-				[](IncompleteAssignment::value_type pair) {
-				if (pair.second) {
-					std::cout << "T";
-				} else if (!pair.second) {
-					std::cout << "F";
-				} else if (boost::logic::indeterminate(pair.second)) {
-					std::cout << "I";
-				} else {
-					std::cout << "O";
-				}
-			};
-			auto& assign = formula.create_incomplete_assignment();
-			std::for_each(assign.cbegin(), assign.cend(), print_pred);
-			std::cout << "\n";
-		}
-	}
-
 }
 
 
@@ -102,7 +82,5 @@ void WalkSolver::find_assignment() {
 		if (formula->is_SAT()) break;
 		
 	}
-
-	DEBUG_print_assignment(*formula);
 
 }

@@ -71,10 +71,6 @@ namespace coopnet {
 		template<typename PruneVisitor>
 		void visit(PruneVisitor& v) const;
 
-	private:
-
-		static SatGraph<VProp, EProp> create_reversable_from_base(const BaseSatGraph& original);
-		
 	};
 
 	using BaseRevSatGraph = ReversableSatGraph<ReversableSatVProp, ReversableSatEProp>;

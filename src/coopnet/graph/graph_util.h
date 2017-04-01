@@ -103,4 +103,42 @@ namespace coopnet { namespace graph_util {
 
 	}
 
+
+
+	template<typename VProp, typename EProp>
+	SatGraph<VProp, EProp> create_default_concrete_graph(
+		const BaseSatGraph& baseGraph) {
+
+		auto concreteGraph = SatGraph<VProp, EProp>();
+
+		auto vPair = boost::vertices(baseGraph);
+		auto ePair = boost::edges(baseGraph);
+
+		std::for_each(vPair.first, vPair.second,
+			[&concreteGraph, &baseGraph](VertDescriptor v) {
+
+			auto prop = VProp();
+			prop.base = baseGraph[v].base;
+
+			boost::add_vertex(prop, concreteGraph);
+
+		});
+
+		std::for_each(ePair.first, ePair.second,
+			[&concreteGraph, &baseGraph](EdgeDescriptor e) {
+
+			auto prop = EProp();
+			prop.base = baseGraph[e].base;
+
+			auto vert1 = boost::source(e, concreteGraph);
+			auto vert2 = boost::target(e, concreteGraph);
+
+			boost::add_edge(vert1, vert2, prop, concreteGraph);
+
+		});
+
+		return concreteGraph;
+
+	}
+
 }}

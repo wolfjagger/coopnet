@@ -77,7 +77,7 @@ auto MaxSameClauseNodeChooser<ConcreteFormula>::do_choose(const ConcreteFormula&
 
 	auto visitor = ChooseMaxSameClausesVisitor();
 
-	form.visit_active_graph(visitor);
+	form.reversable_graph().visit(visitor);
 
 	return visitor.retreive_choice();
 
@@ -89,7 +89,7 @@ auto MaxTotClauseNodeChooser<ConcreteFormula>::do_choose(const ConcreteFormula& 
 
 	auto visitor = ChooseMaxTotClausesVisitor();
 
-	form.visit_active_graph(visitor);
+	form.reversable_graph().visit(visitor);
 
 	return visitor.retreive_choice();
 
