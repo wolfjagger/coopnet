@@ -77,7 +77,7 @@ namespace coopnet {
 
 
 	struct ClauseSatisfiability {
-		std::set<VertDescriptor> clauses_satisfied;
+		std::set<VertDescriptor> clausesSatisfied;
 	};
 
 }

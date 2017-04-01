@@ -13,6 +13,10 @@ namespace {
 
 	constexpr bool DEBUG = false;
 
+	void DEBUG_print_assignment(const WalkFormula& form) {
+		std::cout << form.create_assignment();
+	}
+
 }
 
 
@@ -82,5 +86,7 @@ void WalkSolver::find_assignment() {
 		if (formula->is_SAT()) break;
 		
 	}
+
+	DEBUG_print_assignment(*formula);
 
 }

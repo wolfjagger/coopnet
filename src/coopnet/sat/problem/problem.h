@@ -69,7 +69,7 @@ namespace coopnet {
 			std::shared_ptr<const Assignment> assign) const;
 
 		size_t num_satisfied_by(std::shared_ptr<const Assignment> assign) const {
-			return clause_satisfiability_for(assign).clauses_satisfied.size();
+			return clause_satisfiability_for(assign).clausesSatisfied.size();
 		}
 		size_t num_unsatisfied_by(std::shared_ptr<const Assignment> assign) const {
 			return numClauses - num_satisfied_by(assign);

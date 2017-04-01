@@ -23,7 +23,8 @@ namespace coopnet {
 		// Color for visitation
 		SatColorPropMap<Graph> colorPropMap;
 
-		std::shared_ptr<unsigned int> numClausesFailed;
+		size_t numClauses;
+		std::shared_ptr<size_t> numClausesFailed;
 		std::unique_ptr<BfsWalkVisitor> walkVisitor;
 
 	public:
@@ -51,6 +52,10 @@ namespace coopnet {
 	protected:
 
 		Graph& graph() override;
+
+	private:
+
+		void init_count_clauses_failed();
 
 	};
 

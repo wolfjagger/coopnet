@@ -37,7 +37,6 @@ namespace coopnet {
 	class RandWalkNodeChooser : public WalkNodeChooser {
 
 	protected:
-
 		VertDescriptor do_choose(const WalkFormula& form) override;
 
 	};

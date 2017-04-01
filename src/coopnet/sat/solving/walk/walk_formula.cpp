@@ -21,7 +21,8 @@ WalkFormula::WalkFormula(const Problem& prob) :
 	
 	colorPropMap = boost::get(&WalkVProp::color, graph());
 
-	numClausesFailed = std::make_shared<unsigned int>();
+	numClauses = prob.get_num_clauses();
+	numClausesFailed = std::make_shared<size_t>();
 	walkVisitor = std::make_unique<BfsWalkVisitor>(numClausesFailed);
 
 }
@@ -32,22 +33,22 @@ WalkFormula::~WalkFormula() { }
 
 void WalkFormula::flip_node(Node node) {
 
-	auto vert_node = node_vert_map().left.at(node);
+	auto vertNode = node_vert_map().left.at(node);
 
-	graph()[vert_node].walkStatus = WalkVertStatus::Flip;
+	graph()[vertNode].walkStatus = WalkVertStatus::Flip;
 
 	if (DEBUG) {
 
-		auto old_sgn = graph()[vert_node].assignment;
-		auto new_sgn = !old_sgn;
+		auto oldSgn = graph()[vertNode].assignment;
+		auto newSgn = !oldSgn;
 
-		std::cout << "Flip node " << node.id << " with vert " << vert_node;
-		std::cout << (new_sgn ? "F to T" : "T to F") << std::endl;
+		std::cout << "Flip node " << node.id << " with vert " << vertNode;
+		std::cout << (newSgn ? "F to T" : "T to F") << std::endl;
 
 	}
 
 	boost::breadth_first_visit(
-		graph(), vert_node, greyBuffer,
+		graph(), vertNode, greyBuffer,
 		*walkVisitor, colorPropMap);
 
 }
@@ -63,10 +64,10 @@ bool WalkFormula::is_SAT() const {
 Assignment WalkFormula::create_assignment() const {
 
 	Assignment assignment;
-	auto copy_pred = [this, &assignment](auto pair) {
+	auto copyPred = [this, &assignment](auto pair) {
 		assignment.data.emplace(pair.first, g[pair.second].assignment);
 	};
-	apply_to_node_vert_map(copy_pred);
+	apply_to_node_vert_map(copyPred);
 
 	return assignment;
 
@@ -74,10 +75,12 @@ Assignment WalkFormula::create_assignment() const {
 
 void WalkFormula::set_assignment(const Assignment& assignment) {
 
-	auto copy_pred = [this, &assignment](auto pair) {
+	auto copyPred = [this, &assignment](auto pair) {
 		g[pair.second].assignment = assignment.data.at(pair.first);
 	};
-	apply_to_node_vert_map(copy_pred);
+	apply_to_node_vert_map(copyPred);
+
+	init_count_clauses_failed();
 
 }
 
@@ -89,4 +92,30 @@ auto WalkFormula::graph() const -> const Graph& {
 }
 auto WalkFormula::graph() -> Graph& {
 	return g;
+}
+
+void WalkFormula::init_count_clauses_failed() {
+	
+	ClauseSatisfiability satisfiability;
+
+	auto edges = boost::edges(g);
+	for (auto edge = edges.first; edge != edges.second; ++edge) {
+
+		auto vertNode = boost::source(*edge, g);
+		auto vertClause = boost::target(*edge, g);
+		if (g[vertNode].base.kind == BaseSatVProp::Clause)
+			std::swap(vertNode, vertClause);
+
+		// If sign of literal in clause matches assignment, clause is satisfied
+		auto n = node_vert_map().right.at(vertNode);
+		auto sgn_of_literal = g[*edge].base.sgn;
+		auto assigned_val = g[vertNode].assignment;
+		if (sgn_of_literal == assigned_val) {
+			satisfiability.clausesSatisfied.insert(vertClause);
+		}
+
+	}
+
+	*numClausesFailed = numClauses - satisfiability.clausesSatisfied.size();
+
 }

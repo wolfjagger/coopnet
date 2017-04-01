@@ -38,17 +38,17 @@ void DPLLFormula::set_node(DPLLNodeChoice choice) {
 	// partial_graph remove node_to_set and reduce (unit clauses
 	//  & pure literals), supplying the stack to append
 
-	auto vert_node = node_vert_map().left.at(choice.n);
+	auto vertNode = node_vert_map().left.at(choice.n);
 
 	auto status = choice.sgn ? 
 		DPLLVertStatus::SetToTrue : DPLLVertStatus::SetToFalse;
-	graph()[vert_node].dpll.status = status;
+	graph()[vertNode].dpll.status = status;
 
 	if (DEBUG) std::cout << "Assign node " << choice.n.id <<
-		" with vert " << vert_node << " to " << status << std::endl;
+		" with vert " << vertNode << " to " << status << std::endl;
 
 	boost::breadth_first_visit(
-		graph(), vert_node, greyBuffer,
+		graph(), vertNode, greyBuffer,
 		*pruneVisitor, colorPropMap);
 
 }
@@ -88,10 +88,10 @@ void DPLLFormula::set_uncontradicting() {
 IncompleteAssignment DPLLFormula::create_incomplete_assignment() const {
 
 	auto assignment = IncompleteAssignment();
-	auto copy_pred = [this, &assignment](auto pair) {
+	auto copyPred = [this, &assignment](auto pair) {
 		assignment.emplace(pair.second, reversableGraph.get_assignment(pair.second));
 	};
-	apply_to_node_vert_map(copy_pred);
+	apply_to_node_vert_map(copyPred);
 
 	return assignment;
 
@@ -99,10 +99,10 @@ IncompleteAssignment DPLLFormula::create_incomplete_assignment() const {
 
 void DPLLFormula::set_incomplete_assignment(const IncompleteAssignment& assignment) {
 
-	auto copy_pred = [this, &assignment](auto pair) {
+	auto copyPred = [this, &assignment](auto pair) {
 		reversableGraph.set_assignment(pair.second, assignment.at(pair.second));
 	};
-	apply_to_node_vert_map(copy_pred);
+	apply_to_node_vert_map(copyPred);
 
 }
 
@@ -119,10 +119,10 @@ Assignment DPLLFormula::create_assignment() const {
 	}
 
 	Assignment assignment;
-	auto copy_pred = [this, &assignment](auto pair) {
+	auto copyPred = [this, &assignment](auto pair) {
 		assignment.data.emplace(pair.first, bool(reversableGraph.get_assignment(pair.second)));
 	};
-	apply_to_node_vert_map(copy_pred);
+	apply_to_node_vert_map(copyPred);
 
 	return assignment;
 
@@ -130,10 +130,10 @@ Assignment DPLLFormula::create_assignment() const {
 
 void DPLLFormula::set_assignment(const Assignment& assignment) {
 
-	auto copy_pred = [this, &assignment](auto pair) {
+	auto copyPred = [this, &assignment](auto pair) {
 		reversableGraph.set_assignment(pair.second, boost::tribool(assignment.data.at(pair.first)));
 	};
-	apply_to_node_vert_map(copy_pred);
+	apply_to_node_vert_map(copyPred);
 
 }
 

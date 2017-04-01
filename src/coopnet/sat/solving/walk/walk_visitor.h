@@ -13,11 +13,11 @@ namespace coopnet {
 
 		using event_filter = boost::on_examine_vertex;
 
-		std::shared_ptr<unsigned int> numClausesFailed;
+		std::shared_ptr<size_t> numClausesFailed;
 
 
 
-		explicit WalkVisitor(std::shared_ptr<unsigned int> numClausesFailed);
+		explicit WalkVisitor(std::shared_ptr<size_t> numClausesFailed);
 
 
 
@@ -29,10 +29,6 @@ namespace coopnet {
 			const WalkSatGraph& g, VertDescriptor clause,
 			const WalkVProp& prop);
 
-
-
-		void init_count_clauses_failed();
-
 	};
 
 
@@ -40,7 +36,7 @@ namespace coopnet {
 	struct BfsWalkVisitor
 		: public boost::bfs_visitor<WalkVisitor> {
 
-		explicit BfsWalkVisitor(std::shared_ptr<unsigned int> pNumClausesFailed) :
+		explicit BfsWalkVisitor(std::shared_ptr<size_t> pNumClausesFailed) :
 			boost::bfs_visitor<WalkVisitor>(WalkVisitor(pNumClausesFailed)) {
 
 		}
