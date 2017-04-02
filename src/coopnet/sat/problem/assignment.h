@@ -36,7 +36,7 @@ namespace coopnet {
 	Assignment rand_assignment(NodeIterator nodeBegin, NodeIterator nodeEnd) {
 
 		Assignment assignment;
-		for (auto node = nodeBegin; node != nodeEnd; ++nodeBegin) {
+		for (auto node = nodeBegin; node != nodeEnd; ++node) {
 			assignment.data.emplace(*node, alphali::coin_flip());
 		}
 

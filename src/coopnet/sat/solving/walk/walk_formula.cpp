@@ -101,6 +101,11 @@ auto WalkFormula::graph() -> Graph& {
 
 void WalkFormula::init_clause_satisfaction() {
 
+	if (DEBUG) {
+		std::cout << "Initialize clause satisfaction\n";
+		std::cout << "Init nodes to Default and clauses to Unsatisfied\n";
+	}
+
 	// Init all nodes to Default and clauses to Unsatisfied
 	auto verts = boost::vertices(g);
 	for (auto vert = verts.first; vert != verts.second; ++vert) {
@@ -113,6 +118,8 @@ void WalkFormula::init_clause_satisfaction() {
 	}
 
 	
+	if (DEBUG) std::cout << "Set satisfied clauses to Satisfied\n";
+
 	// Set clauses to Satisfied, and init numClausesFailed
 	ClauseSatisfiability satisfiability;
 
@@ -135,6 +142,8 @@ void WalkFormula::init_clause_satisfaction() {
 		}
 
 	}
+
+	if (DEBUG) std::cout << "Calc number of clauses failed\n";
 
 	numClausesFailed = numClauses - satisfiability.clausesSatisfied.size();
 

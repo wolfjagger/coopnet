@@ -38,15 +38,22 @@ Solution WalkSolver::try_single_solve(const Problem& prob) {
 	if (DEBUG) {
 		std::cout << "Solving problem:\n";
 		std::cout << prob;
+		std::cout << "Construct formula\n";
 	}
 
 	formula = std::make_unique<WalkFormula>(prob);
+
+	if (DEBUG) std::cout << "Set random formula assignment\n";
 
 	auto nodeList = prob.generate_node_list();
 	auto randAssignment = rand_assignment(nodeList.begin(), nodeList.end());
 	formula->set_assignment(randAssignment);
 
+	if (DEBUG) std::cout << "Find satisfactory assignment\n";
+
 	find_assignment();
+
+	if (DEBUG) std::cout << "Construct solution\n";
 
 	Solution solution;
 	if (formula->is_SAT()) {
