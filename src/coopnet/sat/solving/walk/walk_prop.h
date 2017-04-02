@@ -16,14 +16,7 @@ namespace coopnet {
 
 	};
 
-	struct WalkEProp : public AssignSatEProp {
-		mutable WalkEdgeStatus walkStatus;
-
-		WalkEProp() :
-			AssignSatEProp(),
-			walkStatus(WalkEdgeStatus::Default) {}
-
-	};
+	struct WalkEProp : public AssignSatEProp { };
 
 
 

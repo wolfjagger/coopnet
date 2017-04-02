@@ -25,8 +25,6 @@ DPLLVertVisitor::DPLLVertVisitor(
 // This visitor will decide if the vert should be removed:
 //  either if it only has one edge (clause)
 //  or if it has all edges with same sign (node).
-// It also needs to color the surrounding edges if they
-//  should be (re)visited (i.e. if vert is to be removed).
 void DPLLVertVisitor::dpll_node_event(
 	const DPLLSatGraph& g, VertDescriptor node, const DPLLVProp& prop) {
 

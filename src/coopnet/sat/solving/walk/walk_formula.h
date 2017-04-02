@@ -18,14 +18,8 @@ namespace coopnet {
 
 		Graph& g;
 
-		// Queue for remaining grey nodes to color black
-		boost::queue<VertDescriptor> greyBuffer;
-		// Color for visitation
-		SatColorPropMap<Graph> colorPropMap;
-
 		size_t numClauses;
-		std::shared_ptr<size_t> numClausesFailed;
-		std::unique_ptr<BfsWalkVisitor> walkVisitor;
+		size_t numClausesFailed;
 
 	public:
 
@@ -55,7 +49,10 @@ namespace coopnet {
 
 	private:
 
-		void init_count_clauses_failed();
+		void init_clause_satisfaction();
+
+		void satisfy_clause(VertDescriptor vertClause);
+		void check_unsatisfied_clause(VertDescriptor vertClause);
 
 	};
 

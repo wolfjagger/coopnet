@@ -19,7 +19,7 @@ Node WalkNodeChooser::choose(const WalkFormula& form) {
 std::unique_ptr<WalkNodeChooser> WalkNodeChooser::create(WalkNodeChoiceMode mode) {
 
 	switch (mode) {
-	case WalkNodeChoiceMode::Rand:
+	case WalkNodeChoiceMode::Random:
 		return std::make_unique<RandWalkNodeChooser>();
 	default:
 		throw std::exception("Unknown walk node choice mode.");

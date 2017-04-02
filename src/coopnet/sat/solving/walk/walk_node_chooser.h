@@ -11,7 +11,7 @@ namespace coopnet {
 	class WalkFormula;
 
 	enum class WalkNodeChoiceMode {
-		Rand
+		Random
 	};
 
 

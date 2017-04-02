@@ -2,7 +2,6 @@
 #include <iostream>
 #include "coopnet/graph/graph_util.h"
 #include "coopnet/sat/problem/problem.h"
-#include "walk_visitor.h"
 
 using namespace coopnet;
 
@@ -16,14 +15,9 @@ namespace {
 
 WalkFormula::WalkFormula(const Problem& prob) :
 	Formula<WalkVProp, WalkEProp>(prob),
-	g(graph_util::create_default_concrete_graph<WalkVProp, WalkEProp>(prob.get_graph())),
-	greyBuffer() {
+	g(graph_util::create_default_concrete_graph<WalkVProp, WalkEProp>(prob.get_graph())) {
 	
-	colorPropMap = boost::get(&WalkVProp::color, graph());
-
 	numClauses = prob.get_num_clauses();
-	numClausesFailed = std::make_shared<size_t>();
-	walkVisitor = std::make_unique<BfsWalkVisitor>(numClausesFailed);
 
 }
 
@@ -35,11 +29,9 @@ void WalkFormula::flip_node(Node node) {
 
 	auto vertNode = node_vert_map().left.at(node);
 
-	graph()[vertNode].walkStatus = WalkVertStatus::Flip;
-
 	if (DEBUG) {
 
-		auto oldSgn = graph()[vertNode].assignment;
+		auto oldSgn = g[vertNode].assignment;
 		auto newSgn = !oldSgn;
 
 		std::cout << "Flip node " << node.id << " with vert " << vertNode;
@@ -47,9 +39,22 @@ void WalkFormula::flip_node(Node node) {
 
 	}
 
-	boost::breadth_first_visit(
-		graph(), vertNode, greyBuffer,
-		*walkVisitor, colorPropMap);
+	// Flip node
+	g[vertNode].assignment = !g[vertNode].assignment;
+
+	// Propagate to clauses
+	auto edges = boost::out_edges(vertNode, g);
+	for (auto edge = edges.first; edge != edges.second; ++edge) {
+
+		auto vertClause = boost::target(*edge, g);
+
+		if (g[vertNode].assignment == g[*edge].base.sgn) {
+			satisfy_clause(vertClause);
+		} else {
+			check_unsatisfied_clause(vertClause);
+		}
+
+	}
 
 }
 
@@ -57,7 +62,7 @@ void WalkFormula::flip_node(Node node) {
 
 bool WalkFormula::is_SAT() const {
 
-	return *numClausesFailed == 0;
+	return numClausesFailed == 0;
 
 }
 
@@ -80,7 +85,7 @@ void WalkFormula::set_assignment(const Assignment& assignment) {
 	};
 	apply_to_node_vert_map(copyPred);
 
-	init_count_clauses_failed();
+	init_clause_satisfaction();
 
 }
 
@@ -94,8 +99,21 @@ auto WalkFormula::graph() -> Graph& {
 	return g;
 }
 
-void WalkFormula::init_count_clauses_failed() {
+void WalkFormula::init_clause_satisfaction() {
+
+	// Init all nodes to Default and clauses to Unsatisfied
+	auto verts = boost::vertices(g);
+	for (auto vert = verts.first; vert != verts.second; ++vert) {
+		auto& prop = g[*vert];
+		if (prop.base.kind == BaseSatVProp::Node) {
+			prop.walkStatus = WalkVertStatus::Default;
+		} else {
+			prop.walkStatus = WalkVertStatus::Unsatisfied;
+		}
+	}
+
 	
+	// Set clauses to Satisfied, and init numClausesFailed
 	ClauseSatisfiability satisfiability;
 
 	auto edges = boost::edges(g);
@@ -110,12 +128,49 @@ void WalkFormula::init_count_clauses_failed() {
 		auto n = node_vert_map().right.at(vertNode);
 		auto sgn_of_literal = g[*edge].base.sgn;
 		auto assigned_val = g[vertNode].assignment;
+
 		if (sgn_of_literal == assigned_val) {
 			satisfiability.clausesSatisfied.insert(vertClause);
+			g[vertClause].walkStatus = WalkVertStatus::Satisfied;
 		}
 
 	}
 
-	*numClausesFailed = numClauses - satisfiability.clausesSatisfied.size();
+	numClausesFailed = numClauses - satisfiability.clausesSatisfied.size();
+
+}
+
+
+
+void WalkFormula::satisfy_clause(VertDescriptor vertClause) {
+
+	auto& status = g[vertClause].walkStatus;
+
+	// If clause is satisfied, no change
+	if (status == WalkVertStatus::Unsatisfied) {
+		--numClausesFailed;
+		status = WalkVertStatus::Satisfied;
+	}
+
+}
+
+void WalkFormula::check_unsatisfied_clause(VertDescriptor vertClause) {
+
+	auto& status = g[vertClause].walkStatus;
+
+	if (DEBUG) {
+		if (status == WalkVertStatus::Unsatisfied)
+			throw std::exception("Clause already unsatisfied; improperly called.");
+	}
+
+	// Check if no nodes/edges satisfy clause
+	auto edges = boost::out_edges(vertClause, g);
+	if (std::none_of(edges.first, edges.second, [this](EdgeDescriptor edge) {
+		auto vertNode = boost::target(edge, g);
+		return g[vertNode].assignment == g[edge].base.sgn;
+	})) {
+		++numClausesFailed;
+		status = WalkVertStatus::Unsatisfied;
+	}
 
 }
