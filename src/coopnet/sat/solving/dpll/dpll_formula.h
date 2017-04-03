@@ -46,7 +46,7 @@ namespace coopnet {
 
 		void set_node(DPLLNodeChoice choice);
 
-		void reverse_prune_to_assignment(Node n);
+		void reverse_prune_to_assignment(VertDescriptor vertNode);
 
 
 
@@ -62,12 +62,15 @@ namespace coopnet {
 		void set_incomplete_assignment(const IncompleteAssignment& assignment);
 
 		bool is_SAT() const override;
-		Assignment create_assignment() const override;
-		void set_assignment(const Assignment& assignment) override;
 
 		const Graph& graph() const override;
 
 	protected:
+
+		const SatGraphTranslator& get_sat_graph_translator() const override;
+
+		VertAssignment create_vert_assignment() const override;
+		void set_vert_assignment(const VertAssignment& assignment) override;
 
 		Graph& graph() override;
 

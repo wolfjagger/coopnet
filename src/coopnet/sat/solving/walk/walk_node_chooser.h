@@ -20,7 +20,7 @@ namespace coopnet {
 
 	public:
 
-		Node choose(const WalkFormula& form);
+		VertDescriptor choose(const WalkFormula& form);
 
 		static std::unique_ptr<WalkNodeChooser> create(WalkNodeChoiceMode mode);
 

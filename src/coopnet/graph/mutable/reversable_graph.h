@@ -18,7 +18,7 @@ namespace coopnet {
 
 		constexpr static bool DEBUG = false;
 
-		SatGraph<VProp, EProp> graph;
+		TranslatedSatGraph<VProp, EProp> graph;
 		ReverseStack reverseStack;
 
 		// Connected components members
@@ -29,12 +29,15 @@ namespace coopnet {
 
 		ReversableSatGraph() = default;
 
-		ReversableSatGraph(const BaseSatGraph& original);
+		ReversableSatGraph(
+			const BaseSatGraph& original, const SatGraphTranslator& origTranslator);
 
 
 
-		SatGraph<VProp, EProp>& get_graph() { return graph; }
-		const SatGraph<VProp, EProp>& get_graph() const { return graph; }
+		SatGraph<VProp, EProp>& get_graph() { return graph.graph; }
+		const SatGraph<VProp, EProp>& get_graph() const { return graph.graph; }
+
+		const SatGraphTranslator& get_translator() const { return graph.translator; }
 
 		ReverseStack& reverse_stack() { return reverseStack; }
 		const ReverseStack& reverse_stack() const { return reverseStack; }

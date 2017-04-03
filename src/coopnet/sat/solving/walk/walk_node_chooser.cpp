@@ -6,13 +6,9 @@ using namespace coopnet;
 
 
 
-Node WalkNodeChooser::choose(const WalkFormula& form) {
+VertDescriptor WalkNodeChooser::choose(const WalkFormula& form) {
 
-	auto choice = do_choose(form);
-
-	auto node = form.node_vert_map().right.at(choice);
-
-	return node;
+	return do_choose(form);
 
 }
 

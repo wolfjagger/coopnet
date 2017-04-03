@@ -18,11 +18,7 @@ boost::optional<DPLLNodeChoice> DPLLNodeChooser::choose(
 		return boost::optional<DPLLNodeChoice>();
 	} else {
 
-		auto choice = do_choose(form);
-
-		auto n = form.node_vert_map().right.at(choice.first);
-
-		return DPLLNodeChoice{ n, choice.second };
+		return do_choose(form);
 
 	}
 
@@ -32,8 +28,7 @@ boost::optional<DPLLNodeChoice> DPLLNodeChooser::choose(
 
 
 
-auto NextNodeChooser::do_choose(const DPLLFormula& form)
--> VertChoice {
+DPLLNodeChoice NextNodeChooser::do_choose(const DPLLFormula& form) {
 
 	auto& reversableGraph = form.reversable_graph();
 
@@ -56,8 +51,7 @@ namespace detail {
 	static auto rand_node_engine = std::mt19937_64(std::random_device()());
 }
 
-auto RandNodeChooser::do_choose(const DPLLFormula& form)
-	-> VertChoice {
+DPLLNodeChoice RandNodeChooser::do_choose(const DPLLFormula& form) {
 
 	auto& reversableGraph = form.reversable_graph();
 
@@ -76,8 +70,7 @@ auto RandNodeChooser::do_choose(const DPLLFormula& form)
 
 
 
-auto MaxSameClauseNodeChooser::do_choose(const DPLLFormula& form)
-    -> VertChoice {
+DPLLNodeChoice MaxSameClauseNodeChooser::do_choose(const DPLLFormula& form) {
 
 	auto visitor = ChooseMaxSameClausesVisitor();
 
@@ -89,8 +82,7 @@ auto MaxSameClauseNodeChooser::do_choose(const DPLLFormula& form)
 
 
 
-auto MaxTotClauseNodeChooser::do_choose(const DPLLFormula& form)
--> VertChoice {
+DPLLNodeChoice MaxTotClauseNodeChooser::do_choose(const DPLLFormula& form) {
 
 	auto visitor = ChooseMaxTotClausesVisitor();
 

@@ -9,14 +9,11 @@
 
 namespace coopnet {
 
-	class Problem;
-	struct BfsWalkVisitor;
-
 	class WalkFormula : public Formula<WalkVProp, WalkEProp> {
 
 	private:
 
-		Graph& g;
+		TranslatedSatGraph<WalkVProp, WalkEProp> g;
 
 		size_t numClauses;
 		size_t numClausesFailed;
@@ -35,15 +32,18 @@ namespace coopnet {
 
 
 
-		void flip_node(Node node);
+		void flip_node(VertDescriptor vertNode);
 
 		bool is_SAT() const override;
-		Assignment create_assignment() const override;
-		void set_assignment(const Assignment& assignment) override;
 
 		const Graph& graph() const override;
 
 	protected:
+
+		const SatGraphTranslator& get_sat_graph_translator() const override;
+
+		VertAssignment create_vert_assignment() const override;
+		void set_vert_assignment(const VertAssignment& assignment) override;
 
 		Graph& graph() override;
 

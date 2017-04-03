@@ -1,14 +1,20 @@
 #pragma once
 
-#include "coopnet/sat/component/node.h"
+#include "coopnet/graph/graph.h"
 
 
 
 namespace coopnet {
 
 	struct DPLLNodeChoice {
-		Node n;
+
+		VertDescriptor vertNode;
 		bool sgn;
+
+		DPLLNodeChoice(std::pair<VertDescriptor, bool> pair) :
+			vertNode(pair.first),
+			sgn(pair.second) { }
+
 	};
 
 	struct DPLLNodeChoiceBranch {

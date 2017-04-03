@@ -219,7 +219,7 @@ namespace {
 	
 TEST_CASE("WalkSAT", "[sat]") {
 
-	SECTION("Random problems give correct assignments if solvable, and node choice doesn't matter.") {
+	SECTION("WalkSAT reaches same conclusions as DPLL.") {
 
 		auto lam = []() {
 

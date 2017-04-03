@@ -179,6 +179,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\coopnet\graph\graph.cpp" />
+    <ClCompile Include="src\coopnet\graph\sat_graph_translator.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\walk\walk_formula.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\walk\walk_node_chooser.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\walk\walk_solver.cpp" />
@@ -211,6 +212,7 @@
     <ClInclude Include="src\coopnet\graph\mutable\prune_graph.h" />
     <ClInclude Include="src\coopnet\graph\mutable\reversable_graph.h" />
     <ClInclude Include="src\coopnet\graph\mutable\reverse_info.h" />
+    <ClInclude Include="src\coopnet\graph\sat_graph_translator.h" />
     <ClInclude Include="src\coopnet\sat\problem\assignment.h" />
     <ClInclude Include="src\coopnet\sat\component\clause.h" />
     <ClInclude Include="src\coopnet\sat\component\component_fwd.h" />

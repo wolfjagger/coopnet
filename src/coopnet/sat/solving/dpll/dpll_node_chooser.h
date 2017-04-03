@@ -13,17 +13,13 @@ namespace coopnet {
 
 	class DPLLNodeChooser {
 
-	protected:
-
-		using VertChoice = std::pair<VertDescriptor, bool>;
-
 	public:
 
 		boost::optional<DPLLNodeChoice> choose(const DPLLFormula& form);
 
 	protected:
 
-		virtual VertChoice do_choose(const DPLLFormula& form) = 0;
+		virtual DPLLNodeChoice do_choose(const DPLLFormula& form) = 0;
 
 	};
 
@@ -32,7 +28,7 @@ namespace coopnet {
 	class NextNodeChooser : public DPLLNodeChooser {
 
 	protected:
-		VertChoice do_choose(const DPLLFormula& form) override;
+		DPLLNodeChoice do_choose(const DPLLFormula& form) override;
 
 	};
 
@@ -40,7 +36,7 @@ namespace coopnet {
 	class RandNodeChooser : public DPLLNodeChooser {
 
 	protected:
-		VertChoice do_choose(const DPLLFormula& form) override;
+		DPLLNodeChoice do_choose(const DPLLFormula& form) override;
 
 	};
 
@@ -48,7 +44,7 @@ namespace coopnet {
 	class MaxSameClauseNodeChooser : public DPLLNodeChooser {
 
 	protected:
-		VertChoice do_choose(const DPLLFormula& form) override;
+		DPLLNodeChoice do_choose(const DPLLFormula& form) override;
 
 	};
 
@@ -56,7 +52,7 @@ namespace coopnet {
 	class MaxTotClauseNodeChooser : public DPLLNodeChooser {
 
 	protected:
-		VertChoice do_choose(const DPLLFormula& form) override;
+		DPLLNodeChoice do_choose(const DPLLFormula& form) override;
 
 	};
 

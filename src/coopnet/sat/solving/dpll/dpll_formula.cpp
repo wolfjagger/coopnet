@@ -15,10 +15,9 @@ namespace {
 
 DPLLFormula::DPLLFormula(const Problem& prob) :
 	Formula<DPLLVProp, DPLLEProp>(prob),
-	reversableGraph(prob.get_graph()),
+	reversableGraph(prob.get_graph(), *prob.get_node_vert_translator()),
 	greyBuffer(),
 	isContradicting(std::make_shared<bool>(false)) {
-
 
 	colorPropMap = boost::get(&DPLLVProp::color, graph());
 
@@ -38,14 +37,16 @@ void DPLLFormula::set_node(DPLLNodeChoice choice) {
 	// partial_graph remove node_to_set and reduce (unit clauses
 	//  & pure literals), supplying the stack to append
 
-	auto vertNode = node_vert_map().left.at(choice.n);
+	auto vertNode = choice.vertNode;
 
 	auto status = choice.sgn ? 
 		DPLLVertStatus::SetToTrue : DPLLVertStatus::SetToFalse;
 	graph()[vertNode].dpll.status = status;
 
-	if (DEBUG) std::cout << "Assign node " << choice.n.id <<
-		" with vert " << vertNode << " to " << status << std::endl;
+	if (DEBUG) {
+		std::cout << "Assign node associated with vert " << vertNode;
+		std::cout << " to " << status << std::endl;
+	}
 
 	boost::breadth_first_visit(
 		graph(), vertNode, greyBuffer,
@@ -55,10 +56,9 @@ void DPLLFormula::set_node(DPLLNodeChoice choice) {
 
 
 
-void DPLLFormula::reverse_prune_to_assignment(Node n) {
+void DPLLFormula::reverse_prune_to_assignment(VertDescriptor vertNode) {
 
-	auto vert = node_vert_map().left.at(n);
-	reversableGraph.reverse_to_vert(vert);
+	reversableGraph.reverse_to_vert(vertNode);
 
 }
 
@@ -88,10 +88,16 @@ void DPLLFormula::set_uncontradicting() {
 IncompleteAssignment DPLLFormula::create_incomplete_assignment() const {
 
 	auto assignment = IncompleteAssignment();
-	auto copyPred = [this, &assignment](auto pair) {
-		assignment.emplace(pair.second, reversableGraph.get_assignment(pair.second));
-	};
-	apply_to_node_vert_map(copyPred);
+
+	auto verts = boost::vertices(graph());
+	for (auto vert = verts.first; vert != verts.second; ++vert) {
+
+		auto& prop = graph()[*vert];
+		if (prop.base.kind == BaseSatVProp::Node) {
+			assignment.emplace(*vert, reversableGraph.get_assignment(*vert));
+		}
+
+	}
 
 	return assignment;
 
@@ -99,10 +105,9 @@ IncompleteAssignment DPLLFormula::create_incomplete_assignment() const {
 
 void DPLLFormula::set_incomplete_assignment(const IncompleteAssignment& assignment) {
 
-	auto copyPred = [this, &assignment](auto pair) {
-		reversableGraph.set_assignment(pair.second, assignment.at(pair.second));
-	};
-	apply_to_node_vert_map(copyPred);
+	for (auto iter = assignment.begin(); iter != assignment.end(); ++iter) {
+		reversableGraph.set_assignment(iter->first, iter->second);
+	}
 
 }
 
@@ -112,35 +117,48 @@ bool DPLLFormula::is_SAT() const {
 	return !reversableGraph.is_indeterminate();
 }
 
-Assignment DPLLFormula::create_assignment() const {
+
+
+
+const SatGraphTranslator& DPLLFormula::get_sat_graph_translator() const {
+	return reversableGraph.get_translator();
+}
+
+
+
+auto DPLLFormula::create_vert_assignment() const -> VertAssignment {
 
 	if (reversableGraph.is_indeterminate()) {
 		throw std::exception("Incomplete assignment cannot be transformed.");
 	}
 
-	Assignment assignment;
-	auto copyPred = [this, &assignment](auto pair) {
-		assignment.data.emplace(pair.first, bool(reversableGraph.get_assignment(pair.second)));
-	};
-	apply_to_node_vert_map(copyPred);
+	auto assignment = VertAssignment();
+
+	auto verts = boost::vertices(graph());
+	for (auto vert = verts.first; vert != verts.second; ++vert) {
+
+		auto& prop = graph()[*vert];
+		if (prop.base.kind == BaseSatVProp::Node) {
+			assignment.emplace(*vert, bool(reversableGraph.get_assignment(*vert)));
+		}
+
+	}
 
 	return assignment;
 
 }
 
-void DPLLFormula::set_assignment(const Assignment& assignment) {
+void DPLLFormula::set_vert_assignment(const VertAssignment& assignment) {
 
-	auto copyPred = [this, &assignment](auto pair) {
-		reversableGraph.set_assignment(pair.second, boost::tribool(assignment.data.at(pair.first)));
-	};
-	apply_to_node_vert_map(copyPred);
+	for (auto iter = assignment.begin(); iter != assignment.end(); ++iter) {
+		reversableGraph.set_assignment(iter->first, boost::tribool(iter->second));
+	}
 
 }
 
 
 
-
-auto DPLLFormula::graph() const -> const Graph& {
+auto DPLLFormula::graph() const -> const Graph&{
 	return reversableGraph.get_graph();
 }
 auto DPLLFormula::graph() -> Graph& {

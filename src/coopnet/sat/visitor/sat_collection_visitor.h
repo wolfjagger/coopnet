@@ -19,12 +19,12 @@ namespace coopnet {
 		// Shared so that when this visitor is converted to e.g.
         //  a breadth-first visitor, the state can be retrieved.
 		std::shared_ptr<ClauseSatisfiability> satisfiability;
-		std::shared_ptr<const NodeVertMap> node_to_vertex_map;
+		std::shared_ptr<const SatGraphTranslator> translator;
 
 		explicit SatCollectionVisitor(
 			const Problem& prob,
 			std::shared_ptr<const Assignment> init_assigned) :
-			node_to_vertex_map(prob.get_node_vert_map()),
+			translator(prob.get_node_vert_translator()),
 			assigned(init_assigned),
 			satisfiability(std::make_shared<ClauseSatisfiability>()) {
 			
@@ -38,10 +38,10 @@ namespace coopnet {
 			VertDescriptor vertNode, VertDescriptor vertClause) {
 
 			// If sign of literal in clause matches assignment, clause is satisfied
-			auto n = node_to_vertex_map->right.at(vertNode);
+			auto n = translator->vert_to_node(vertNode);
 			auto sgn_of_literal = edge_property.base.sgn;
 			auto assigned_val = assigned->data.at(n);
-			if(sgn_of_literal == assigned_val) {
+			if (sgn_of_literal == assigned_val) {
 				satisfiability->clausesSatisfied.insert(vertClause);
 			}
 		

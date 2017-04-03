@@ -22,8 +22,10 @@ namespace {
 
 
 WalkSolver::WalkSolver(WalkNodeChoiceMode mode, unsigned int triesUntilFail) :
+	formula(nullptr),
 	nodeChooser(WalkNodeChooser::create(mode)),
-	retryCount(triesUntilFail) {
+	retryCount(triesUntilFail),
+	maxNumSteps(100) {
 
 }
 
@@ -45,8 +47,9 @@ Solution WalkSolver::try_single_solve(const Problem& prob) {
 
 	if (DEBUG) std::cout << "Set random formula assignment\n";
 
-	auto nodeList = prob.generate_node_list();
-	auto randAssignment = rand_assignment(nodeList.begin(), nodeList.end());
+	auto& translator = *prob.get_node_vert_translator();
+	auto randAssignment = rand_assignment(
+		translator.node_begin(), translator.node_end());
 	formula->set_assignment(randAssignment);
 
 	if (DEBUG) std::cout << "Find satisfactory assignment\n";
