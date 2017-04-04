@@ -14,7 +14,9 @@ namespace {
 	constexpr bool DEBUG = false;
 
 	void DEBUG_print_assignment(const WalkFormula& form) {
-		std::cout << form.create_assignment();
+		if(DEBUG) {
+			std::cout << form.create_assignment();
+		}
 	}
 
 }
@@ -25,7 +27,7 @@ WalkSolver::WalkSolver(WalkNodeChoiceMode mode, unsigned int triesUntilFail) :
 	formula(nullptr),
 	nodeChooser(WalkNodeChooser::create(mode)),
 	retryCount(triesUntilFail),
-	maxNumSteps(100) {
+	maxNumSteps(1000) {
 
 }
 
@@ -87,14 +89,13 @@ unsigned int WalkSolver::retry_count() const {
 
 void WalkSolver::find_assignment() {
 
-	unsigned int numSteps = 0;
-	while (numSteps < maxNumSteps) {
+	for (unsigned stepNum = 0; stepNum < maxNumSteps; ++stepNum) {
 
 		auto nodeToFlip = nodeChooser->choose(*formula);
 
 		formula->flip_node(nodeToFlip);
 		if (formula->is_SAT()) break;
-		
+
 	}
 
 	DEBUG_print_assignment(*formula);

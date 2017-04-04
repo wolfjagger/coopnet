@@ -194,7 +194,7 @@ namespace {
 
 		auto dpll_solver = DPLLSolver(DPLLNodeChoiceMode::MostTotClauses);
 		auto dpll_pair = dpll_solver.solve(prob);
-		auto walk_solver = WalkSolver(WalkNodeChoiceMode::Random, 1000);
+		auto walk_solver = WalkSolver(WalkNodeChoiceMode::Random, 10);
 		auto walk_pair = walk_solver.solve(prob);
 
 		switch (walk_pair.status) {
@@ -209,7 +209,6 @@ namespace {
 			RC_FAIL();
 			break;
 		case SolutionStatus::Undetermined:
-			std::cout << "Here\n";
 			break;
 		}
 
