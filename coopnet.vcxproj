@@ -234,10 +234,10 @@
     <ClInclude Include="src\coopnet\sat\solving\walk\walk_prop.h" />
     <ClInclude Include="src\coopnet\sat\solving\walk\walk_formula.h" />
     <ClInclude Include="src\coopnet\sat\solving\walk\walk_solver.h" />
-    <ClInclude Include="src\coopnet\sat\visitor\choose_max_clauses_visitor.h" />
+    <ClInclude Include="src\coopnet\sat\visitor\prune\choose_max_clauses_visitor.h" />
     <ClInclude Include="src\coopnet\sat\solving\simple_formula.h" />
-    <ClInclude Include="src\coopnet\sat\visitor\pruned_sat_visitor.h" />
-    <ClInclude Include="src\coopnet\sat\visitor\pruning_sat_visitor.h" />
+    <ClInclude Include="src\coopnet\sat\visitor\prune\pruned_sat_visitor.h" />
+    <ClInclude Include="src\coopnet\sat\visitor\prune\pruning_sat_visitor.h" />
     <ClInclude Include="src\coopnet\sat\visitor\visit.h" />
     <ClInclude Include="src\sat\sat_defs.h" />
     <ClInclude Include="src\coopnet\sat\visitor\sat_visitor.h" />

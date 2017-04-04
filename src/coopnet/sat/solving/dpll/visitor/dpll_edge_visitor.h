@@ -2,7 +2,7 @@
 
 #include <memory>
 #include "coopnet/sat/solving/dpll/dpll_prop.h"
-#include "coopnet/sat/visitor/pruning_sat_visitor.h"
+#include "coopnet/sat/visitor/prune/pruning_sat_visitor.h"
 
 
 

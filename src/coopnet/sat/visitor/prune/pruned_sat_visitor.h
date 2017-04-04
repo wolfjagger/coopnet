@@ -2,7 +2,7 @@
 
 #include <algorithm>
 #include "coopnet/graph/mutable/reversable_graph.h"
-#include "sat_visitor.h"
+#include "coopnet/sat/visitor/sat_visitor.h"
 
 
 

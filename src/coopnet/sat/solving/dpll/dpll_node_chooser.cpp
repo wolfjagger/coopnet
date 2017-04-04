@@ -1,7 +1,7 @@
 #include "dpll_node_chooser.h"
 #include "alphali/containers/random_iterator.h"
 #include "coopnet/graph/mutable/reversable_graph.h"
-#include "coopnet/sat/visitor/choose_max_clauses_visitor.h"
+#include "coopnet/sat/visitor/prune/choose_max_clauses_visitor.h"
 #include "dpll_formula.h"
 
 using namespace coopnet;
