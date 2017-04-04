@@ -11,17 +11,14 @@ namespace coopnet {
 	using DPLLVisitorTuple =
 		std::pair<DPLLVertVisitor, DPLLEdgeVisitor>;
 
-	class DPLLVisitor :
+	class BfsDPLLVisitor :
 		public boost::bfs_visitor<DPLLVisitorTuple> {
 
 	public:
 
-		DPLLVisitor(
-			PruneStack& pruneStack,
-			alphali::collaborator&& vertContradictionCollab,
-			alphali::collaborator&& edgeContradictionCollab,
-			alphali::publisher& mainContradictPub,
-			alphali::publisher& mainUncontradictPub);
+		BfsDPLLVisitor(
+			ReverseStack& reverseStack,
+			std::shared_ptr<bool> isContradictingPtr);
 
 	};
 	

@@ -12,12 +12,12 @@ namespace coopnet {
 
 	private:
 
-		PruneStack& pruneStack;
+		ReverseStack& reverseStack;
 
 	public:
 
-		PruningSatVertVisitor(PruneStack& initPruneStack) :
-			pruneStack(initPruneStack) { }
+		PruningSatVertVisitor(ReverseStack& initReverseStack) :
+			reverseStack(initReverseStack) { }
 
 
 
@@ -49,7 +49,7 @@ namespace coopnet {
 
 				if (DEBUG) std::cout << "Set status for vert " << v << " to " << newStatus << std::endl;
 
-				pruneStack.emplace(std::make_pair(v, oldStatus));
+				reverseStack.emplace(std::make_pair(v, oldStatus));
 				oldStatus = newStatus;
 
 			}
@@ -62,7 +62,7 @@ namespace coopnet {
 
 				if (DEBUG) std::cout << "Set status for edge " << e << " to " << newStatus << std::endl;
 
-				pruneStack.emplace(std::make_pair(e, oldStatus));
+				reverseStack.emplace(std::make_pair(e, oldStatus));
 				oldStatus = newStatus;
 
 			}
@@ -77,7 +77,7 @@ namespace coopnet {
 
 				if (DEBUG) std::cout << "Set assignment for vert " << v << " to " << newAssign << std::endl;
 
-				pruneStack.emplace(std::make_pair(v, oldAssign));
+				reverseStack.emplace(std::make_pair(v, oldAssign));
 				oldAssign = newAssign;
 
 			}
@@ -94,12 +94,12 @@ namespace coopnet {
 
 	private:
 
-		PruneStack& pruneStack;
+		ReverseStack& reverseStack;
 
 	public:
 
-		PruningSatEdgeVisitor(PruneStack& initPruneStack) :
-			pruneStack(initPruneStack) {}
+		PruningSatEdgeVisitor(ReverseStack& initReverseStack) :
+			reverseStack(initReverseStack) {}
 
 
 
@@ -125,7 +125,7 @@ namespace coopnet {
 
 				if (DEBUG) std::cout << "Set status for edge " << e << " to " << newStatus << std::endl;
 
-				pruneStack.emplace(std::make_pair(e, oldStatus));
+				reverseStack.emplace(std::make_pair(e, oldStatus));
 				oldStatus = newStatus;
 
 			}

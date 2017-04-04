@@ -179,10 +179,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\coopnet\graph\graph.cpp" />
-    <None Include="src\coopnet\graph\mutable\extended_graph.inl">
+    <ClCompile Include="src\coopnet\graph\sat_graph_translator.cpp" />
+    <ClCompile Include="src\coopnet\sat\solving\walk\walk_formula.cpp" />
+    <ClCompile Include="src\coopnet\sat\solving\walk\walk_node_chooser.cpp" />
+    <ClCompile Include="src\coopnet\sat\solving\walk\walk_solver.cpp" />
+    <None Include="src\coopnet\graph\mutable\reversable_graph.inl">
       <FileType>CppCode</FileType>
     </None>
-    <ClCompile Include="src\coopnet\graph\mutable\prune_info.cpp" />
+    <ClCompile Include="src\coopnet\graph\mutable\reverse_info.cpp" />
     <ClCompile Include="src\coopnet\sat\component\node.cpp" />
     <ClCompile Include="src\coopnet\sat\problem\shuffler.cpp" />
     <ClCompile Include="src\coopnet\sat\problem\problem.cpp" />
@@ -194,9 +198,9 @@
     <None Include="src\coopnet\sat\solving\formula.inl">
       <FileType>CppCode</FileType>
     </None>
-    <None Include="src\coopnet\sat\solving\node_chooser.inl">
+    <ClCompile Include="src\coopnet\sat\solving\dpll\dpll_node_chooser.cpp">
       <FileType>CppCode</FileType>
-    </None>
+    </ClCompile>
     <ClCompile Include="src\coopnet\sat\solving\dpll\dpll_solver.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\dpll\visitor\dpll_visitor.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\solver.cpp" />
@@ -204,9 +208,11 @@
   <ItemGroup>
     <ClInclude Include="src\coopnet\graph\bgl_inc.h" />
     <ClInclude Include="src\coopnet\graph\graph_util.h" />
-    <ClInclude Include="src\coopnet\graph\mutable\mutable_graph.h" />
-    <ClInclude Include="src\coopnet\graph\mutable\extended_graph.h" />
-    <ClInclude Include="src\coopnet\graph\mutable\prune_info.h" />
+    <ClInclude Include="src\coopnet\graph\mutable\assignable_graph.h" />
+    <ClInclude Include="src\coopnet\graph\mutable\prune_graph.h" />
+    <ClInclude Include="src\coopnet\graph\mutable\reversable_graph.h" />
+    <ClInclude Include="src\coopnet\graph\mutable\reverse_info.h" />
+    <ClInclude Include="src\coopnet\graph\sat_graph_translator.h" />
     <ClInclude Include="src\coopnet\sat\problem\assignment.h" />
     <ClInclude Include="src\coopnet\sat\component\clause.h" />
     <ClInclude Include="src\coopnet\sat\component\component_fwd.h" />
@@ -217,13 +223,17 @@
     <ClInclude Include="src\coopnet\sat\problem\creation\problem_factory.h" />
     <ClInclude Include="src\coopnet\sat\problem\problem_util.h" />
     <ClInclude Include="src\coopnet\sat\solving\dpll\dpll_node_chooser.h" />
-    <ClInclude Include="src\coopnet\sat\solving\dpll\dpll_prop_maps.h" />
+    <ClInclude Include="src\coopnet\sat\solving\dpll\dpll_prop.h" />
     <ClInclude Include="src\coopnet\sat\solving\dpll\visitor\dpll_edge_visitor.h" />
     <ClInclude Include="src\coopnet\sat\solving\dpll\visitor\dpll_vert_visitor.h" />
     <ClInclude Include="src\coopnet\sat\solving\formula.h" />
-    <ClInclude Include="src\coopnet\sat\solving\node_choice.h" />
-    <ClInclude Include="src\coopnet\sat\solving\node_chooser.h" />
+    <ClInclude Include="src\coopnet\sat\solving\dpll\dpll_node_choice.h" />
     <ClInclude Include="src\coopnet\sat\solving\solution.h" />
+    <ClInclude Include="src\coopnet\sat\solving\walk\walk_node_chooser.h" />
+    <ClInclude Include="src\coopnet\sat\solving\walk\walk_status.h" />
+    <ClInclude Include="src\coopnet\sat\solving\walk\walk_prop.h" />
+    <ClInclude Include="src\coopnet\sat\solving\walk\walk_formula.h" />
+    <ClInclude Include="src\coopnet\sat\solving\walk\walk_solver.h" />
     <ClInclude Include="src\coopnet\sat\visitor\choose_max_clauses_visitor.h" />
     <ClInclude Include="src\coopnet\sat\solving\simple_formula.h" />
     <ClInclude Include="src\coopnet\sat\visitor\pruned_sat_visitor.h" />

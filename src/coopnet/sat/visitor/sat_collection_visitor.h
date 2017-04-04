@@ -2,6 +2,7 @@
 
 #include "coopnet/graph/graph.h"
 #include "coopnet/sat/problem/assignment.h"
+#include "coopnet/sat/problem/problem.h"
 #include "sat_visitor.h"
 
 
@@ -18,12 +19,12 @@ namespace coopnet {
 		// Shared so that when this visitor is converted to e.g.
         //  a breadth-first visitor, the state can be retrieved.
 		std::shared_ptr<ClauseSatisfiability> satisfiability;
-		std::shared_ptr<const NodeVertMap> node_to_vertex_map;
+		std::shared_ptr<const SatGraphTranslator> translator;
 
 		explicit SatCollectionVisitor(
 			const Problem& prob,
 			std::shared_ptr<const Assignment> init_assigned) :
-			node_to_vertex_map(prob.get_node_vert_map()),
+			translator(prob.get_node_vert_translator()),
 			assigned(init_assigned),
 			satisfiability(std::make_shared<ClauseSatisfiability>()) {
 			
@@ -34,14 +35,14 @@ namespace coopnet {
 		template<typename SatGraph>
 		void edge_event(const SatGraph& g, EdgeDescriptor e,
 			const coopnet::BaseSatEProp& edge_property,
-			VertDescriptor vert_node, VertDescriptor vert_clause) {
+			VertDescriptor vertNode, VertDescriptor vertClause) {
 
 			// If sign of literal in clause matches assignment, clause is satisfied
-			auto n = node_to_vertex_map->right.at(vert_node);
+			auto n = translator->vert_to_node(vertNode);
 			auto sgn_of_literal = edge_property.base.sgn;
 			auto assigned_val = assigned->data.at(n);
-			if(sgn_of_literal == assigned_val) {
-				satisfiability->clauses_satisfied.insert(vert_clause);
+			if (sgn_of_literal == assigned_val) {
+				satisfiability->clausesSatisfied.insert(vertClause);
 			}
 		
 		}
@@ -49,7 +50,7 @@ namespace coopnet {
 
 
 		size_t count_satisfied() const {
-			return satisfiability->clauses_satisfied.size();
+			return satisfiability->clausesSatisfied.size();
 		}
 
 	};

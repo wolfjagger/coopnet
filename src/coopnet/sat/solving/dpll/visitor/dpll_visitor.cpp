@@ -7,21 +7,12 @@ using namespace coopnet;
 namespace {
 
 	DPLLVisitorTuple make_visitor_tuple(
-		PruneStack& pruneStack,
-		alphali::collaborator&& vertContradictionCollab,
-		alphali::collaborator&& edgeContradictionCollab,
-		alphali::publisher& mainContradictPub,
-		alphali::publisher& mainUncontradictPub) {
+		ReverseStack& reverseStack,
+		std::shared_ptr<bool> isContradictingPtr) {
 
 		return std::make_pair(
-			DPLLVertVisitor(
-				pruneStack,
-				std::move(vertContradictionCollab),
-				mainContradictPub, mainUncontradictPub),
-			DPLLEdgeVisitor(
-				pruneStack,
-				std::move(edgeContradictionCollab),
-				mainContradictPub, mainUncontradictPub)
+			DPLLVertVisitor(reverseStack, isContradictingPtr),
+			DPLLEdgeVisitor(reverseStack, isContradictingPtr)
 		);
 
 	}
@@ -30,17 +21,10 @@ namespace {
 
 
 
-DPLLVisitor::DPLLVisitor(
-	PruneStack& pruneStack,
-	alphali::collaborator&& vertContradictionCollab,
-	alphali::collaborator&& edgeContradictionCollab,
-	alphali::publisher& mainContradictPub,
-	alphali::publisher& mainUncontradictPub) :
+BfsDPLLVisitor::BfsDPLLVisitor(
+	ReverseStack& reverseStack,
+	std::shared_ptr<bool> isContradictingPtr) :
 	boost::bfs_visitor<DPLLVisitorTuple>(
-		make_visitor_tuple(
-			pruneStack,
-			std::move(vertContradictionCollab),
-			std::move(edgeContradictionCollab),
-			mainContradictPub, mainUncontradictPub)) {
+		make_visitor_tuple(reverseStack, isContradictingPtr)) {
 
 }

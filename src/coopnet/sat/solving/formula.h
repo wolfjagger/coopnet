@@ -1,30 +1,26 @@
 #pragma once
 
-#include <functional>
+#include "coopnet/graph/sat_graph_translator.h"
 #include "coopnet/sat/visitor/visit.h"
 #include "coopnet/sat/problem/assignment.h"
 #include "coopnet/sat/problem/problem.h"
-#include "coopnet/graph/mutable/mutable_graph.h"
-#include "node_choice.h"
 
 
 
 namespace coopnet {
 
+	// Note: Formula and children should have NO knowledge of Node
+	//  and instead should rely on VertDescriptor
+
 	template<typename VProp, typename EProp>
 	class Formula {
 
-	private:
-
-		using Graph = SatGraph<VProp, EProp>;
-		using ExtendedGraph = ExtendedSatGraph<VProp, EProp>;
-
-		std::reference_wrapper<const Problem> prob;
-
 	protected:
 
-		ExtendedGraph extendedGraph;
-		SatColorPropMap<Graph> colorPropMap;
+		using Graph = SatGraph<VProp, EProp>;
+		using VertAssignment = std::map<VertDescriptor, bool>;
+
+		std::reference_wrapper<const Problem> prob;
 
 	public:
 
@@ -36,41 +32,25 @@ namespace coopnet {
 		Formula(Formula&& other) = default;
 		Formula& operator=(Formula&& other) = default;
 
-		~Formula() = default;
+		virtual ~Formula() = default;
 
 
 
-		template<typename Visitor>
-		void visit_entire_graph(const Visitor& v) const {
-
-			auto sources = std::vector<size_t>();
-			for (auto source_vert : pruneGraph.connected_component_entry_pts())
-				sources.push_back(boost::vertex(source_vert, graph()));
-
-			visit_sat_graph(v, graph(), sources.cbegin(), sources.cend());
-
-		}
-
-		template<typename PruneVisitor>
-		void visit_active_graph(PruneVisitor& v) const {
-			extendedGraph.visit(v);
-		}
-
-		
-
-		void reverse_prune_to_assignment(Node n);
-
-
-
-		const NodeVertMap& node_vert_map() const;
-		std::shared_ptr<const NodeVertMap> node_vert_map_ptr() const;
-
-		const ExtendedGraph& extended_graph() const;
-		const Graph& graph() const;
-
-		bool is_SAT() const;
-		IncompleteAssignment create_incomplete_assignment() const;
 		Assignment create_assignment() const;
+		void set_assignment(const Assignment& assignment);
+
+		virtual bool is_SAT() const = 0;
+
+		virtual const Graph& graph() const = 0;
+
+	protected:
+
+		virtual const SatGraphTranslator& get_sat_graph_translator() const = 0;
+
+		virtual VertAssignment create_vert_assignment() const = 0;
+		virtual void set_vert_assignment(const VertAssignment& assignment) = 0;
+
+		virtual Graph& graph() = 0;
 
 	};
 

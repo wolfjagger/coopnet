@@ -2,7 +2,7 @@
 
 #include <map>
 #include <memory>
-#include "coopnet/graph/graph.h"
+#include "coopnet/graph/sat_graph_translator.h"
 #include "coopnet/sat/component/component_fwd.h"
 #include "shuffler.h"
 
@@ -27,10 +27,8 @@ namespace coopnet {
 
 		// Graph and properties
 		BaseSatGraph probGraph;
+		std::shared_ptr<SatGraphTranslator> translator;
 		boost::dynamic_properties dynProps;
-
-		// Map node with id to vertex_descriptor
-		std::shared_ptr<NodeVertMap> mapNodeToVert;
 
 	public:
 
@@ -69,7 +67,7 @@ namespace coopnet {
 			std::shared_ptr<const Assignment> assign) const;
 
 		size_t num_satisfied_by(std::shared_ptr<const Assignment> assign) const {
-			return clause_satisfiability_for(assign).clauses_satisfied.size();
+			return clause_satisfiability_for(assign).clausesSatisfied.size();
 		}
 		size_t num_unsatisfied_by(std::shared_ptr<const Assignment> assign) const {
 			return numClauses - num_satisfied_by(assign);
@@ -86,8 +84,8 @@ namespace coopnet {
 		const BaseSatGraph& get_graph() const { return probGraph; }
 		const boost::dynamic_properties& get_properties() const { return dynProps; }
 
-		std::shared_ptr<const NodeVertMap> get_node_vert_map() const {
-			return mapNodeToVert;
+		std::shared_ptr<const SatGraphTranslator> get_node_vert_translator() const {
+			return translator;
 		}
 
 		auto get_num_nodes() const { return numNodes; }

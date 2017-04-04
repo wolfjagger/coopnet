@@ -12,20 +12,11 @@ namespace {
 
 
 DPLLVertVisitor::DPLLVertVisitor(
-	PruneStack& initPruneStack,
-	alphali::collaborator&& initContradictCollab,
-	alphali::publisher& mainContradictPub,
-	alphali::publisher& mainUncontradictPub) :
-	PruningSatVertVisitor<DPLLVertVisitor>(initPruneStack) {
+	ReverseStack& initReverseStack,
+	std::shared_ptr<bool> isContradictingPtr) :
+	PruningSatVertVisitor<DPLLVertVisitor>(initReverseStack) {
 
-	set_uncontradicting();
-
-	contradictionCollab = std::move(initContradictCollab);
-
-	contradictionCollab.subscribe(mainContradictPub,
-		[this]() { set_contradicting(); });
-	contradictionCollab.subscribe(mainUncontradictPub,
-		[this]() { set_uncontradicting(); });
+	isContradicting = isContradictingPtr;
 
 }
 
@@ -34,8 +25,6 @@ DPLLVertVisitor::DPLLVertVisitor(
 // This visitor will decide if the vert should be removed:
 //  either if it only has one edge (clause)
 //  or if it has all edges with same sign (node).
-// It also needs to color the surrounding edges if they
-//  should be (re)visited (i.e. if vert is to be removed).
 void DPLLVertVisitor::dpll_node_event(
 	const DPLLSatGraph& g, VertDescriptor node, const DPLLVProp& prop) {
 
@@ -150,7 +139,7 @@ void DPLLVertVisitor::dpll_clause_event(
 			// If no edges left, no way to satisfy clause: contradicting
 			if (num_active_edges == 0) {
 				if (DEBUG) std::cout << "Contradict: no edges to satisfy clause.\n";
-				contradictionCollab.publish();
+				*isContradicting = true;
 			}
 			// If one edge left, it must be used to satisfy clause
 			else if (num_active_edges == 1) {
@@ -184,7 +173,7 @@ void DPLLVertVisitor::default_vert_event(
 void DPLLVertVisitor::select_node(
 	const DPLLSatGraph& g, VertDescriptor node, const DPLLVProp& prop, bool sgn) {
 
-	set_assignment(node, prop.mutate.assignment, sgn);
+	set_assignment(node, prop.assignment, sgn);
 
 	auto prop_to_edges_fcn = [this, &g, sgn](EdgeDescriptor edge) {
 
@@ -205,7 +194,7 @@ void DPLLVertVisitor::select_node(
 				deactivate_edge(edge, eProp);
 			} else {
 				if (DEBUG) std::cout << "Contradict: opposite constraints on node.\n";
-				contradictionCollab.publish();
+				*isContradicting = true;
 			}
 			break;
 		}
@@ -247,13 +236,13 @@ void DPLLVertVisitor::satisfy_clause(
 void DPLLVertVisitor::deactivate_vert(
 	VertDescriptor vert, const DPLLVProp& prop) {
 	change_vert_status(vert, prop, DPLLVertStatus::Default);
-	set_prune_status(vert, prop.mutate.status, PruneStatus::Inactive);
+	set_prune_status(vert, prop.pruneStatus, PruneStatus::Inactive);
 }
 
 void DPLLVertVisitor::deactivate_edge(
 	EdgeDescriptor edge, const DPLLEProp& prop) {
 	change_edge_status(edge, prop, DPLLEdgeStatus::Default);
-	set_prune_status(edge, prop.mutate.status, PruneStatus::Inactive);
+	set_prune_status(edge, prop.pruneStatus, PruneStatus::Inactive);
 }
 
 
@@ -279,14 +268,4 @@ void DPLLVertVisitor::change_edge_status(
 		status = newStatus;
 	}
 
-}
-
-
-
-void DPLLVertVisitor::set_contradicting() {
-	isContradicting = true;
-}
-
-void DPLLVertVisitor::set_uncontradicting() {
-	isContradicting = false;
 }

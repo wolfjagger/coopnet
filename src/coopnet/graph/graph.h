@@ -9,6 +9,8 @@
 
 namespace coopnet {
 
+	using boost::default_color_type;
+
 	struct BaseSatVProp {
 		enum VertKind { Node = 0, Clause = 1 };
 		struct Base {
@@ -17,8 +19,12 @@ namespace coopnet {
 			int kind;
 		} base;
 
+		// Color for changing what is visited while visiting
+		mutable default_color_type color;
+
 		BaseSatVProp() :
-			base{std::string(), 0} { }
+			base{ std::string(), 0 },
+			color(default_color_type::black_color) { }
 
 	};
 
@@ -54,11 +60,15 @@ namespace coopnet {
 
 	using VertDescriptor = BaseSatGraph::vertex_descriptor;
 	using EdgeDescriptor = BaseSatGraph::edge_descriptor;
-	using boost::default_color_type;
 
 	template<typename Value>
 	using EdgeDescUnordMap
 		= std::unordered_map<EdgeDescriptor, Value, boost::hash<EdgeDescriptor>>;
+
+
+	template<typename Graph>
+	using SatColorPropMap
+		= typename boost::property_map<Graph, default_color_type BaseSatVProp::*>::type;
 
 
 
@@ -67,7 +77,7 @@ namespace coopnet {
 
 
 	struct ClauseSatisfiability {
-		std::set<VertDescriptor> clauses_satisfied;
+		std::set<VertDescriptor> clausesSatisfied;
 	};
 
 }

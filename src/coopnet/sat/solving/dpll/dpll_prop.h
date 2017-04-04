@@ -1,30 +1,30 @@
 #pragma once
 
-#include "coopnet/graph/mutable/mutable_graph.h"
+#include "coopnet/graph/mutable/reversable_graph.h"
 #include "dpll_status.h"
 
 
 
 namespace coopnet {
 
-	struct DPLLVProp : public MutableSatVProp {
+	struct DPLLVProp : public ReversableSatVProp {
 		mutable struct DPLL {
 			DPLLVertStatus status;
 		} dpll;
 
 		DPLLVProp() :
-			MutableSatVProp(),
+			ReversableSatVProp(),
 			dpll{DPLLVertStatus::Default} { }
 
 	};
 
-	struct DPLLEProp : public MutableSatEProp {
+	struct DPLLEProp : public ReversableSatEProp {
 		mutable struct DPLL {
 			DPLLEdgeStatus status;
 		} dpll;
 
 		DPLLEProp() :
-			MutableSatEProp(),
+			ReversableSatEProp(),
 			dpll{DPLLEdgeStatus::Default} {}
 
 	};
@@ -33,6 +33,6 @@ namespace coopnet {
 
 	using DPLLSatGraph = SatGraph<DPLLVProp, DPLLEProp>;
 
-	using DPLLExtSatGraph = ExtendedSatGraph<DPLLVProp, DPLLEProp>;
+	using DPLLRevSatGraph = ReversableSatGraph<DPLLVProp, DPLLEProp>;
 	
 }

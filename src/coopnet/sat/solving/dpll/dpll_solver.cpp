@@ -2,7 +2,6 @@
 #include <iostream>
 #include "boost/logic/tribool.hpp"
 #include "coopnet/sat/problem/problem.h"
-#include "coopnet/sat/component/node.h"
 #include "dpll_formula.h"
 #include "dpll_node_chooser.h"
 
@@ -78,10 +77,11 @@ auto DPLLSolver::do_solve(const Problem& prob) -> Solution {
 	if (DEBUG) {
 		std::cout << "Solving problem:\n";
 		std::cout << prob;
+		std::cout << "Construct formula\n";
 	}
-
+	
 	formula = std::make_unique<DPLLFormula>(prob);
-	decisions = std::stack<NodeDecision>();
+	decisions = std::stack<DPLLNodeChoiceBranch>();
 
 	find_assignment();
 
@@ -110,17 +110,25 @@ auto DPLLSolver::do_solve(const Problem& prob) -> Solution {
 
 void DPLLSolver::find_assignment() {
 
+	if (DEBUG) std::cout << "Find assignment\n";
+
 	while (true) {
+
+		if (DEBUG) std::cout << "Choose node\n";
 
 		auto new_choice = nodeChooser->choose(*formula);
 
 		// If no valid new node, formula is reduced
 		if (!new_choice.is_initialized()) break;
 
-		auto decision = NodeDecision{ new_choice.get(), true };
+		if (DEBUG) std::cout << "Reduce with decision\n";
+
+		auto decision = DPLLNodeChoiceBranch{ new_choice.get(), true };
 		reduce_with_selection(decision);
 		
 		if (formula->is_contradicting()) {
+
+			if (DEBUG) std::cout << "Formula contradicts; change choice\n";
 
 			auto last_choice_success = change_last_free_choice();
 
@@ -146,14 +154,14 @@ bool DPLLSolver::change_last_free_choice() {
 		decisions.pop();
 
 		auto choice = decision.choice;
-		formula->reverse_prune_to_assignment(choice.n);
+		formula->reverse_prune_to_assignment(choice.vertNode);
 		formula->set_uncontradicting();
 		DEBUG_print_assignment(*formula);
 
 		if (decision.is_first_choice) {
 
-			auto new_choice = NodeChoice{ choice.n, !choice.sgn };
-			auto new_decision = NodeDecision{ new_choice, false };
+			auto new_choice = std::make_pair(choice.vertNode, !choice.sgn);
+			auto new_decision = DPLLNodeChoiceBranch{ new_choice, false };
 			reduce_with_selection(new_decision);
 			if(!formula->is_contradicting()) return true;
 
@@ -166,10 +174,10 @@ bool DPLLSolver::change_last_free_choice() {
 
 }
 
-void DPLLSolver::reduce_with_selection(NodeDecision decision) {
+void DPLLSolver::reduce_with_selection(DPLLNodeChoiceBranch decision) {
 
 	if (DEBUG) {
-		std::cout << "Choose node " << std::to_string(decision.choice.n.id);
+		std::cout << "Choose node associated with vert " << std::to_string(decision.choice.vertNode);
 		std::cout << " to be " << (decision.choice.sgn ? "true" : "false");
 		std::cout << " for the " << (decision.is_first_choice ? "first" : "second");
 		std::cout << " time." << std::endl;

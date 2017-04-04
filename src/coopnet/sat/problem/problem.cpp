@@ -14,6 +14,8 @@ using namespace coopnet;
 
 namespace {
 
+	constexpr bool DEBUG = false;
+
 	boost::dynamic_properties generate_dyn_props(
 		BaseSatGraph& probGraph) {
 
@@ -52,15 +54,21 @@ namespace {
 ClauseSatisfiability Problem::clause_satisfiability_for(
 	std::shared_ptr<const Assignment> assign) const {
 
+	if (DEBUG) std::cout << "Create satisfiability collector\n";
+
 	auto satisfiabilityCollector
 		= SatCollectionVisitor(*this, assign);
 
-	auto form = SimpleFormula(*this);
+	if (DEBUG) std::cout << "Calculate connected components\n";
+
+	auto components = graph_util::calculate_connected_components(probGraph);
+
+	if (DEBUG) std::cout << "Visit with satisfiability collector\n";
+
+	visit_sat_graph(probGraph, satisfiabilityCollector, components.cbegin(), components.cend());
 	
-	auto& g = form.graph();
-	auto components = graph_util::calculate_connected_components(g);
-	visit_sat_graph(satisfiabilityCollector, g, components.cbegin(), components.cend());
-	
+	if (DEBUG) std::cout << "Return satisfiability\n";
+
 	return *satisfiabilityCollector.satisfiability;
 	
 }
@@ -69,11 +77,15 @@ ClauseSatisfiability Problem::clause_satisfiability_for(
 
 std::shared_ptr<Assignment> Problem::create_same_sgn_assignment(bool sgn) const {
 
+	if (DEBUG) std::cout << "Create same sgn assignment\n";
+
 	// Should be satisfied by an assignment of all true
 	auto mapAssign = std::map<Node, bool>();
-	for(auto pair : mapNodeToVert->left) {
-		auto node = pair.first;
-		mapAssign.emplace(node, sgn);
+	for(auto node = translator->node_begin();
+		node != translator->node_end(); ++node) {
+
+		mapAssign.emplace(*node, sgn);
+
 	}
 
 	auto assign = std::make_shared<coopnet::Assignment>();
@@ -88,13 +100,17 @@ std::shared_ptr<Assignment> Problem::create_same_sgn_assignment(bool sgn) const 
 
 void Problem::build_graph(NodeList&& nodes, ClauseList&& clauses) {
 
+	if (DEBUG) std::cout << "Build graph\n";
+
 	numNodes = nodes.size();
 	numClauses = clauses.size();
 
 	probGraph = BaseSatGraph();
 
 	// Temp map to connect node-clause edges
-	mapNodeToVert = std::make_shared<NodeVertMap>();
+	auto mapNodeToVert = NodeVertMap();
+
+	if (DEBUG) std::cout << "Add nodes\n";
 
 	// Add all nodes in sequence to graph
 	for(auto node_to_add : nodes) {
@@ -106,10 +122,16 @@ void Problem::build_graph(NodeList&& nodes, ClauseList&& clauses) {
 
 		auto nodeVert = boost::add_vertex(prop, probGraph);
 
-		mapNodeToVert->insert(NodeVertMap::value_type(node_to_add, nodeVert));
+		mapNodeToVert.insert(NodeVertMap::value_type(node_to_add, nodeVert));
 
 	}
 
+	if (DEBUG) std::cout << "Create node-vert translator\n";
+
+	translator = std::make_shared<SatGraphTranslator>(std::move(mapNodeToVert));
+
+
+	if (DEBUG) std::cout << "Add clauses\n";
 
 	// Add all clauses in sequence to graph, then add all edges
 	for(auto& clause_to_add : clauses) {
@@ -125,7 +147,7 @@ void Problem::build_graph(NodeList&& nodes, ClauseList&& clauses) {
 
 			// Add node in clause as edge to graph
 			//TODO: Add error handling for if node not in map.
-			auto nodeVert = mapNodeToVert->left.at(lit.first);
+			auto nodeVert = translator->node_to_vert(lit.first);
 
 			auto prop = BaseSatGraph::edge_property_type();
 			prop.base.sgn = lit.second;
@@ -137,6 +159,8 @@ void Problem::build_graph(NodeList&& nodes, ClauseList&& clauses) {
 
 	}
 
+
+	if (DEBUG) std::cout << "Generate dynamic properties\n";
 
 	dynProps = generate_dyn_props(probGraph);
 

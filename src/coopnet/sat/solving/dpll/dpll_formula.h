@@ -1,28 +1,34 @@
 #pragma once
 
 #include <functional>
+#include "boost/pending/queue.hpp"
+#include "coopnet/graph/mutable/reversable_graph.h"
 #include "coopnet/sat/solving/formula.h"
-#include "visitor/dpll_visitor.h"
+#include "dpll_node_choice.h"
+#include "dpll_prop.h"
 
 
 
 namespace coopnet {
 
 	class Problem;
+	class BfsDPLLVisitor;
 
 	class DPLLFormula : public Formula<DPLLVProp, DPLLEProp> {
 
 	private:
 
+		using ReversableGraph = ReversableSatGraph<DPLLVProp, DPLLEProp>;
+
+		ReversableGraph reversableGraph;
+
 		// Queue for remaining grey nodes to color black
 		boost::queue<VertDescriptor> greyBuffer;
+		// Color for visitation
+		SatColorPropMap<Graph> colorPropMap;
 
-		bool isContradicting;
-		alphali::publisher setContradictPub;
-		alphali::subscriber setContradictSub;
-		alphali::publisher setUncontradictPub;
-
-		std::unique_ptr<DPLLVisitor> pruneVisitor;
+		std::shared_ptr<bool> isContradicting;
+		std::unique_ptr<BfsDPLLVisitor> pruneVisitor;
 
 	public:
 
@@ -34,15 +40,39 @@ namespace coopnet {
 		DPLLFormula(DPLLFormula&& other) = default;
 		DPLLFormula& operator=(DPLLFormula&& other) = default;
 
-		~DPLLFormula() = default;
+		~DPLLFormula();
 
 
 
-		void set_node(NodeChoice choice);
+		void set_node(DPLLNodeChoice choice);
+
+		void reverse_prune_to_assignment(VertDescriptor vertNode);
+
+
+
+		const ReversableGraph& reversable_graph() const;
 
 		bool is_contradicting() const;
 		void set_contradicting();
 		void set_uncontradicting();
+
+
+
+		IncompleteAssignment create_incomplete_assignment() const;
+		void set_incomplete_assignment(const IncompleteAssignment& assignment);
+
+		bool is_SAT() const override;
+
+		const Graph& graph() const override;
+
+	protected:
+
+		const SatGraphTranslator& get_sat_graph_translator() const override;
+
+		VertAssignment create_vert_assignment() const override;
+		void set_vert_assignment(const VertAssignment& assignment) override;
+
+		Graph& graph() override;
 
 	};
 

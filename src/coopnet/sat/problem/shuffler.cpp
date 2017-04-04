@@ -14,22 +14,22 @@ using namespace coopnet;
 NodeShuffler::NodeShuffler(const Problem& prob) {
 
 	nodes = std::vector<Node>();
-	auto numNodes = prob.get_num_nodes();
-	nodes.reserve(numNodes);
-	for (unsigned int i = 0; i < numNodes; ++i) {
-		nodes.emplace_back(i);
-	}
+	nodes.reserve(prob.get_num_nodes());
+	auto& translator = *prob.get_node_vert_translator();
+	for(auto node = translator.node_begin();
+		node != translator.node_end(); ++node) {
 
-	mapNodeToVert = prob.get_node_vert_map();
+		nodes.emplace_back(*node);
+
+	}
 
 	shuffle();
 
 }
 
-NodeShuffler::NodeShuffler(const Problem& prob, std::vector<Node> shuffleNodes) {
+NodeShuffler::NodeShuffler(std::vector<Node> shuffleNodes) {
 
 	nodes = std::move(shuffleNodes);
-	mapNodeToVert = prob.get_node_vert_map();
 
 }
 
@@ -64,19 +64,23 @@ void NodeShuffler::apply_to_problem(Problem& prob) const {
 	// Change node_vert_map to re-point the nodes
 	// Need copy and swap because we can't have duplicates
 	auto map_cpy = NodeVertMap();
-	for (auto iter = prob.mapNodeToVert->left.begin();
-		iter != prob.mapNodeToVert->left.end(); ++iter) {
 
-		auto old_node = iter->first;
-		auto vert = iter->second;
+	auto& translator = *prob.get_node_vert_translator();
+	for(auto node = translator.node_begin();
+		node != translator.node_end(); ++node) {
+
+		auto old_node = *node;
+		auto vert = translator.node_to_vert(old_node);
 		auto new_node = nodes.at(old_node.id);
 		map_cpy.left.insert(std::make_pair(new_node, vert));
 
 	}
-	std::swap(map_cpy, *prob.mapNodeToVert);
+
+	auto newTranslator = SatGraphTranslator(std::move(map_cpy));
+	std::swap(newTranslator, *prob.translator);
 
 	// Rename nodes and clauses
-	graph_util::rename_verts(prob.probGraph, *mapNodeToVert);
+	graph_util::rename_verts(prob.probGraph, translator);
 
 }
 
@@ -91,16 +95,13 @@ SgnShuffler::SgnShuffler(const Problem& prob) {
 		sgns.emplace_back(true);
 	}
 
-	mapNodeToVert = prob.get_node_vert_map();
-
 	shuffle();
 
 }
 
-SgnShuffler::SgnShuffler(const Problem& prob, std::vector<bool> shuffleSgns) {
+SgnShuffler::SgnShuffler(std::vector<bool> shuffleSgns) {
 
 	sgns = std::move(shuffleSgns);
-	mapNodeToVert = prob.get_node_vert_map();
 
 }
 
@@ -143,12 +144,13 @@ void SgnShuffler::apply_to_problem(Problem& prob) const {
 
 	auto& probGraph = prob.probGraph;
 
-	for (auto iter = prob.mapNodeToVert->left.begin();
-		iter != prob.mapNodeToVert->left.end(); ++iter) {
+	auto& translator = *prob.get_node_vert_translator();
+	for (auto node = translator.node_begin();
+		node != translator.node_end(); ++node) {
 
-		if (!sgns.at(iter->first.id)) {
+		if (!sgns.at(node->id)) {
 
-			auto vert = iter->second;
+			auto vert = translator.node_to_vert(*node);
 
 			auto edge_pair = boost::out_edges(vert, probGraph);
 			for_each(edge_pair.first, edge_pair.second, [&probGraph](EdgeDescriptor e) {
@@ -159,7 +161,7 @@ void SgnShuffler::apply_to_problem(Problem& prob) const {
 	}
 
 	// Rename nodes and clauses
-	graph_util::rename_verts(probGraph, *mapNodeToVert);
+	graph_util::rename_verts(probGraph, translator);
 
 }
 
@@ -188,8 +190,8 @@ namespace {
 
 LiteralShuffler::LiteralShuffler(
 	const Problem& prob, const std::vector<Literal>& lits) :
-	node_sh(prob, nodes_from_lit(lits)),
-	sgn_sh(prob, sgns_from_lit(lits)) {
+	node_sh(nodes_from_lit(lits)),
+	sgn_sh(sgns_from_lit(lits)) {
 
 }
 

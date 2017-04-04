@@ -1,6 +1,7 @@
 #pragma once
 
 #include "boost/graph/visitors.hpp"
+#include "coopnet/graph/graph.h"
 
 
 

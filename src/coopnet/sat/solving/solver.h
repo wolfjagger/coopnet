@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-#include "node_choice.h"
 #include "solution.h"
 
 
