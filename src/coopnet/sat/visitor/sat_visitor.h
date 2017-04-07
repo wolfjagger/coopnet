@@ -1,7 +1,7 @@
 #pragma once
 
 #include "boost/graph/visitors.hpp"
-#include "coopnet/graph/graph.h"
+#include "coopnet/graph/base/graph.h"
 
 
 
@@ -19,12 +19,12 @@ namespace coopnet {
 
 			// Split depending on whether vert is node or clause
 			auto& prop = g[v];
-			switch(prop.base.kind) {
-			case BaseSatVProp::Node:
-				static_cast<ImplVisitor*>(this)->node_event(g, v, prop);
+			switch(prop.kind) {
+			case VertKind::Node:
+				static_cast<ImplVisitor*>(this)->node_event(g, v, prop.node());
 				break;
-			case BaseSatVProp::Clause:
-				static_cast<ImplVisitor*>(this)->clause_event(g, v, prop);
+			case VertKind::Clause:
+				static_cast<ImplVisitor*>(this)->clause_event(g, v, prop.clause());
 				break;
 			}
 
@@ -47,7 +47,7 @@ namespace coopnet {
 			// Find which vert is node and which is clause
 			auto vert_node = boost::source(e, g);
 			auto vert_clause = boost::target(e, g);
-			if (g[vert_node].base.kind == BaseSatVProp::Clause)
+			if (VertKind(g[vert_node].kind) == VertKind::Clause)
 				std::swap(vert_node, vert_clause);
 
 			static_cast<ImplVisitor*>(this)->edge_event(

@@ -3,7 +3,7 @@
 #include <vector>
 #include <map>
 #include <memory>
-#include "coopnet/graph/graph.h"
+#include "coopnet/graph/base/graph.h"
 #include "coopnet/sat/component/component_fwd.h"
 
 

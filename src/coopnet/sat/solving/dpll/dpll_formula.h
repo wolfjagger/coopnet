@@ -14,18 +14,18 @@ namespace coopnet {
 	class Problem;
 	class BfsDPLLVisitor;
 
-	class DPLLFormula : public Formula<DPLLVProp, DPLLEProp> {
+	class DPLLFormula : public Formula<DPLLProp> {
 
 	private:
 
-		using ReversableGraph = ReversableSatGraph<DPLLVProp, DPLLEProp>;
+		using ReversableGraph = DPLLRevSatGraph;
 
 		ReversableGraph reversableGraph;
 
 		// Queue for remaining grey nodes to color black
 		boost::queue<VertDescriptor> greyBuffer;
 		// Color for visitation
-		SatColorPropMap<Graph> colorPropMap;
+		SatColorPropMap<DPLLProp> colorPropMap;
 
 		std::shared_ptr<bool> isContradicting;
 		std::unique_ptr<BfsDPLLVisitor> pruneVisitor;

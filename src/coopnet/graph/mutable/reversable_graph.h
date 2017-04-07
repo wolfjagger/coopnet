@@ -1,24 +1,29 @@
 #pragma once
 
-#include "coopnet/graph/graph_util.h"
+#include "coopnet/graph/base/graph_util.h"
 #include "reverse_info.h"
 
 
 
 namespace coopnet {
 
-	struct ReversableSatVProp : public PruneSatVProp, public AssignSatVProp { };
-	struct ReversableSatEProp : public PruneSatEProp, public AssignSatEProp { };
+	struct ReversableSatProp {
+
+		struct Node : public PruneSatProp::Node, public AssignSatProp::Node {};
+		struct Clause : public PruneSatProp::Clause, public AssignSatProp::Clause {};
+		struct Edge : public PruneSatProp::Edge, public AssignSatProp::Edge {};
+
+	};
 
 
-	template<typename VProp, typename EProp>
+	template<typename SatProp>
 	class ReversableSatGraph {
 
 	private:
 
 		constexpr static bool DEBUG = false;
 
-		TranslatedSatGraph<VProp, EProp> graph;
+		TranslatedSatGraph<SatProp> graph;
 		ReverseStack reverseStack;
 
 		// Connected components members
@@ -34,8 +39,8 @@ namespace coopnet {
 
 
 
-		SatGraph<VProp, EProp>& get_graph() { return graph.graph; }
-		const SatGraph<VProp, EProp>& get_graph() const { return graph.graph; }
+		SatGraph<SatProp>& get_graph() { return graph.graph; }
+		const SatGraph<SatProp>& get_graph() const { return graph.graph; }
 
 		const SatGraphTranslator& get_translator() const { return graph.translator; }
 
@@ -44,16 +49,16 @@ namespace coopnet {
 
 
 
-		PruneStatus ReversableSatGraph::get_vert_status(VertDescriptor v) const;
-		void ReversableSatGraph::set_vert_status(VertDescriptor v, PruneStatus newStatus);
+		PruneStatus get_vert_status(VertDescriptor v) const;
+		void set_vert_status(VertDescriptor v, PruneStatus newStatus);
 
-		PruneStatus ReversableSatGraph::get_edge_status(EdgeDescriptor e) const;
-		void ReversableSatGraph::set_edge_status(EdgeDescriptor e, PruneStatus newStatus);
+		PruneStatus get_edge_status(EdgeDescriptor e) const;
+		void set_edge_status(EdgeDescriptor e, PruneStatus newStatus);
 
-		boost::tribool ReversableSatGraph::get_assignment(VertDescriptor v) const;
-		void ReversableSatGraph::set_assignment(VertDescriptor v, boost::tribool newValue);
-		bool ReversableSatGraph::is_indeterminate_node(VertDescriptor v) const;
-		bool ReversableSatGraph::is_indeterminate() const;
+		boost::tribool get_assignment(VertDescriptor v) const;
+		void set_assignment(VertDescriptor v, boost::tribool newValue);
+		bool is_indeterminate_node(VertDescriptor v) const;
+		bool is_indeterminate() const;
 
 
 
@@ -76,7 +81,7 @@ namespace coopnet {
 
 	};
 
-	using BaseRevSatGraph = ReversableSatGraph<ReversableSatVProp, ReversableSatEProp>;
+	using BaseRevSatGraph = ReversableSatGraph<ReversableSatProp>;
 
 #include "reversable_graph.inl"
 

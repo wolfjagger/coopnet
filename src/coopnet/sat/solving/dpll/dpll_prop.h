@@ -7,32 +7,47 @@
 
 namespace coopnet {
 
-	struct DPLLVProp : public ReversableSatVProp {
-		mutable struct DPLL {
-			DPLLVertStatus status;
-		} dpll;
+	struct DPLLProp {
 
-		DPLLVProp() :
-			ReversableSatVProp(),
-			dpll{DPLLVertStatus::Default} { }
+		struct Node : public ReversableSatProp::Node {
+			mutable struct DPLL {
+				DPLLVertStatus status;
+			} dpll;
+
+			Node() :
+				ReversableSatProp::Node(),
+				dpll{ DPLLVertStatus::Default } {}
+
+		};
+
+		struct Clause : public ReversableSatProp::Clause {
+			mutable struct DPLL {
+				DPLLVertStatus status;
+			} dpll;
+
+			Clause() :
+				ReversableSatProp::Clause(),
+				dpll{ DPLLVertStatus::Default } {}
+
+		};
+
+		struct Edge : public ReversableSatProp::Edge {
+			mutable struct DPLL {
+				DPLLEdgeStatus status;
+			} dpll;
+
+			Edge() :
+				ReversableSatProp::Edge(),
+				dpll{ DPLLEdgeStatus::Default } {}
+
+		};
 
 	};
 
-	struct DPLLEProp : public ReversableSatEProp {
-		mutable struct DPLL {
-			DPLLEdgeStatus status;
-		} dpll;
-
-		DPLLEProp() :
-			ReversableSatEProp(),
-			dpll{DPLLEdgeStatus::Default} {}
-
-	};
 
 
+	using DPLLSatGraph = SatGraph<DPLLProp>;
 
-	using DPLLSatGraph = SatGraph<DPLLVProp, DPLLEProp>;
-
-	using DPLLRevSatGraph = ReversableSatGraph<DPLLVProp, DPLLEProp>;
+	using DPLLRevSatGraph = ReversableSatGraph<DPLLProp>;
 	
 }

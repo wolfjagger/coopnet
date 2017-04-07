@@ -31,10 +31,10 @@ namespace coopnet {
 
 
 
-		template<class SatGraph, typename VProp>
+		template<class SatGraph, typename NProp>
 		void node_event(
 			const SatGraph& g, VertDescriptor node,
-			const VProp& prop) {
+			const NProp& prop) {
 
 			if (DEBUG) std::cout << "node " << node << std::endl;
 
@@ -43,7 +43,7 @@ namespace coopnet {
 
 
 			auto count_fcn = [&g, &num_pos_edges, &num_neg_edges](EdgeDescriptor e) {
-				if (g[e].base.sgn) {
+				if (g[e].sgn) {
 					++num_pos_edges;
 				} else {
 					++num_neg_edges;
@@ -65,10 +65,10 @@ namespace coopnet {
 
 
 
-		template<class SatGraph, typename VProp>
+		template<class SatGraph, typename CProp>
 		void clause_event(
 			const SatGraph& g, VertDescriptor clause,
-			const VProp& prop) { }
+			const CProp& prop) { }
 
 
 

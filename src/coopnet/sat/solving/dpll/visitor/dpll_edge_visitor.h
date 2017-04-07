@@ -33,7 +33,7 @@ namespace coopnet {
 
 		void edge_event(
 			const DPLLSatGraph& g, EdgeDescriptor edge,
-			const DPLLEProp& prop,
+			const EProp<DPLLProp>& prop,
 			VertDescriptor node, VertDescriptor clause) {
 
 			if (*isContradicting) {
@@ -48,22 +48,24 @@ namespace coopnet {
 
 		void dpll_edge_event(
 			const DPLLSatGraph& g, EdgeDescriptor edge,
-			const DPLLEProp& prop,
+			const EProp<DPLLProp>& prop,
 			VertDescriptor node, VertDescriptor clause);
 
 		void default_edge_event(
 			const DPLLSatGraph& g, EdgeDescriptor edge,
-			const DPLLEProp& prop,
+			const EProp<DPLLProp>& prop,
 			VertDescriptor node, VertDescriptor clause);
 
 
 
-		void deactivate_edge(EdgeDescriptor edge, const DPLLEProp& prop);
+		void deactivate_edge(EdgeDescriptor edge, const EProp<DPLLProp>& prop);
 
-		void change_vert_status(
-			VertDescriptor vert, const DPLLVProp& prop, DPLLVertStatus new_status);
+		void change_node_status(
+			VertDescriptor vert, const DPLLProp::Node& prop, DPLLVertStatus new_status);
+		void change_clause_status(
+			VertDescriptor vert, const DPLLProp::Clause& prop, DPLLVertStatus new_status);
 		void change_edge_status(
-			EdgeDescriptor edge, const DPLLEProp& prop, DPLLEdgeStatus new_status);
+			EdgeDescriptor edge, const DPLLProp::Edge& prop, DPLLEdgeStatus new_status);
 
 	};
 

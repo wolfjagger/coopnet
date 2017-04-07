@@ -2,7 +2,7 @@
 
 #include <memory>
 #include "boost/optional.hpp"
-#include "coopnet/graph/graph.h"
+#include "coopnet/graph/base/graph.h"
 #include "dpll_node_choice.h"
 
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "coopnet/graph/graph.h"
+#include "coopnet/graph/base/graph.h"
 #include "coopnet/sat/problem/assignment.h"
 #include "coopnet/sat/problem/problem.h"
 #include "sat_visitor.h"
@@ -34,12 +34,12 @@ namespace coopnet {
 
 		template<typename SatGraph>
 		void edge_event(const SatGraph& g, EdgeDescriptor e,
-			const coopnet::BaseSatEProp& edge_property,
+			const EProp<BaseSatProp>& edge_property,
 			VertDescriptor vertNode, VertDescriptor vertClause) {
 
 			// If sign of literal in clause matches assignment, clause is satisfied
 			auto n = translator->vert_to_node(vertNode);
-			auto sgn_of_literal = edge_property.base.sgn;
+			auto sgn_of_literal = edge_property.sgn;
 			auto assigned_val = assigned->data.at(n);
 			if (sgn_of_literal == assigned_val) {
 				satisfiability->clausesSatisfied.insert(vertClause);

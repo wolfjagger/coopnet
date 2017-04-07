@@ -1,10 +1,10 @@
 
 
 
-template<typename VProp, typename EProp>
-ReversableSatGraph<VProp, EProp>::ReversableSatGraph(
+template<typename SatProp>
+ReversableSatGraph<SatProp>::ReversableSatGraph(
 	const BaseSatGraph& original, const SatGraphTranslator& origTranslator) :
-	graph(graph_util::create_default_concrete_graph<VProp, EProp>(
+	graph(graph_util::create_default_concrete_graph<SatProp>(
 		original, origTranslator)),
 	reverseStack() {
 
@@ -18,33 +18,50 @@ ReversableSatGraph<VProp, EProp>::ReversableSatGraph(
 
 
 
-template<typename VProp, typename EProp>
-PruneStatus ReversableSatGraph<VProp, EProp>::get_vert_status(VertDescriptor v) const {
-	return graph.graph[v].pruneStatus;
+template<typename SatProp>
+PruneStatus ReversableSatGraph<SatProp>::get_vert_status(VertDescriptor v) const {
+	auto& prop = graph.graph[vert];
+	switch (prop.kind) {
+	case VertKind::Node:
+		return prop.node().pruneStatus = status;
+	case VertKind::Node:
+		return prop.clause().pruneStatus = status;
+	}
 }
 
-template<typename VProp, typename EProp>
-void ReversableSatGraph<VProp, EProp>::set_vert_status(VertDescriptor v, PruneStatus newStatus) {
+template<typename SatProp>
+void ReversableSatGraph<SatProp>::set_vert_status(VertDescriptor v, PruneStatus newStatus) {
 
-	auto& oldStatus = graph.graph[v].pruneStatus;
-	if (oldStatus != newStatus) {
+	PruneStatus* oldStatus;
+
+	auto& prop = graph.graph[vert];
+	switch (prop.kind) {
+	case VertKind::Node:
+		oldStatus = &prop.node().pruneStatus;
+		break;
+	case VertKind::Node:
+		oldStatus = &prop.clause().pruneStatus;
+		break;
+	}
+	
+	if (*oldStatus != newStatus) {
 
 		if (DEBUG) std::cout << "Set status for vert " << v << " to " << newStatus << "\n";
 
-		reverseStack.emplace(std::make_pair(v, oldStatus));
-		oldStatus = newStatus;
+		reverseStack.emplace(std::make_pair(v, *oldStatus));
+		*oldStatus = newStatus;
 
 	}
 
 }
 
-template<typename VProp, typename EProp>
-PruneStatus ReversableSatGraph<VProp, EProp>::get_edge_status(EdgeDescriptor e) const {
+template<typename SatProp>
+PruneStatus ReversableSatGraph<SatProp>::get_edge_status(EdgeDescriptor e) const {
 	return graph.graph[e].pruneStatus;
 }
 
-template<typename VProp, typename EProp>
-void ReversableSatGraph<VProp, EProp>::set_edge_status(EdgeDescriptor e, PruneStatus newStatus) {
+template<typename SatProp>
+void ReversableSatGraph<SatProp>::set_edge_status(EdgeDescriptor e, PruneStatus newStatus) {
 
 	auto& oldStatus = graph.graph[e].pruneStatus;
 	if (oldStatus != newStatus) {
@@ -58,15 +75,15 @@ void ReversableSatGraph<VProp, EProp>::set_edge_status(EdgeDescriptor e, PruneSt
 
 }
 
-template<typename VProp, typename EProp>
-boost::tribool ReversableSatGraph<VProp, EProp>::get_assignment(VertDescriptor v) const {
-	return graph.graph[v].assignment;
+template<typename SatProp>
+boost::tribool ReversableSatGraph<SatProp>::get_assignment(VertDescriptor v) const {
+	return graph.graph[v].node().assignment;
 }
 
-template<typename VProp, typename EProp>
-void ReversableSatGraph<VProp, EProp>::set_assignment(VertDescriptor v, boost::tribool newValue) {
+template<typename SatProp>
+void ReversableSatGraph<SatProp>::set_assignment(VertDescriptor v, boost::tribool newValue) {
 
-	auto& oldValue = graph.graph[v].assignment;
+	auto& oldValue = graph.graph[v].node().assignment;
 	if (oldValue != newValue ||
 		(!boost::indeterminate(oldValue) && boost::indeterminate(newValue)) ||
 		(boost::indeterminate(oldValue) && !boost::indeterminate(newValue))) {
@@ -80,16 +97,16 @@ void ReversableSatGraph<VProp, EProp>::set_assignment(VertDescriptor v, boost::t
 
 }
 
-template<typename VProp, typename EProp>
-bool ReversableSatGraph<VProp, EProp>::is_indeterminate_node(VertDescriptor v) const {
+template<typename SatProp>
+bool ReversableSatGraph<SatProp>::is_indeterminate_node(VertDescriptor v) const {
 
-	return (graph.graph[v].base.kind == PruneSatVProp::Node)
-		&& (boost::indeterminate(graph.graph[v].assignment));
+	return (VertKind(graph.graph[v].kind) == VertKind::Node)
+		&& (boost::indeterminate(graph.graph[v].node().assignment));
 
 }
 
-template<typename VProp, typename EProp>
-bool ReversableSatGraph<VProp, EProp>::is_indeterminate() const {
+template<typename SatProp>
+bool ReversableSatGraph<SatProp>::is_indeterminate() const {
 
 	auto vPair = boost::vertices(graph.graph);
 	return std::any_of(vPair.first, vPair.second, [this](VertDescriptor v) {
@@ -100,8 +117,8 @@ bool ReversableSatGraph<VProp, EProp>::is_indeterminate() const {
 
 
 
-template<typename VProp, typename EProp>
-void ReversableSatGraph<VProp, EProp>::reverse_to_vert(VertDescriptor v) {
+template<typename SatProp>
+void ReversableSatGraph<SatProp>::reverse_to_vert(VertDescriptor v) {
 
 	auto done = false;
 	while (!done && !reverseStack.empty()) {
@@ -120,7 +137,15 @@ void ReversableSatGraph<VProp, EProp>::reverse_to_vert(VertDescriptor v) {
 			if (DEBUG)
 				std::cout << "Prune vert status " << vert << " " << status << "\n";
 
-			graph.graph[vert].pruneStatus = status;
+			auto& prop = graph.graph[vert];
+			switch (prop.kind) {
+			case VertKind::Node:
+				prop.node().pruneStatus = status;
+				break;
+			case VertKind::Clause:
+				prop.clause().pruneStatus = status;
+				break;
+			}
 
 			// If vert is prune-to vert, set to done (status is set first, not assignment)
 			if (vert == v && status == PruneStatus::Active) done = true;
@@ -152,7 +177,7 @@ void ReversableSatGraph<VProp, EProp>::reverse_to_vert(VertDescriptor v) {
 			if (DEBUG)
 				std::cout << "Prune assignment " << vert << " " << value << "\n";
 
-			graph.graph[vert].assignment = value;
+			graph.graph[vert].node().assignment = value;
 			break;
 
 		}
@@ -164,15 +189,23 @@ void ReversableSatGraph<VProp, EProp>::reverse_to_vert(VertDescriptor v) {
 
 }
 
-template<typename VProp, typename EProp>
-void ReversableSatGraph<VProp, EProp>::reset_all() {
+template<typename SatProp>
+void ReversableSatGraph<SatProp>::reset_all() {
 
 	auto vPair = boost::vertices(graph.graph);
 	auto ePair = boost::edges(graph.graph);
 
 	std::for_each(vPair.first, vPair.second, [this](VertDescriptor v) {
-		graph.graph[v].pruneStatus = PruneStatus::Active;
-		graph.graph[v].assignment = boost::indeterminate;
+		auto& prop = graph.graph[v];
+		switch(prop.kind) {
+		case VertKind::Node:
+			prop.node().pruneStatus = PruneStatus::Active;
+			prop.node().assignment = boost::indeterminate;
+			break;
+		case VertKind::Clause:
+			prop.clause().pruneStatus = PruneStatus::Active;
+			break;
+		}
 	});
 
 	std::for_each(ePair.first, ePair.second, [this](EdgeDescriptor e) {
@@ -187,31 +220,31 @@ void ReversableSatGraph<VProp, EProp>::reset_all() {
 
 
 
-template<typename VProp, typename EProp>
-size_t ReversableSatGraph<VProp, EProp>::num_connected_components() const {
+template<typename SatProp>
+size_t ReversableSatGraph<SatProp>::num_connected_components() const {
 	return numConnectedComponents;
 }
 
-template<typename VProp, typename EProp>
+template<typename SatProp>
 const std::vector<VertDescriptor>&
-ReversableSatGraph<VProp, EProp>::connected_component_entry_pts() const {
+ReversableSatGraph<SatProp>::connected_component_entry_pts() const {
 	return connectedComponentEntryPts;
 }
 
 
 
-template<typename VProp, typename EProp>
+template<typename SatProp>
 template<typename PruneVisitor>
-void ReversableSatGraph<VProp, EProp>::visit(PruneVisitor& v) {
+void ReversableSatGraph<SatProp>::visit(PruneVisitor& v) {
 
 	visit_sat_graph(graph.graph, v,
 		connectedComponentEntryPts.begin(), connectedComponentEntryPts.end());
 
 }
 
-template<typename VProp, typename EProp>
+template<typename SatProp>
 template<typename PruneVisitor>
-void ReversableSatGraph<VProp, EProp>::visit(PruneVisitor& v) const {
+void ReversableSatGraph<SatProp>::visit(PruneVisitor& v) const {
 
 	visit_sat_graph(graph.graph, v,
 		connectedComponentEntryPts.begin(), connectedComponentEntryPts.end());

@@ -2,7 +2,7 @@
 
 #include <stack>
 #include "coopnet/sat/solving/solver.h"
-#include "coopnet/graph/graph.h"
+#include "coopnet/graph/base/graph.h"
 #include "walk_node_chooser.h"
 
 

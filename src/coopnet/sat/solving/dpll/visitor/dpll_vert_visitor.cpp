@@ -26,7 +26,7 @@ DPLLVertVisitor::DPLLVertVisitor(
 //  either if it only has one edge (clause)
 //  or if it has all edges with same sign (node).
 void DPLLVertVisitor::dpll_node_event(
-	const DPLLSatGraph& g, VertDescriptor node, const DPLLVProp& prop) {
+	const DPLLSatGraph& g, VertDescriptor node, const DPLLProp::Node& prop) {
 
 	switch (prop.dpll.status) {
 	case DPLLVertStatus::SetToTrue:
@@ -66,16 +66,16 @@ void DPLLVertVisitor::dpll_node_event(
 
 				auto& eProp = g[*constraining_edge];
 				deactivate_edge(*constraining_edge, eProp);
-				select_node(g, node, prop, g[*constraining_edge].base.sgn);
+				select_node(g, node, prop, g[*constraining_edge].sgn);
 
 			}
 			// Otherwise, if all active edges have same sgn, select node = sgn
 			else {
 
 				auto first_active_edge = find_active_edge(node, g);
-				auto first_sgn = g[*first_active_edge].base.sgn;
+				auto first_sgn = g[*first_active_edge].sgn;
 				auto same_sgn_fcn = [first_sgn, &g](EdgeDescriptor e) {
-					return first_sgn == g[e].base.sgn;
+					return first_sgn == g[e].sgn;
 				};
 
 				if (all_of_active_edges(node, g, same_sgn_fcn))
@@ -94,7 +94,7 @@ void DPLLVertVisitor::dpll_node_event(
 }
 
 void DPLLVertVisitor::dpll_clause_event(
-	const DPLLSatGraph& g, VertDescriptor clause, const DPLLVProp& prop) {
+	const DPLLSatGraph& g, VertDescriptor clause, const DPLLProp::Clause& prop) {
 
 	auto& clause_status = prop.dpll.status;
 
@@ -161,8 +161,15 @@ void DPLLVertVisitor::dpll_clause_event(
 
 }
 
-void DPLLVertVisitor::default_vert_event(
-	const DPLLSatGraph& g, VertDescriptor vert, const DPLLVProp& prop) {
+void DPLLVertVisitor::default_node_event(
+	const DPLLSatGraph& g, VertDescriptor vert, const DPLLProp::Node& prop) {
+
+	prop.dpll.status = DPLLVertStatus::Default;
+
+}
+
+void DPLLVertVisitor::default_clause_event(
+	const DPLLSatGraph& g, VertDescriptor vert, const DPLLProp::Clause& prop) {
 
 	prop.dpll.status = DPLLVertStatus::Default;
 
@@ -171,7 +178,7 @@ void DPLLVertVisitor::default_vert_event(
 
 
 void DPLLVertVisitor::select_node(
-	const DPLLSatGraph& g, VertDescriptor node, const DPLLVProp& prop, bool sgn) {
+	const DPLLSatGraph& g, VertDescriptor node, const DPLLProp::Node& prop, bool sgn) {
 
 	set_assignment(node, prop.assignment, sgn);
 
@@ -181,7 +188,7 @@ void DPLLVertVisitor::select_node(
 		switch (status) {
 		case DPLLEdgeStatus::Default:
 			// If active edge, use to satisfy clause (if correct sgn) or remove
-			if (g[edge].base.sgn == sgn) {
+			if (g[edge].sgn == sgn) {
 				change_edge_status(edge, g[edge], DPLLEdgeStatus::SatisfyClause);
 			} else {
 				change_edge_status(edge, g[edge], DPLLEdgeStatus::Remove);
@@ -190,7 +197,7 @@ void DPLLVertVisitor::select_node(
 		case DPLLEdgeStatus::ConstrainNode:
 			// If already set to constrain node, set inactive or contradict
 			auto& eProp = g[edge];
-			if (eProp.base.sgn == sgn) {
+			if (eProp.sgn == sgn) {
 				deactivate_edge(edge, eProp);
 			} else {
 				if (DEBUG) std::cout << "Contradict: opposite constraints on node.\n";
@@ -203,14 +210,14 @@ void DPLLVertVisitor::select_node(
 
 	for_each_active_edge(node, g, prop_to_edges_fcn);
 
-	deactivate_vert(node, prop);
+	deactivate_node(node, prop);
 
 }
 
 
 
 void DPLLVertVisitor::satisfy_clause(
-	const DPLLSatGraph& g, VertDescriptor clause, const DPLLVProp& prop) {
+	const DPLLSatGraph& g, VertDescriptor clause, const DPLLProp::Clause& prop) {
 
 	auto remove_edges_fcn = [this, &g](EdgeDescriptor edge) {
 
@@ -227,20 +234,26 @@ void DPLLVertVisitor::satisfy_clause(
 
 	for_each_active_edge(clause, g, remove_edges_fcn);
 
-	deactivate_vert(clause, prop);
+	deactivate_clause(clause, prop);
 
 }
 
 
 
-void DPLLVertVisitor::deactivate_vert(
-	VertDescriptor vert, const DPLLVProp& prop) {
-	change_vert_status(vert, prop, DPLLVertStatus::Default);
+void DPLLVertVisitor::deactivate_node(
+	VertDescriptor vert, const DPLLProp::Node& prop) {
+	change_node_status(vert, prop, DPLLVertStatus::Default);
+	set_prune_status(vert, prop.pruneStatus, PruneStatus::Inactive);
+}
+
+void DPLLVertVisitor::deactivate_clause(
+	VertDescriptor vert, const DPLLProp::Clause& prop) {
+	change_clause_status(vert, prop, DPLLVertStatus::Default);
 	set_prune_status(vert, prop.pruneStatus, PruneStatus::Inactive);
 }
 
 void DPLLVertVisitor::deactivate_edge(
-	EdgeDescriptor edge, const DPLLEProp& prop) {
+	EdgeDescriptor edge, const DPLLProp::Edge& prop) {
 	change_edge_status(edge, prop, DPLLEdgeStatus::Default);
 	set_prune_status(edge, prop.pruneStatus, PruneStatus::Inactive);
 }
@@ -248,8 +261,19 @@ void DPLLVertVisitor::deactivate_edge(
 
 
 
-void DPLLVertVisitor::change_vert_status(
-	VertDescriptor vert, const DPLLVProp& prop, DPLLVertStatus newStatus) {
+void DPLLVertVisitor::change_node_status(
+	VertDescriptor vert, const DPLLProp::Node& prop, DPLLVertStatus newStatus) {
+
+	auto& status = prop.dpll.status;
+	if (status != newStatus) {
+		if (DEBUG) std::cout << "vert " << vert << " goes " << status << " to " << newStatus << std::endl;
+		status = newStatus;
+	}
+
+}
+
+void DPLLVertVisitor::change_clause_status(
+	VertDescriptor vert, const DPLLProp::Clause& prop, DPLLVertStatus newStatus) {
 
 	auto& status = prop.dpll.status;
 	if (status != newStatus) {
@@ -260,7 +284,7 @@ void DPLLVertVisitor::change_vert_status(
 }
 
 void DPLLVertVisitor::change_edge_status(
-	EdgeDescriptor edge, const DPLLEProp& prop, DPLLEdgeStatus newStatus) {
+	EdgeDescriptor edge, const DPLLProp::Edge& prop, DPLLEdgeStatus newStatus) {
 
 	auto& status = prop.dpll.status;
 	if (status != newStatus) {

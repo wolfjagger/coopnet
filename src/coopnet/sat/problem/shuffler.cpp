@@ -4,7 +4,7 @@
 #include "alphali/util/random.h"
 #include "problem.h"
 #include "assignment.h"
-#include "coopnet/graph/graph_util.h"
+#include "coopnet/graph/base/graph_util.h"
 
 using namespace coopnet;
 
@@ -154,7 +154,7 @@ void SgnShuffler::apply_to_problem(Problem& prob) const {
 
 			auto edge_pair = boost::out_edges(vert, probGraph);
 			for_each(edge_pair.first, edge_pair.second, [&probGraph](EdgeDescriptor e) {
-				probGraph[e].base.sgn = !probGraph[e].base.sgn;
+				probGraph[e].sgn = !probGraph[e].sgn;
 			});
 
 		}

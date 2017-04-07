@@ -2,7 +2,7 @@
 #include <queue>
 #include "boost/property_map/transform_value_property_map.hpp"
 #include "boost/graph/breadth_first_search.hpp"
-#include "coopnet/graph/graph_util.h"
+#include "coopnet/graph/base/graph_util.h"
 #include "coopnet/sat/solving/simple_formula.h"
 #include "coopnet/sat/visitor/sat_collection_visitor.h"
 #include "assignment.h"
@@ -23,24 +23,22 @@ namespace {
 
 		// Generate dynamic_properties
 
-		auto baseVertMap = get(&BaseSatVProp::base, probGraph);
-
-		auto kindLam = [](BaseSatVProp::Base& base) { return base.kind; };
+		// If you need to access a substructure, use transform_value_property_map:
+		/*
+		auto baseVertMap = get(&BaseSatProp::base, probGraph);
+		auto kindLam = [](VProp<BaseSatProp>& vProp) { return vProp.kind; };
 		auto kindMap = boost::transform_value_property_map<decltype(kindLam), decltype(baseVertMap)>(
 			kindLam, baseVertMap);
+		*/
+
+		auto kindMap = get(&VProp<BaseSatProp>::kind, probGraph);
 		dynProps.property("Kind", kindMap);
 
-		auto nameLam = [](BaseSatVProp::Base& base) { return base.name; };
-		auto nameMap = boost::transform_value_property_map<decltype(nameLam), decltype(baseVertMap)>(
-			nameLam, baseVertMap);
+		auto nameMap = get(&VProp<BaseSatProp>::name, probGraph);
 		dynProps.property("Name", nameMap);
 
 
-		auto baseEdgeMap = get(&BaseSatEProp::base, probGraph);
-
-		auto sgnLam = [](BaseSatEProp::Base& base) { return base.sgn; };
-		auto sgnMap = boost::transform_value_property_map<decltype(sgnLam), decltype(baseEdgeMap)>(
-			sgnLam, baseEdgeMap);
+		auto sgnMap = get(&EProp<BaseSatProp>::sgn, probGraph);
 		dynProps.property("Sign", sgnMap);
 
 		return dynProps;
@@ -116,9 +114,8 @@ void Problem::build_graph(NodeList&& nodes, ClauseList&& clauses) {
 	for(auto node_to_add : nodes) {
 
 		// Add node as vertex to graph
-		auto prop = BaseSatGraph::vertex_property_type();
-		prop.base.kind = BaseSatVProp::Node;
-		prop.base.name = graph_util::node_name(node_to_add);
+		auto prop = BaseSatGraph::vertex_property_type(BaseSatProp::Node());
+		prop.name = graph_util::node_name(node_to_add);
 
 		auto nodeVert = boost::add_vertex(prop, probGraph);
 
@@ -137,9 +134,8 @@ void Problem::build_graph(NodeList&& nodes, ClauseList&& clauses) {
 	for(auto& clause_to_add : clauses) {
 
 		// Add clause as vertex to graph
-		auto prop = BaseSatGraph::vertex_property_type();
-		prop.base.kind = BaseSatVProp::Clause;
-		prop.base.name = graph_util::clause_name(clause_to_add);
+		auto prop = BaseSatGraph::vertex_property_type(BaseSatProp::Clause());
+		prop.name = graph_util::clause_name(clause_to_add);
 
 		auto clauseVert = boost::add_vertex(prop, probGraph);
 		
@@ -150,7 +146,7 @@ void Problem::build_graph(NodeList&& nodes, ClauseList&& clauses) {
 			auto nodeVert = translator->node_to_vert(lit.first);
 
 			auto prop = BaseSatGraph::edge_property_type();
-			prop.base.sgn = lit.second;
+			prop.sgn = lit.second;
 
 			auto desc_pair = boost::add_edge(nodeVert, clauseVert, prop, probGraph);
 			if (!desc_pair.second) std::exception("Failed to add edge to graph.");
@@ -178,7 +174,7 @@ std::ostream& coopnet::operator<<(std::ostream& os, const Problem& prob) {
 	auto vertPair = boost::vertices(prob.get_graph());
 	for (auto vert = vertPair.first; vert != vertPair.second; ++vert) {
 		const auto& prop = g[*vert];
-		os << prop.base.kind << prop.base.name << std::endl;
+		os << prop.kind << prop.name << std::endl;
 	}
 
 	return os << std::endl;

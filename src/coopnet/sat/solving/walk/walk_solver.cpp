@@ -91,7 +91,11 @@ void WalkSolver::find_assignment() {
 
 	for (unsigned stepNum = 0; stepNum < maxNumSteps; ++stepNum) {
 
+		if (DEBUG) std::cout << "Choose node\n";
+
 		auto nodeToFlip = nodeChooser->choose(*formula);
+
+		if (DEBUG) std::cout << "Flip node\n";
 
 		formula->flip_node(nodeToFlip);
 		if (formula->is_SAT()) break;

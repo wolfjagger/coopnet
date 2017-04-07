@@ -1,15 +1,15 @@
 
 
-template<typename VProp, typename EProp>
-Formula<VProp, EProp>::Formula(const Problem& prob) :
+template<typename SatProp>
+Formula<SatProp>::Formula(const Problem& prob) :
 	prob(std::cref(prob)) {
 
 }
 
 
 
-template<typename VProp, typename EProp>
-Assignment Formula<VProp, EProp>::create_assignment() const {
+template<typename SatProp>
+Assignment Formula<SatProp>::create_assignment() const {
 
 	auto& translator = get_sat_graph_translator();
 	auto assign = Assignment();
@@ -29,8 +29,8 @@ Assignment Formula<VProp, EProp>::create_assignment() const {
 
 }
 
-template<typename VProp, typename EProp>
-void Formula<VProp, EProp>::set_assignment(const Assignment& assignment) {
+template<typename SatProp>
+void Formula<SatProp>::set_assignment(const Assignment& assignment) {
 
 	auto& translator = get_sat_graph_translator();
 	auto assign = VertAssignment();

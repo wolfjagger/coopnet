@@ -25,18 +25,18 @@ namespace coopnet {
 		void operator()(VertDescriptor v, const SatGraph& g) {
 
 			auto& prop = g[v];
-			if(prop.pruneStatus == PruneStatus::Active) {
-
+			switch (prop.kind) {
 				// Split depending on whether vert is node or clause
-				switch (prop.base.kind) {
-				case BaseSatVProp::Node:
-					static_cast<ImplVisitor*>(this)->node_event(g, v, prop);
-					break;
-				case BaseSatVProp::Clause:
-					static_cast<ImplVisitor*>(this)->clause_event(g, v, prop);
-					break;
+			case VertKind::Node:
+				if(prop.node().pruneStatus == PruneStatus::Active) {
+					static_cast<ImplVisitor*>(this)->node_event(g, v, prop.node());
 				}
-
+				break;
+			case VertKind::Clause:
+				if (prop.clause().pruneStatus == PruneStatus::Active) {
+					static_cast<ImplVisitor*>(this)->clause_event(g, v, prop.clause());
+				}
+				break;
 			}
 
 		}
@@ -125,7 +125,7 @@ namespace coopnet {
 				// Find which vert is node and which is clause
 				auto vert_node = boost::source(e, g);
 				auto vert_clause = boost::target(e, g);
-				if (g[vert_node].base.kind == BaseSatVProp::Clause)
+				if (VertKind(g[vert_node].kind) == VertKind::Clause)
 					std::swap(vert_node, vert_clause);
 
 				static_cast<ImplVisitor*>(this)->edge_event(

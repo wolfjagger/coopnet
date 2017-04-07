@@ -1,24 +1,30 @@
 #pragma once
 
-#include "coopnet/graph/graph.h"
+#include "coopnet/graph/base/graph.h"
 #include "boost/logic/tribool.hpp"
 
 
 
 namespace coopnet {
 
-	struct AssignSatVProp : public virtual BaseSatVProp {
-		mutable boost::tribool assignment;
+	struct AssignSatProp {
 
-		AssignSatVProp() :
-			BaseSatVProp(),
-			assignment(boost::indeterminate) {}
+		struct Node : public virtual BaseSatProp::Node {
+			mutable boost::tribool assignment;
+
+			Node() :
+				BaseSatProp::Node(),
+				assignment(boost::indeterminate) {}
+
+		};
+
+		struct Clause : public virtual BaseSatProp::Clause { };
+
+		struct Edge : public virtual BaseSatProp::Edge { };
 
 	};
 
-	struct AssignSatEProp : public virtual BaseSatEProp { };
-
-	using AssignSatGraph = SatGraph<AssignSatVProp, AssignSatEProp>;
+	using AssignSatGraph = SatGraph<AssignSatProp>;
 
 
 	inline std::ostream& operator<<(std::ostream& os, boost::logic::tribool b) {

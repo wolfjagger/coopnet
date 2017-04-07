@@ -31,10 +31,10 @@ namespace coopnet {
 
 		void node_event(
 			const DPLLSatGraph& g, VertDescriptor node,
-			const DPLLVProp& prop) {
+			const DPLLProp::Node& prop) {
 
 			if (*isContradicting) {
-				default_vert_event(g, node, prop);
+				default_node_event(g, node, prop);
 			} else {
 				dpll_node_event(g, node, prop);
 			}
@@ -43,10 +43,10 @@ namespace coopnet {
 
 		void clause_event(
 			const DPLLSatGraph& g, VertDescriptor clause,
-			const DPLLVProp& prop) {
+			const DPLLProp::Clause& prop) {
 
 			if (*isContradicting) {
-				default_vert_event(g, clause, prop);
+				default_clause_event(g, clause, prop);
 			} else {
 				dpll_clause_event(g, clause, prop);
 			}
@@ -57,30 +57,37 @@ namespace coopnet {
 
 		void dpll_node_event(
 			const DPLLSatGraph& g, VertDescriptor node,
-			const DPLLVProp& prop);
+			const DPLLProp::Node& prop);
 
 		void dpll_clause_event(
 			const DPLLSatGraph& g, VertDescriptor clause,
-			const DPLLVProp& prop);
+			const DPLLProp::Clause& prop);
 
-		void default_vert_event(
+		void default_node_event(
 			const DPLLSatGraph& g, VertDescriptor vert,
-			const DPLLVProp& prop);
+			const DPLLProp::Node& prop);
+
+		void default_clause_event(
+			const DPLLSatGraph& g, VertDescriptor vert,
+			const DPLLProp::Clause& prop);
 
 
 
 		void select_node(const DPLLSatGraph& g,
-			VertDescriptor node, const DPLLVProp& prop, bool sgn);
+			VertDescriptor node, const DPLLProp::Node& prop, bool sgn);
 		void satisfy_clause(const DPLLSatGraph& g,
-			VertDescriptor clause, const DPLLVProp& prop);
+			VertDescriptor clause, const DPLLProp::Clause& prop);
 
-		void deactivate_vert(VertDescriptor vert, const DPLLVProp& prop);
-		void deactivate_edge(EdgeDescriptor edge, const DPLLEProp& prop);
+		void deactivate_node(VertDescriptor vert, const DPLLProp::Node& prop);
+		void deactivate_clause(VertDescriptor vert, const DPLLProp::Clause& prop);
+		void deactivate_edge(EdgeDescriptor edge, const DPLLProp::Edge& prop);
 
-		void change_vert_status(
-			VertDescriptor vert, const DPLLVProp& prop, DPLLVertStatus new_status);
+		void change_node_status(
+			VertDescriptor vert, const DPLLProp::Node& prop, DPLLVertStatus new_status);
+		void change_clause_status(
+			VertDescriptor vert, const DPLLProp::Clause& prop, DPLLVertStatus new_status);
 		void change_edge_status(
-			EdgeDescriptor edge, const DPLLEProp& prop, DPLLEdgeStatus new_status);
+			EdgeDescriptor edge, const DPLLProp::Edge& prop, DPLLEdgeStatus new_status);
 
 	};
 

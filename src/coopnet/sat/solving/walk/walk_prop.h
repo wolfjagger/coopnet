@@ -7,19 +7,32 @@
 
 namespace coopnet {
 
-	struct WalkVProp : public AssignSatVProp {
-		mutable WalkVertStatus walkStatus;
+	struct WalkProp {
 
-		WalkVProp() :
-			AssignSatVProp(),
-			walkStatus(WalkVertStatus::Default) { }
+		struct Node : public AssignSatProp::Node {
+			mutable WalkVertStatus walkStatus;
+
+			Node() :
+				AssignSatProp::Node(),
+				walkStatus(WalkVertStatus::Default) {}
+
+		};
+
+		struct Clause : public AssignSatProp::Clause {
+			mutable WalkVertStatus walkStatus;
+
+			Clause() :
+				AssignSatProp::Clause(),
+				walkStatus(WalkVertStatus::Default) {}
+
+		};
+
+		struct Edge : public AssignSatProp::Edge {};
 
 	};
 
-	struct WalkEProp : public AssignSatEProp { };
 
 
-
-	using WalkSatGraph = SatGraph<WalkVProp, WalkEProp>;
+	using WalkSatGraph = SatGraph<WalkProp>;
 
 }

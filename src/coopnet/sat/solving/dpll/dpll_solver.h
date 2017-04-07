@@ -3,7 +3,7 @@
 #include <stack>
 #include "coopnet/sat/component/node.h"
 #include "coopnet/sat/solving/solver.h"
-#include "coopnet/graph/graph.h"
+#include "coopnet/graph/base/graph.h"
 #include "dpll_node_chooser.h"
 
 

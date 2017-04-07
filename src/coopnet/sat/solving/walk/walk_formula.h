@@ -9,11 +9,11 @@
 
 namespace coopnet {
 
-	class WalkFormula : public Formula<WalkVProp, WalkEProp> {
+	class WalkFormula : public Formula<WalkProp> {
 
 	private:
 
-		TranslatedSatGraph<WalkVProp, WalkEProp> g;
+		TranslatedSatGraph<WalkProp> g;
 
 		size_t numClauses;
 		size_t numClausesFailed;

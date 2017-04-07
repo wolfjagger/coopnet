@@ -14,12 +14,12 @@ namespace {
 
 
 DPLLFormula::DPLLFormula(const Problem& prob) :
-	Formula<DPLLVProp, DPLLEProp>(prob),
+	Formula<DPLLProp>(prob),
 	reversableGraph(prob.get_graph(), *prob.get_node_vert_translator()),
 	greyBuffer(),
 	isContradicting(std::make_shared<bool>(false)) {
 
-	colorPropMap = boost::get(&DPLLVProp::color, graph());
+	colorPropMap = boost::get(&VProp<DPLLProp>::color, graph());
 
 	pruneVisitor = std::make_unique<BfsDPLLVisitor>(
 		reversableGraph.reverse_stack(),
@@ -41,7 +41,7 @@ void DPLLFormula::set_node(DPLLNodeChoice choice) {
 
 	auto status = choice.sgn ? 
 		DPLLVertStatus::SetToTrue : DPLLVertStatus::SetToFalse;
-	graph()[vertNode].dpll.status = status;
+	graph()[vertNode].node().dpll.status = status;
 
 	if (DEBUG) {
 		std::cout << "Assign node associated with vert " << vertNode;
@@ -92,8 +92,7 @@ IncompleteAssignment DPLLFormula::create_incomplete_assignment() const {
 	auto verts = boost::vertices(graph());
 	for (auto vert = verts.first; vert != verts.second; ++vert) {
 
-		auto& prop = graph()[*vert];
-		if (prop.base.kind == BaseSatVProp::Node) {
+		if (VertKind(graph()[*vert].kind) == VertKind::Node) {
 			assignment.emplace(*vert, reversableGraph.get_assignment(*vert));
 		}
 
@@ -137,8 +136,7 @@ auto DPLLFormula::create_vert_assignment() const -> VertAssignment {
 	auto verts = boost::vertices(graph());
 	for (auto vert = verts.first; vert != verts.second; ++vert) {
 
-		auto& prop = graph()[*vert];
-		if (prop.base.kind == BaseSatVProp::Node) {
+		if (VertKind(graph()[*vert].kind) == VertKind::Node) {
 			assignment.emplace(*vert, bool(reversableGraph.get_assignment(*vert)));
 		}
 

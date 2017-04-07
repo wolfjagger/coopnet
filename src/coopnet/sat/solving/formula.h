@@ -12,12 +12,12 @@ namespace coopnet {
 	// Note: Formula and children should have NO knowledge of Node
 	//  and instead should rely on VertDescriptor
 
-	template<typename VProp, typename EProp>
+	template<typename SatProp>
 	class Formula {
 
 	protected:
 
-		using Graph = SatGraph<VProp, EProp>;
+		using Graph = SatGraph<SatProp>;
 		using VertAssignment = std::map<VertDescriptor, bool>;
 
 		std::reference_wrapper<const Problem> prob;

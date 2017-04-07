@@ -1,7 +1,7 @@
 #pragma once
 
-#include "graph.h"
 #include "coopnet/sat/component/node.h"
+#include "base/graph.h"
 
 
 
@@ -45,9 +45,11 @@ namespace coopnet {
 
 	};
 
-	template<typename VProp, typename EProp>
+
+
+	template<typename SatProp>
 	struct TranslatedSatGraph {
-		SatGraph<VProp, EProp> graph;
+		SatGraph<SatProp> graph;
 		SatGraphTranslator translator;
 	};
 

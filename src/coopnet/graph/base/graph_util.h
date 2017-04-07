@@ -1,9 +1,9 @@
 #pragma once
 
 #include "boost/graph/connected_components.hpp"
+#include "coopnet/graph/sat_graph_translator.h"
 #include "coopnet/sat/component/node.h"
 #include "coopnet/sat/component/clause.h"
-#include "sat_graph_translator.h"
 
 
 
@@ -38,16 +38,16 @@ namespace coopnet { namespace graph_util {
 
 			auto vert = *vert_iter;
 
-			switch (g[vert].base.kind) {
-			case BaseSatVProp::Node: {
+			switch (g[vert].kind) {
+			case VertKind::Node: {
 
 				auto n = translator.vert_to_node(vert);
-				g[vert].base.name = node_name(n);
+				g[vert].name = node_name(n);
 
 				break;
 
 			}
-			case BaseSatVProp::Clause: {
+			case VertKind::Clause: {
 
 				auto lits = Clause::LitStorage();
 				auto edge_pair = boost::out_edges(vert, g);
@@ -56,12 +56,12 @@ namespace coopnet { namespace graph_util {
 
 					auto n = translator.vert_to_node(
 						boost::target(*edge_iter, g));
-					lits.emplace(std::make_pair(n, g[*edge_iter].base.sgn));
+					lits.emplace(std::make_pair(n, g[*edge_iter].sgn));
 
 				}
 
 				auto c = Clause(lits);
-				g[vert].base.name = clause_name(c);
+				g[vert].name = clause_name(c);
 
 				break;
 
@@ -105,11 +105,11 @@ namespace coopnet { namespace graph_util {
 
 
 
-	template<typename VProp, typename EProp>
-	TranslatedSatGraph<VProp, EProp> create_default_concrete_graph(
+	template<typename SatProp>
+	TranslatedSatGraph<SatProp> create_default_concrete_graph(
 		const BaseSatGraph& baseGraph, const SatGraphTranslator& baseTranslator) {
 
-		auto concreteGraph = SatGraph<VProp, EProp>();
+		auto concreteGraph = SatGraph<SatProp>();
 		auto nodeVertMap = NodeVertMap();
 
 		auto vPair = boost::vertices(baseGraph);
@@ -118,12 +118,11 @@ namespace coopnet { namespace graph_util {
 		std::for_each(vPair.first, vPair.second,
 			[&concreteGraph, &nodeVertMap, &baseGraph, &baseTranslator](VertDescriptor v) {
 
-			auto prop = VProp();
-			prop.base = baseGraph[v].base;
+			auto prop = copy_base<SatProp>(baseGraph[v]);
 
 			auto newVert = boost::add_vertex(prop, concreteGraph);
 
-			if(prop.base.kind == BaseSatVProp::Node) {
+			if(VertKind(prop.kind) == VertKind::Node) {
 				auto node_to_add = baseTranslator.vert_to_node(v);
 				nodeVertMap.insert(NodeVertMap::value_type(node_to_add, newVert));
 			}
@@ -133,8 +132,7 @@ namespace coopnet { namespace graph_util {
 		std::for_each(ePair.first, ePair.second,
 			[&concreteGraph, &baseGraph](EdgeDescriptor e) {
 
-			auto prop = EProp();
-			prop.base = baseGraph[e].base;
+			auto prop = copy_base<SatProp>(baseGraph[e]);
 
 			auto vert1 = boost::source(e, concreteGraph);
 			auto vert2 = boost::target(e, concreteGraph);
@@ -143,7 +141,7 @@ namespace coopnet { namespace graph_util {
 
 		});
 
-		return TranslatedSatGraph<VProp, EProp> {
+		return TranslatedSatGraph<SatProp> {
 			std::move(concreteGraph),
 			SatGraphTranslator(std::move(nodeVertMap))
 		};

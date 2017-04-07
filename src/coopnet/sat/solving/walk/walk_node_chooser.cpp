@@ -39,10 +39,31 @@ VertDescriptor RandWalkNodeChooser::do_choose(const WalkFormula& form) {
 	auto iter = alphali::random_find_if(vPair.first, vPair.second,
 		[&graph](VertDescriptor v) {
 
-		return true;
+		return VertKind(graph[v].kind) == VertKind::Node;
 
 	}, detail::rand_node_engine);
 
 	return *iter;
 
+}
+
+
+
+VertDescriptor GSATNodeChooser::do_choose(const WalkFormula& form) {
+	return 0;
+}
+
+
+
+UnsatClauseMCNodeChooser::UnsatClauseMCNodeChooser(double initGreedyProb) :
+	greedyProb(initGreedyProb) {
+
+}
+
+VertDescriptor UnsatClauseMCNodeChooser::do_choose(const WalkFormula& form) {
+	return 0;
+}
+
+void UnsatClauseMCNodeChooser::set_greedy_prob(double newGreedyProb) {
+	greedyProb = newGreedyProb;
 }

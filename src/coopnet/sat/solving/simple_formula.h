@@ -6,7 +6,7 @@
 
 namespace coopnet {
 
-	class SimpleFormula : public Formula<BaseSatVProp, BaseSatEProp> {
+	class SimpleFormula : public Formula<BaseSatProp> {
 
 	private:
 
@@ -15,7 +15,7 @@ namespace coopnet {
 	public:
 
 		explicit SimpleFormula(const Problem& prob) :
-			Formula<BaseSatVProp, BaseSatEProp>(prob),
+			Formula<BaseSatProp>(prob),
 			g(prob.get_graph()) { }
 
 

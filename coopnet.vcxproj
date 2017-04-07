@@ -178,7 +178,7 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\coopnet\graph\graph.cpp" />
+    <ClCompile Include="src\coopnet\graph\base\prop.cpp" />
     <ClCompile Include="src\coopnet\graph\sat_graph_translator.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\walk\walk_formula.cpp" />
     <ClCompile Include="src\coopnet\sat\solving\walk\walk_node_chooser.cpp" />
@@ -206,8 +206,9 @@
     <ClCompile Include="src\coopnet\sat\solving\solver.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\coopnet\graph\bgl_inc.h" />
-    <ClInclude Include="src\coopnet\graph\graph_util.h" />
+    <ClInclude Include="src\coopnet\graph\base\prop.h" />
+    <ClInclude Include="src\coopnet\graph\base\bgl_inc.h" />
+    <ClInclude Include="src\coopnet\graph\base\graph_util.h" />
     <ClInclude Include="src\coopnet\graph\mutable\assignable_graph.h" />
     <ClInclude Include="src\coopnet\graph\mutable\prune_graph.h" />
     <ClInclude Include="src\coopnet\graph\mutable\reversable_graph.h" />
@@ -217,7 +218,7 @@
     <ClInclude Include="src\coopnet\sat\component\clause.h" />
     <ClInclude Include="src\coopnet\sat\component\component_fwd.h" />
     <ClInclude Include="src\coopnet\sat\component\node.h" />
-    <ClInclude Include="src\coopnet\graph\graph.h" />
+    <ClInclude Include="src\coopnet\graph\base\graph.h" />
     <ClInclude Include="src\coopnet\sat\problem\shuffler.h" />
     <ClInclude Include="src\coopnet\sat\problem\problem.h" />
     <ClInclude Include="src\coopnet\sat\problem\creation\problem_factory.h" />

@@ -21,19 +21,19 @@ namespace coopnet {
 
 
 
-		template<class SatGraph, typename VProp>
+		template<class SatGraph, typename NProp>
 		void node_event(
 			const SatGraph& g, VertDescriptor node,
-			const VProp& prop) {
+			const NProp& prop) {
 
 			static_cast<ImplVisitor*>(this)->node_event(g, node, prop);
 
 		}
 
-		template<class SatGraph, typename VProp>
+		template<class SatGraph, typename CProp>
 		void clause_event(
 			const SatGraph& g, VertDescriptor clause,
-			const VProp& prop) {
+			const CProp& prop) {
 
 			static_cast<ImplVisitor*>(this)->clause_event(g, clause, prop);
 

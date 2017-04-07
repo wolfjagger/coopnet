@@ -1,6 +1,6 @@
 #include "walk_formula.h"
 #include <iostream>
-#include "coopnet/graph/graph_util.h"
+#include "coopnet/graph/base/graph_util.h"
 #include "coopnet/sat/problem/problem.h"
 
 using namespace coopnet;
@@ -14,8 +14,8 @@ namespace {
 
 
 WalkFormula::WalkFormula(const Problem& prob) :
-	Formula<WalkVProp, WalkEProp>(prob),
-	g(graph_util::create_default_concrete_graph<WalkVProp, WalkEProp>(
+	Formula<WalkProp>(prob),
+	g(graph_util::create_default_concrete_graph<WalkProp>(
 		prob.get_graph(), *prob.get_node_vert_translator())) {
 	
 	numClauses = prob.get_num_clauses();
@@ -32,7 +32,7 @@ void WalkFormula::flip_node(VertDescriptor vertNode) {
 
 	if (DEBUG) {
 
-		auto oldSgn = g.graph[vertNode].assignment;
+		auto oldSgn = g.graph[vertNode].node().assignment;
 		auto newSgn = !oldSgn;
 
 		std::cout << "Flip node associated with vert " << vertNode;
@@ -41,7 +41,7 @@ void WalkFormula::flip_node(VertDescriptor vertNode) {
 	}
 
 	// Flip node
-	g.graph[vertNode].assignment = !g.graph[vertNode].assignment;
+	g.graph[vertNode].node().assignment = !g.graph[vertNode].node().assignment;
 
 	// Propagate to clauses
 	auto edges = boost::out_edges(vertNode, g.graph);
@@ -49,7 +49,7 @@ void WalkFormula::flip_node(VertDescriptor vertNode) {
 
 		auto vertClause = boost::target(*edge, g.graph);
 
-		if (g.graph[vertNode].assignment == g.graph[*edge].base.sgn) {
+		if (g.graph[vertNode].node().assignment == g.graph[*edge].sgn) {
 			satisfy_clause(vertClause);
 		} else {
 			check_unsatisfied_clause(vertClause);
@@ -83,8 +83,8 @@ auto WalkFormula::create_vert_assignment() const -> VertAssignment {
 	for (auto vert = verts.first; vert != verts.second; ++vert) {
 
 		auto& prop = g.graph[*vert];
-		if(prop.base.kind == BaseSatVProp::Node) {
-			assignment.emplace(*vert, prop.assignment);
+		if(VertKind(prop.kind) == VertKind::Node) {
+			assignment.emplace(*vert, prop.node().assignment);
 		}
 
 	}
@@ -96,7 +96,7 @@ auto WalkFormula::create_vert_assignment() const -> VertAssignment {
 void WalkFormula::set_vert_assignment(const VertAssignment& assignment) {
 
 	for (auto iter = assignment.begin(); iter != assignment.end(); ++iter) {
-		g.graph[iter->first].assignment = iter->second;
+		g.graph[iter->first].node().assignment = iter->second;
 	}
 
 	init_clause_satisfaction();
@@ -124,10 +124,10 @@ void WalkFormula::init_clause_satisfaction() {
 	auto verts = boost::vertices(g.graph);
 	for (auto vert = verts.first; vert != verts.second; ++vert) {
 		auto& prop = g.graph[*vert];
-		if (prop.base.kind == BaseSatVProp::Node) {
-			prop.walkStatus = WalkVertStatus::Default;
+		if (VertKind(prop.kind) == VertKind::Node) {
+			prop.node().walkStatus = WalkVertStatus::Default;
 		} else {
-			prop.walkStatus = WalkVertStatus::Unsatisfied;
+			prop.clause().walkStatus = WalkVertStatus::Unsatisfied;
 		}
 	}
 
@@ -142,16 +142,16 @@ void WalkFormula::init_clause_satisfaction() {
 
 		auto vertNode = boost::source(*edge, g.graph);
 		auto vertClause = boost::target(*edge, g.graph);
-		if (g.graph[vertNode].base.kind == BaseSatVProp::Clause)
+		if (VertKind(g.graph[vertNode].kind) == VertKind::Clause)
 			std::swap(vertNode, vertClause);
 
 		// If sign of literal in clause matches assignment, clause is satisfied
-		auto sgn_of_literal = g.graph[*edge].base.sgn;
-		auto assigned_val = g.graph[vertNode].assignment;
+		auto sgn_of_literal = g.graph[*edge].sgn;
+		auto assigned_val = g.graph[vertNode].node().assignment;
 
 		if (sgn_of_literal == assigned_val) {
 			satisfiability.clausesSatisfied.insert(vertClause);
-			g.graph[vertClause].walkStatus = WalkVertStatus::Satisfied;
+			g.graph[vertClause].clause().walkStatus = WalkVertStatus::Satisfied;
 		}
 
 	}
@@ -166,7 +166,7 @@ void WalkFormula::init_clause_satisfaction() {
 
 void WalkFormula::satisfy_clause(VertDescriptor vertClause) {
 
-	auto& status = g.graph[vertClause].walkStatus;
+	auto& status = g.graph[vertClause].clause().walkStatus;
 
 	// If clause is satisfied, no change
 	if (status == WalkVertStatus::Unsatisfied) {
@@ -178,7 +178,7 @@ void WalkFormula::satisfy_clause(VertDescriptor vertClause) {
 
 void WalkFormula::check_unsatisfied_clause(VertDescriptor vertClause) {
 
-	auto& status = g.graph[vertClause].walkStatus;
+	auto& status = g.graph[vertClause].clause().walkStatus;
 
 	if (DEBUG) {
 		if (status == WalkVertStatus::Unsatisfied)
@@ -189,7 +189,7 @@ void WalkFormula::check_unsatisfied_clause(VertDescriptor vertClause) {
 	auto edges = boost::out_edges(vertClause, g.graph);
 	if (std::none_of(edges.first, edges.second, [this](EdgeDescriptor edge) {
 		auto vertNode = boost::target(edge, g.graph);
-		return g.graph[vertNode].assignment == g.graph[edge].base.sgn;
+		return g.graph[vertNode].node().assignment == g.graph[edge].sgn;
 	})) {
 		++numClausesFailed;
 		status = WalkVertStatus::Unsatisfied;

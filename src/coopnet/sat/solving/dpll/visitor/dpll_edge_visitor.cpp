@@ -33,7 +33,7 @@ DPLLEdgeVisitor::DPLLEdgeVisitor(
 // (3) remove edge
 void DPLLEdgeVisitor::dpll_edge_event(
 	const DPLLSatGraph& g, EdgeDescriptor edge,
-	const DPLLEProp& prop,
+	const EProp<DPLLProp>& prop,
 	VertDescriptor node, VertDescriptor clause) {
 
 	auto status = g[edge].dpll.status;
@@ -54,8 +54,9 @@ void DPLLEdgeVisitor::dpll_edge_event(
 
 		// If node satisfies clause, remove clause
 
-		if (g[clause].pruneStatus != PruneStatus::Inactive)
-			change_vert_status(clause, g[clause], DPLLVertStatus::Remove);
+		auto& vProp = g[clause].clause();
+		if (vProp.pruneStatus != PruneStatus::Inactive)
+			change_clause_status(clause, vProp, DPLLVertStatus::Remove);
 		break;
 
 	}
@@ -63,18 +64,19 @@ void DPLLEdgeVisitor::dpll_edge_event(
 
 		// If clause constrains node, set node to sgn
 
-		if (g[node].pruneStatus == PruneStatus::Active) {
+		auto& vProp = g[node].node();
+		if (vProp.pruneStatus == PruneStatus::Active) {
 
-			switch (g[node].dpll.status) {
+			switch (vProp.dpll.status) {
 			case DPLLVertStatus::Default:
 
-				change_vert_status(node, g[node], prop.base.sgn ?
+				change_node_status(node, vProp, prop.sgn ?
 					DPLLVertStatus::SetToTrue : DPLLVertStatus::SetToFalse);
 				break;
 
 			case DPLLVertStatus::SetToTrue:
 
-				if (!prop.base.sgn) {
+				if (!prop.sgn) {
 					if (DEBUG) std::cout << "Contradict: Can't constrain node to false when already true.\n";
 					*isContradicting = true;
 				}
@@ -82,7 +84,7 @@ void DPLLEdgeVisitor::dpll_edge_event(
 
 			case DPLLVertStatus::SetToFalse:
 
-				if (prop.base.sgn) {
+				if (prop.sgn) {
 					if (DEBUG) std::cout << "Contradict: Can't constrain node to true when already false.\n";
 					*isContradicting = true;
 				}
@@ -103,7 +105,7 @@ void DPLLEdgeVisitor::dpll_edge_event(
 
 void DPLLEdgeVisitor::default_edge_event(
 	const DPLLSatGraph& g, EdgeDescriptor edge,
-	const DPLLEProp& prop,
+	const EProp<DPLLProp>& prop,
 	VertDescriptor node, VertDescriptor clause) {
 
 	prop.dpll.status = DPLLEdgeStatus::Default;
@@ -113,7 +115,7 @@ void DPLLEdgeVisitor::default_edge_event(
 
 
 void DPLLEdgeVisitor::deactivate_edge(
-	EdgeDescriptor edge, const DPLLEProp& prop) {
+	EdgeDescriptor edge, const EProp<DPLLProp>& prop) {
 	change_edge_status(edge, prop, DPLLEdgeStatus::Default);
 	set_prune_status(edge, prop.pruneStatus, PruneStatus::Inactive);
 }
@@ -121,8 +123,19 @@ void DPLLEdgeVisitor::deactivate_edge(
 
 
 //TODO: Undo replication here and redundancy btwn the three unique methods
-void DPLLEdgeVisitor::change_vert_status(
-	VertDescriptor vert, const DPLLVProp& prop, DPLLVertStatus newStatus) {
+void DPLLEdgeVisitor::change_node_status(
+	VertDescriptor vert, const DPLLProp::Node& prop, DPLLVertStatus newStatus) {
+
+	auto& status = prop.dpll.status;
+	if (status != newStatus) {
+		if (DEBUG) std::cout << "vert " << vert << " goes " << status << " to " << newStatus << std::endl;
+		status = newStatus;
+	}
+
+}
+
+void DPLLEdgeVisitor::change_clause_status(
+	VertDescriptor vert, const DPLLProp::Clause& prop, DPLLVertStatus newStatus) {
 
 	auto& status = prop.dpll.status;
 	if (status != newStatus) {
@@ -133,7 +146,7 @@ void DPLLEdgeVisitor::change_vert_status(
 }
 
 void DPLLEdgeVisitor::change_edge_status(
-	EdgeDescriptor edge, const DPLLEProp& prop, DPLLEdgeStatus newStatus) {
+	EdgeDescriptor edge, const DPLLProp::Edge& prop, DPLLEdgeStatus newStatus) {
 
 	auto& status = prop.dpll.status;
 	if (status != newStatus) {
