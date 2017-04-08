@@ -92,7 +92,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\src;..\alphali\include;..\..\boost;..\rapidcheck\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;..\src;..\alphali\include;..\..\boost;..\rapidcheck\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -108,7 +108,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\src;..\alphali\include;..\..\boost;..\rapidcheck\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;..\src;..\alphali\include;..\..\boost;..\rapidcheck\include</AdditionalIncludeDirectories>
       <AdditionalUsingDirectories>
       </AdditionalUsingDirectories>
       <AdditionalOptions>
@@ -130,7 +130,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\src;..\alphali\include;..\..\boost;..\rapidcheck\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;..\src;..\alphali\include;..\..\boost;..\rapidcheck\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -150,7 +150,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\src;..\alphali\include;..\..\boost;..\rapidcheck\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;..\src;..\alphali\include;..\..\boost;..\rapidcheck\include</AdditionalIncludeDirectories>
       <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Link>
@@ -163,20 +163,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="sat\general.gen.cpp" />
-    <ClCompile Include="sat\prob.gen.cpp" />
-    <ClCompile Include="sat\prob.test.cpp" />
-    <ClCompile Include="sat\sat.gen.cpp" />
-    <ClCompile Include="sat\sat.test.cpp" />
+    <ClCompile Include="src\coopnet.test\solving\walk.test.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\coopnet.test\general.gen.cpp" />
+    <ClCompile Include="src\coopnet.test\prob.gen.cpp" />
+    <ClCompile Include="src\coopnet.test\prob.test.cpp" />
+    <ClCompile Include="src\coopnet.test\sat.gen.cpp" />
+    <ClCompile Include="src\coopnet.test\sat.test.cpp" />
+    <ClCompile Include="src\coopnet.test\solving\dpll.test.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="catch.hpp" />
-    <ClInclude Include="sat\general.gen.h" />
-    <ClInclude Include="sat\mock_sat_visitor.h" />
-    <ClInclude Include="sat\prob.gen.h" />
-    <ClInclude Include="sat\rc_printing.h" />
-    <ClInclude Include="sat\sat.gen.h" />
+    <ClInclude Include="src\catch.hpp" />
+    <ClInclude Include="src\coopnet.test\general.gen.h" />
+    <ClInclude Include="src\coopnet.test\mock_sat_visitor.h" />
+    <ClInclude Include="src\coopnet.test\prob.gen.h" />
+    <ClInclude Include="src\coopnet.test\rc_printing.h" />
+    <ClInclude Include="src\coopnet.test\sat.gen.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\coopnet.vcxproj">

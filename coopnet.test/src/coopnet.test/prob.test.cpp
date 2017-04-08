@@ -2,7 +2,6 @@
 #include "catch.hpp"
 #include "coopnet/sat/problem/shuffler.h"
 #include "coopnet/sat/solving/dpll/dpll_solver.h"
-#include "coopnet/sat/solving/walk/walk_solver.h"
 #include "prob.gen.h"
 #include "rc_printing.h"
 
@@ -56,42 +55,6 @@ namespace {
 
 	};
 
-	auto lam_dpll_unknown_all = [](const Problem& prob) {
-
-		auto solver_next = DPLLSolver(DPLLNodeChoiceMode::Next);
-		auto pair_next = solver_next.solve(prob);
-		auto solver_rand = DPLLSolver(DPLLNodeChoiceMode::Random);
-		auto pair_rand = solver_rand.solve(prob);
-		auto solver_most_same_sat = DPLLSolver(DPLLNodeChoiceMode::MostSameClauses);
-		auto pair_most_same_sat = solver_most_same_sat.solve(prob);
-		auto solver_most_tot_sat = DPLLSolver(DPLLNodeChoiceMode::MostTotClauses);
-		auto pair_most_tot_sat = solver_most_tot_sat.solve(prob);
-
-		RC_ASSERT(pair_next.status == pair_rand.status);
-		RC_ASSERT(pair_next.status == pair_most_same_sat.status);
-		RC_ASSERT(pair_next.status == pair_most_tot_sat.status);
-
-		switch (pair_next.status) {
-		case SolutionStatus::Satisfied:
-			RC_ASSERT(prob.is_satisfied_by(pair_next.assignment));
-			RC_ASSERT(prob.is_satisfied_by(pair_rand.assignment));
-			RC_ASSERT(prob.is_satisfied_by(pair_most_same_sat.assignment));
-			RC_ASSERT(prob.is_satisfied_by(pair_most_tot_sat.assignment));
-			break;
-		case SolutionStatus::Partial:
-			RC_FAIL();
-			break;
-		case SolutionStatus::Unsatisfied:
-			// Note this does not assure it is truly unsatisfiable
-			//  if dpll says it is.
-			break;
-		case SolutionStatus::Undetermined:
-			RC_FAIL();
-			break;
-		}
-
-	};
-
 }
 
 TEST_CASE("Problem assignment verification", "[sat]") {
@@ -134,104 +97,6 @@ TEST_CASE("Problem assignment verification", "[sat]") {
 		
 		REQUIRE(rc::check(lam));
 		
-	}
-
-	SECTION("Random problems give correct assignments if solvable, and node choice doesn't matter.") {
-		
-		auto lam = []() {
-
-			auto prob = *rc::random_prob_gen(
-				std::make_pair(3, 10),
-				std::make_pair(1, 50));
-
-			lam_dpll_unknown_all(prob);
-
-		};
-
-		REQUIRE(rc::check(lam));
-
-	}
-
-	SECTION("Barabasi-Albert problems give correct assignments if solvable, and node choice doesn't matter.") {
-
-		auto lam = []() {
-
-			auto prob = *rc::barabasi_albert_prob_gen(
-				std::make_pair(3, 10),
-				std::make_pair(1, 50));
-
-			lam_dpll_unknown_all(prob);
-
-		};
-
-		REQUIRE(rc::check(lam));
-
-	}
-
-	SECTION("Watts-Strogatz problems give correct assignments if solvable, and node choice doesn't matter.") {
-
-		auto lam = []() {
-
-			auto prob = *rc::watts_strogatz_prob_gen(
-				std::make_pair(3, 10),
-				std::make_pair(1, 50));
-
-			lam_dpll_unknown_all(prob);
-
-		};
-
-		REQUIRE(rc::check(lam));
-
-	}
-
-}
-
-
-
-namespace {
-
-	auto lam_compare_dpll_with_walk = [](const Problem& prob) {
-
-		auto dpll_solver = DPLLSolver(DPLLNodeChoiceMode::MostTotClauses);
-		auto dpll_pair = dpll_solver.solve(prob);
-		auto walk_solver = WalkSolver(10, WalkNodeChoiceMode::Random);
-		auto walk_pair = walk_solver.solve(prob);
-
-		switch (walk_pair.status) {
-		case SolutionStatus::Satisfied:
-			RC_ASSERT(dpll_pair.status == SolutionStatus::Satisfied);
-			RC_ASSERT(prob.is_satisfied_by(walk_pair.assignment));
-			break;
-		case SolutionStatus::Partial:
-			RC_FAIL();
-			break;
-		case SolutionStatus::Unsatisfied:
-			RC_FAIL();
-			break;
-		case SolutionStatus::Undetermined:
-			break;
-		}
-
-	};
-
-}
-	
-TEST_CASE("WalkSAT", "[sat]") {
-
-	SECTION("WalkSAT reaches same conclusions as DPLL.") {
-
-		auto lam = []() {
-
-			auto prob = *rc::random_prob_gen(
-				std::make_pair(3, 10),
-				std::make_pair(1, 50));
-
-			lam_compare_dpll_with_walk(prob);
-
-		};
-
-		REQUIRE(rc::check(lam));
-
 	}
 
 }
