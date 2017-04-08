@@ -92,7 +92,7 @@ IncompleteAssignment DPLLFormula::create_incomplete_assignment() const {
 	auto verts = boost::vertices(graph());
 	for (auto vert = verts.first; vert != verts.second; ++vert) {
 
-		if (VertKind(graph()[*vert].kind) == VertKind::Node) {
+		if (graph()[*vert].kind() == VertKind::Node) {
 			assignment.emplace(*vert, reversableGraph.get_assignment(*vert));
 		}
 
@@ -136,7 +136,7 @@ auto DPLLFormula::create_vert_assignment() const -> VertAssignment {
 	auto verts = boost::vertices(graph());
 	for (auto vert = verts.first; vert != verts.second; ++vert) {
 
-		if (VertKind(graph()[*vert].kind) == VertKind::Node) {
+		if (graph()[*vert].kind() == VertKind::Node) {
 			assignment.emplace(*vert, bool(reversableGraph.get_assignment(*vert)));
 		}
 

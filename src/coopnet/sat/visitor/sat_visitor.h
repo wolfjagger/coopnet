@@ -47,7 +47,7 @@ namespace coopnet {
 			// Find which vert is node and which is clause
 			auto vert_node = boost::source(e, g);
 			auto vert_clause = boost::target(e, g);
-			if (VertKind(g[vert_node].kind) == VertKind::Clause)
+			if (g[vert_node].kind() == VertKind::Clause)
 				std::swap(vert_node, vert_clause);
 
 			static_cast<ImplVisitor*>(this)->edge_event(

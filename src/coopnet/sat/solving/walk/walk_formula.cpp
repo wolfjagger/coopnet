@@ -83,7 +83,7 @@ auto WalkFormula::create_vert_assignment() const -> VertAssignment {
 	for (auto vert = verts.first; vert != verts.second; ++vert) {
 
 		auto& prop = g.graph[*vert];
-		if(VertKind(prop.kind) == VertKind::Node) {
+		if(prop.kind() == VertKind::Node) {
 			assignment.emplace(*vert, prop.node().assignment);
 		}
 
@@ -129,7 +129,7 @@ void WalkFormula::init_clause_satisfaction() {
 	for (auto vert = verts.first; vert != verts.second; ++vert) {
 
 		auto& prop = g.graph[*vert];
-		if (VertKind(prop.kind) == VertKind::Clause) {
+		if (prop.kind() == VertKind::Clause) {
 
 			auto lamSatEdge = [this](EdgeDescriptor e) {
 				auto node = boost::target(e, g.graph);

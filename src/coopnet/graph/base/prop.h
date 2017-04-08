@@ -12,6 +12,18 @@ namespace coopnet {
 
 	enum class VertKind { Node = 0, Clause = 1 };
 
+	inline std::ostream& operator<<(std::ostream& os, VertKind kind) {
+		switch (kind) {
+		case VertKind::Node:
+			os << "Node";
+		case VertKind::Clause:
+			os << "Clause";
+		}
+		return os;
+	}
+
+
+
 	// This collects node property and clause property
 	//  into a single structure with a variant.
 	// This class will handle access to node vs clause.
@@ -23,7 +35,7 @@ namespace coopnet {
 
 		std::string name;
 		mutable default_color_type color;
-		int kind;
+		int kindInt;
 
 	private:
 		boost::variant<NProp, CProp> payload;
@@ -36,33 +48,31 @@ namespace coopnet {
 		VProp(NProp nProp) :
 			name(),
 			color(default_color_type::black_color),
-			kind(int(VertKind::Node)),
+			kindInt(int(VertKind::Node)),
 			payload(nProp) {}
 		VProp(CProp cProp) :
 			name(),
 			color(default_color_type::black_color),
-			kind(int(VertKind::Clause)),
+			kindInt(int(VertKind::Clause)),
 			payload(cProp) {}
 
 		const NProp& node() const { return boost::get<NProp>(payload); }
 		NProp& node() { return boost::get<NProp>(payload); }
 		const CProp& clause() const { return boost::get<CProp>(payload); }
 		CProp& clause() { return boost::get<CProp>(payload); }
+		VertKind kind() const { return VertKind(kindInt); }
 
 	};
 
 	template<typename SatProp>
 	std::ostream& operator<<(std::ostream& os, const VProp<SatProp>& vProp) {
 		
-		switch (vProp.kind) {
+		os << "kind: " << vProp.kind() << " || name: " << vProp.name;
+		switch (vProp.kind()) {
 		case VertKind::Node:
-			os << "kind: Node";
-			os << " || name: " << vProp.name;
 			os << " " << vProp.node();
 			break;
 		case VertKind::Clause:
-			os << "kind: Clause";
-			os << " || name: " << vProp.name;
 			os << " " << vProp.clause();
 			break;
 		}
@@ -106,7 +116,7 @@ namespace coopnet {
 	template<typename SatProp>
 	VProp<SatProp> copy_base(const VProp<BaseSatProp>& other) {
 		auto prop = VProp<SatProp>();
-		switch(other.kind) {
+		switch(other.kind()) {
 		case VertKind::Node:
 			prop = SatProp::Node();
 			break;

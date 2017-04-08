@@ -51,7 +51,7 @@ VertDescriptor RandWalkNodeChooser::do_choose() {
 	auto iter = alphali::random_find_if(vPair.first, vPair.second,
 		[&graph](VertDescriptor v) {
 
-		return VertKind(graph[v].kind) == VertKind::Node;
+		return (graph[v].kind() == VertKind::Node);
 
 	}, rand_node_engine);
 
@@ -81,7 +81,7 @@ namespace {
 		auto& g = form.graph();
 		auto verts = boost::vertices(g);
 		std::for_each(verts.first, verts.second, [&g, &nodes](VertDescriptor v) {
-			if (VertKind(g[v].kind) == VertKind::Node) nodes.push_back(v);
+			if (g[v].kind() == VertKind::Node) nodes.push_back(v);
 		});
 
 		sort_nodes(g, nodes);

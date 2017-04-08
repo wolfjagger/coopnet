@@ -38,7 +38,7 @@ namespace coopnet { namespace graph_util {
 
 			auto vert = *vert_iter;
 
-			switch (g[vert].kind) {
+			switch (g[vert].kind()) {
 			case VertKind::Node: {
 
 				auto n = translator.vert_to_node(vert);
@@ -122,7 +122,7 @@ namespace coopnet { namespace graph_util {
 
 			auto newVert = boost::add_vertex(prop, concreteGraph);
 
-			if(VertKind(prop.kind) == VertKind::Node) {
+			if(prop.kind() == VertKind::Node) {
 				auto node_to_add = baseTranslator.vert_to_node(v);
 				nodeVertMap.insert(NodeVertMap::value_type(node_to_add, newVert));
 			}
