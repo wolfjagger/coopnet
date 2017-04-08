@@ -163,6 +163,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\coopnet.test\solving\compare.test.cpp" />
     <ClCompile Include="src\coopnet.test\solving\walk.test.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\coopnet.test\general.gen.cpp" />

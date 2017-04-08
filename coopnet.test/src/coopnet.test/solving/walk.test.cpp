@@ -1,6 +1,5 @@
 #include <numeric>
 #include "catch.hpp"
-#include "coopnet/sat/solving/dpll/dpll_solver.h"
 #include "coopnet/sat/solving/walk/walk_solver.h"
 #include "coopnet.test/prob.gen.h"
 #include "coopnet.test/rc_printing.h"
@@ -11,17 +10,11 @@ using namespace coopnet;
 
 namespace {
 
-	auto lam_compare_dpll_with_walk = [](const Problem& prob) {
+	void check_solution(const Problem& prob, const Solution& solution) {
 
-		auto dpll_solver = DPLLSolver(DPLLNodeChoiceMode::MostTotClauses);
-		auto dpll_pair = dpll_solver.solve(prob);
-		auto walk_solver = WalkSolver(10, WalkNodeChoiceMode::Random);
-		auto walk_pair = walk_solver.solve(prob);
-
-		switch (walk_pair.status) {
+		switch (solution.status) {
 		case SolutionStatus::Satisfied:
-			RC_ASSERT(dpll_pair.status == SolutionStatus::Satisfied);
-			RC_ASSERT(prob.is_satisfied_by(walk_pair.assignment));
+			RC_ASSERT(prob.is_satisfied_by(solution.assignment));
 			break;
 		case SolutionStatus::Partial:
 			RC_FAIL();
@@ -33,13 +26,25 @@ namespace {
 			break;
 		}
 
+	}
+
+	auto lam_walk_unknown_all = [](const Problem& prob, unsigned int numTries) {
+
+		auto solver_rand = WalkSolver(numTries, WalkNodeChoiceMode::Random);
+		auto pair_rand = solver_rand.solve(prob);
+		check_solution(prob, pair_rand);
+
+		auto solver_gsat = WalkSolver(numTries, WalkNodeChoiceMode::GSAT);
+		auto pair_gsat = solver_gsat.solve(prob);
+		check_solution(prob, pair_gsat);
+
 	};
 
 }
-	
+
 TEST_CASE("WalkSAT", "[sat]") {
 
-	SECTION("WalkSAT reaches same conclusions as DPLL.") {
+	SECTION("Random problems give correct assignments if solvable, and node choice doesn't matter.") {
 
 		auto lam = []() {
 
@@ -47,7 +52,39 @@ TEST_CASE("WalkSAT", "[sat]") {
 				std::make_pair(3, 10),
 				std::make_pair(1, 50));
 
-			lam_compare_dpll_with_walk(prob);
+			lam_walk_unknown_all(prob, 5);
+
+		};
+
+		REQUIRE(rc::check(lam));
+
+	}
+
+	SECTION("Barabasi-Albert problems give correct assignments if solvable, and node choice doesn't matter.") {
+
+		auto lam = []() {
+
+			auto prob = *rc::barabasi_albert_prob_gen(
+				std::make_pair(3, 10),
+				std::make_pair(1, 50));
+
+			lam_walk_unknown_all(prob, 5);
+
+		};
+
+		REQUIRE(rc::check(lam));
+
+	}
+
+	SECTION("Watts-Strogatz problems give correct assignments if solvable, and node choice doesn't matter.") {
+
+		auto lam = []() {
+
+			auto prob = *rc::watts_strogatz_prob_gen(
+				std::make_pair(3, 10),
+				std::make_pair(1, 50));
+
+			lam_walk_unknown_all(prob, 5);
 
 		};
 
