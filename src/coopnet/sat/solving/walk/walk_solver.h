@@ -20,7 +20,7 @@ namespace coopnet {
 		std::unique_ptr<WalkNodeChooser> nodeChooser;
 
 		unsigned int retryCount;
-		unsigned int maxNumSteps;
+		size_t maxNumSteps;
 
 	public:
 
@@ -30,7 +30,8 @@ namespace coopnet {
 	public:
 
 		WalkSolver(
-			unsigned int triesUntilFail,
+			unsigned int retriesUntilFail,
+			size_t numStepsToRetry,
 			WalkNodeChoiceMode mode = WalkNodeChoiceMode::Random);
 
 		WalkSolver(const WalkSolver& other) = delete;

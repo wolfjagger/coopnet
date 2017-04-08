@@ -10,33 +10,34 @@ using namespace coopnet;
 
 namespace {
 
-	void check_solution(const Problem& prob, const Solution& solution) {
+	bool check_solution(const Problem& prob, const Solution& solution) {
 
 		switch (solution.status) {
 		case SolutionStatus::Satisfied:
 			RC_ASSERT(prob.is_satisfied_by(solution.assignment));
-			break;
+			return true;
 		case SolutionStatus::Partial:
 			RC_FAIL();
-			break;
+			return false;
 		case SolutionStatus::Unsatisfied:
 			RC_FAIL();
-			break;
+			return false;
 		case SolutionStatus::Undetermined:
-			break;
+			return false;
 		}
 
 	}
 
-	auto lam_walk_unknown_all = [](const Problem& prob, unsigned int numTries) {
+	auto lam_walk_unknown_all = [](
+		const Problem& prob, unsigned int numTries, unsigned int numSteps) {
 
-		auto solver_rand = WalkSolver(numTries, WalkNodeChoiceMode::Random);
+		auto solver_rand = WalkSolver(numTries, numSteps, WalkNodeChoiceMode::Random);
 		auto pair_rand = solver_rand.solve(prob);
-		check_solution(prob, pair_rand);
+		auto sat_rand = check_solution(prob, pair_rand);
 
-		auto solver_gsat = WalkSolver(numTries, WalkNodeChoiceMode::GSAT);
+		auto solver_gsat = WalkSolver(numTries, numSteps, WalkNodeChoiceMode::GSAT);
 		auto pair_gsat = solver_gsat.solve(prob);
-		check_solution(prob, pair_gsat);
+		auto sat_gsat = check_solution(prob, pair_gsat);
 
 	};
 
@@ -52,7 +53,7 @@ TEST_CASE("WalkSAT", "[sat]") {
 				std::make_pair(3, 10),
 				std::make_pair(1, 50));
 
-			lam_walk_unknown_all(prob, 5);
+			lam_walk_unknown_all(prob, 5, 20);
 
 		};
 
@@ -68,7 +69,7 @@ TEST_CASE("WalkSAT", "[sat]") {
 				std::make_pair(3, 10),
 				std::make_pair(1, 50));
 
-			lam_walk_unknown_all(prob, 5);
+			lam_walk_unknown_all(prob, 5, 20);
 
 		};
 
@@ -84,7 +85,7 @@ TEST_CASE("WalkSAT", "[sat]") {
 				std::make_pair(3, 10),
 				std::make_pair(1, 50));
 
-			lam_walk_unknown_all(prob, 5);
+			lam_walk_unknown_all(prob, 5, 20);
 
 		};
 

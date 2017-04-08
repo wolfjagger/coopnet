@@ -23,10 +23,13 @@ namespace {
 
 
 
-WalkSolver::WalkSolver(unsigned int triesUntilFail, WalkNodeChoiceMode mode) :
+WalkSolver::WalkSolver(
+	unsigned int retriesUntilFail,
+	size_t numStepsToRetry,
+	WalkNodeChoiceMode mode) :
 	formula(nullptr),
-	retryCount(triesUntilFail),
-	maxNumSteps(1000),
+	retryCount(retriesUntilFail),
+	maxNumSteps(numStepsToRetry),
 	nodeChoiceMode(mode) {
 
 }

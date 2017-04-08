@@ -15,7 +15,7 @@ namespace {
 
 		auto dpll_solver = DPLLSolver(DPLLNodeChoiceMode::MostTotClauses);
 		auto dpll_pair = dpll_solver.solve(prob);
-		auto walk_solver = WalkSolver(5, WalkNodeChoiceMode::GSAT);
+		auto walk_solver = WalkSolver(5, 100, WalkNodeChoiceMode::GSAT);
 		auto walk_pair = walk_solver.solve(prob);
 
 		switch (walk_pair.status) {
