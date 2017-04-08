@@ -11,15 +11,29 @@ namespace coopnet {
 
 	class DPLLFormula;
 
+
+
+	enum class DPLLNodeChoiceMode {
+		Next, Random, MostSameClauses, MostTotClauses
+	};
+
 	class DPLLNodeChooser {
+
+	protected:
+		const DPLLFormula& form;
+
+		DPLLNodeChooser(const DPLLFormula& initForm);
 
 	public:
 
-		boost::optional<DPLLNodeChoice> choose(const DPLLFormula& form);
+		static std::unique_ptr<DPLLNodeChooser>
+			create(const DPLLFormula& form, DPLLNodeChoiceMode mode);
+
+		boost::optional<DPLLNodeChoice> choose();
 
 	protected:
 
-		virtual DPLLNodeChoice do_choose(const DPLLFormula& form) = 0;
+		virtual DPLLNodeChoice do_choose() = 0;
 
 	};
 
@@ -27,59 +41,45 @@ namespace coopnet {
 
 	class NextNodeChooser : public DPLLNodeChooser {
 
+	public:
+		NextNodeChooser(const DPLLFormula& form);
+
 	protected:
-		DPLLNodeChoice do_choose(const DPLLFormula& form) override;
+		DPLLNodeChoice do_choose() override;
 
 	};
 
 
 	class RandNodeChooser : public DPLLNodeChooser {
 
+	public:
+		RandNodeChooser(const DPLLFormula& form);
+
 	protected:
-		DPLLNodeChoice do_choose(const DPLLFormula& form) override;
+		DPLLNodeChoice do_choose() override;
 
 	};
 
 
 	class MaxSameClauseNodeChooser : public DPLLNodeChooser {
 
+	public:
+		MaxSameClauseNodeChooser(const DPLLFormula& form);
+
 	protected:
-		DPLLNodeChoice do_choose(const DPLLFormula& form) override;
+		DPLLNodeChoice do_choose() override;
 
 	};
 
 
 	class MaxTotClauseNodeChooser : public DPLLNodeChooser {
 
+	public:
+		MaxTotClauseNodeChooser(const DPLLFormula& form);
+
 	protected:
-		DPLLNodeChoice do_choose(const DPLLFormula& form) override;
+		DPLLNodeChoice do_choose() override;
 
-	};
-
-
-
-	enum class DPLLNodeChoiceMode {
-		Next, Random, MostSameClauses, MostTotClauses
 	};
 	
-
-
-	inline std::unique_ptr<DPLLNodeChooser>
-		create_dpll_node_chooser(DPLLNodeChoiceMode mode) {
-
-		switch (mode) {
-		case DPLLNodeChoiceMode::Next:
-			return std::make_unique<NextNodeChooser>();
-		case DPLLNodeChoiceMode::Random:
-			return std::make_unique<RandNodeChooser>();
-		case DPLLNodeChoiceMode::MostSameClauses:
-			return std::make_unique<MaxSameClauseNodeChooser>();
-		case DPLLNodeChoiceMode::MostTotClauses:
-			return std::make_unique<MaxTotClauseNodeChooser>();
-		default:
-			throw std::exception("Unknown DPLL node choice mode.");
-		}
-
-	}
-
 }

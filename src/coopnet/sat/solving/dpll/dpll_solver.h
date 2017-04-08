@@ -25,6 +25,13 @@ namespace coopnet {
 
 	public:
 
+		// Set this to change how node is chosen
+		DPLLNodeChoiceMode nodeChoiceMode
+			= DPLLNodeChoiceMode::MostTotClauses;
+
+	public:
+
+		DPLLSolver();
 		DPLLSolver(DPLLNodeChoiceMode mode);
 
 		DPLLSolver(const DPLLSolver& other) = delete;

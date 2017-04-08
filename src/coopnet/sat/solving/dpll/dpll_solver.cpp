@@ -37,8 +37,14 @@ namespace {
 
 
 
+DPLLSolver::DPLLSolver() {
+
+}
+
 DPLLSolver::DPLLSolver(DPLLNodeChoiceMode mode) :
-	nodeChooser(create_dpll_node_chooser(mode)) {
+	DPLLSolver() {
+
+	nodeChoiceMode = mode;
 
 }
 
@@ -81,6 +87,7 @@ auto DPLLSolver::do_solve(const Problem& prob) -> Solution {
 	}
 	
 	formula = std::make_unique<DPLLFormula>(prob);
+	nodeChooser = DPLLNodeChooser::create(*formula, nodeChoiceMode);
 	decisions = std::stack<DPLLNodeChoiceBranch>();
 
 	find_assignment();
@@ -116,7 +123,7 @@ void DPLLSolver::find_assignment() {
 
 		if (DEBUG) std::cout << "Choose node\n";
 
-		auto new_choice = nodeChooser->choose(*formula);
+		auto new_choice = nodeChooser->choose();
 
 		// If no valid new node, formula is reduced
 		if (!new_choice.is_initialized()) break;

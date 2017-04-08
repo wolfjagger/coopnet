@@ -8,8 +8,33 @@ using namespace coopnet;
 
 
 
-boost::optional<DPLLNodeChoice> DPLLNodeChooser::choose(
-	const DPLLFormula& form) {
+DPLLNodeChooser::DPLLNodeChooser(const DPLLFormula& initForm) :
+	form(initForm) {
+
+}
+
+
+std::unique_ptr<DPLLNodeChooser>
+DPLLNodeChooser::create(const DPLLFormula& form, DPLLNodeChoiceMode mode) {
+
+	switch (mode) {
+	case DPLLNodeChoiceMode::Next:
+		return std::make_unique<NextNodeChooser>(form);
+	case DPLLNodeChoiceMode::Random:
+		return std::make_unique<RandNodeChooser>(form);
+	case DPLLNodeChoiceMode::MostSameClauses:
+		return std::make_unique<MaxSameClauseNodeChooser>(form);
+	case DPLLNodeChoiceMode::MostTotClauses:
+		return std::make_unique<MaxTotClauseNodeChooser>(form);
+	default:
+		throw std::exception("Unknown DPLL node choice mode.");
+	}
+
+}
+
+
+
+boost::optional<DPLLNodeChoice> DPLLNodeChooser::choose() {
 
 	auto& reversableGraph = form.reversable_graph();
 
@@ -18,7 +43,7 @@ boost::optional<DPLLNodeChoice> DPLLNodeChooser::choose(
 		return boost::optional<DPLLNodeChoice>();
 	} else {
 
-		return do_choose(form);
+		return do_choose();
 
 	}
 
@@ -28,7 +53,12 @@ boost::optional<DPLLNodeChoice> DPLLNodeChooser::choose(
 
 
 
-DPLLNodeChoice NextNodeChooser::do_choose(const DPLLFormula& form) {
+NextNodeChooser::NextNodeChooser(const DPLLFormula& initForm) :
+	DPLLNodeChooser(initForm) {
+
+}
+
+DPLLNodeChoice NextNodeChooser::do_choose() {
 
 	auto& reversableGraph = form.reversable_graph();
 
@@ -47,11 +77,16 @@ DPLLNodeChoice NextNodeChooser::do_choose(const DPLLFormula& form) {
 
 
 
+RandNodeChooser::RandNodeChooser(const DPLLFormula& initForm) :
+	DPLLNodeChooser(initForm) {
+
+}
+
 namespace detail {
 	static auto rand_node_engine = std::mt19937_64(std::random_device()());
 }
 
-DPLLNodeChoice RandNodeChooser::do_choose(const DPLLFormula& form) {
+DPLLNodeChoice RandNodeChooser::do_choose() {
 
 	auto& reversableGraph = form.reversable_graph();
 
@@ -70,7 +105,12 @@ DPLLNodeChoice RandNodeChooser::do_choose(const DPLLFormula& form) {
 
 
 
-DPLLNodeChoice MaxSameClauseNodeChooser::do_choose(const DPLLFormula& form) {
+MaxSameClauseNodeChooser::MaxSameClauseNodeChooser(const DPLLFormula& initForm) :
+	DPLLNodeChooser(initForm) {
+
+}
+
+DPLLNodeChoice MaxSameClauseNodeChooser::do_choose() {
 
 	auto visitor = ChooseMaxSameClausesVisitor();
 
@@ -82,7 +122,12 @@ DPLLNodeChoice MaxSameClauseNodeChooser::do_choose(const DPLLFormula& form) {
 
 
 
-DPLLNodeChoice MaxTotClauseNodeChooser::do_choose(const DPLLFormula& form) {
+MaxTotClauseNodeChooser::MaxTotClauseNodeChooser(const DPLLFormula& initForm) :
+	DPLLNodeChooser(initForm) {
+
+}
+
+DPLLNodeChoice MaxTotClauseNodeChooser::do_choose() {
 
 	auto visitor = ChooseMaxTotClausesVisitor();
 

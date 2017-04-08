@@ -10,23 +10,29 @@ namespace coopnet {
 
 	class WalkFormula;
 
+
+
 	enum class WalkNodeChoiceMode {
 		Random
 	};
 
-
-
 	class WalkNodeChooser {
+
+	protected:
+		const WalkFormula& form;
+
+		WalkNodeChooser(const WalkFormula& initForm);
 
 	public:
 
-		VertDescriptor choose(const WalkFormula& form);
+		static std::unique_ptr<WalkNodeChooser> create(
+			const WalkFormula& form, WalkNodeChoiceMode mode);
 
-		static std::unique_ptr<WalkNodeChooser> create(WalkNodeChoiceMode mode);
+		VertDescriptor choose();
 
 	protected:
 
-		virtual VertDescriptor do_choose(const WalkFormula& form) = 0;
+		virtual VertDescriptor do_choose() = 0;
 
 	};
 
@@ -36,31 +42,42 @@ namespace coopnet {
 
 	class RandWalkNodeChooser : public WalkNodeChooser {
 
+	public:
+		RandWalkNodeChooser(const WalkFormula& initForm);
+
 	protected:
-		VertDescriptor do_choose(const WalkFormula& form) override;
+		VertDescriptor do_choose() override;
 
 	};
+
 
 	class GSATNodeChooser : public WalkNodeChooser {
 
+	private:
+		// Nodes of the graph, sorted so that the largest breakCount
+		//  nodes are at the front
+		std::vector<VertDescriptor> sortedNodes;
+
+	public:
+		GSATNodeChooser(const WalkFormula& initForm);
+
 	protected:
-		VertDescriptor do_choose(const WalkFormula& form) override;
+		VertDescriptor do_choose() override;
 
 	};
 
+
 	class UnsatClauseMCNodeChooser : public WalkNodeChooser {
 
-	private:
+	public:
 		double greedyProb;
 
 	public:
-		UnsatClauseMCNodeChooser(double initGreedyProb = 0.5);
+		UnsatClauseMCNodeChooser(
+			const WalkFormula& initForm, double initGreedyProb = 0.5);
 
 	protected:
-		VertDescriptor do_choose(const WalkFormula& form) override;
-
-	private:
-		void set_greedy_prob(double newGreedyProb);
+		VertDescriptor do_choose() override;
 
 	};
 

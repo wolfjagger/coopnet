@@ -11,6 +11,7 @@ namespace coopnet {
 
 		struct Node : public AssignSatProp::Node {
 			mutable WalkVertStatus walkStatus;
+			int breakCount;
 
 			Node() :
 				AssignSatProp::Node(),

@@ -24,7 +24,14 @@ namespace coopnet {
 
 	public:
 
-		WalkSolver(WalkNodeChoiceMode mode, unsigned int triesUntilFail);
+		// Set this to change how node is chosen
+		WalkNodeChoiceMode nodeChoiceMode
+			= WalkNodeChoiceMode::Random;
+
+	public:
+
+		WalkSolver(unsigned int triesUntilFail);
+		WalkSolver(unsigned int triesUntilFail, WalkNodeChoiceMode mode);
 
 		WalkSolver(const WalkSolver& other) = delete;
 		WalkSolver& operator=(const WalkSolver& other) = delete;

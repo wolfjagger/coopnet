@@ -23,11 +23,17 @@ namespace {
 
 
 
-WalkSolver::WalkSolver(WalkNodeChoiceMode mode, unsigned int triesUntilFail) :
+WalkSolver::WalkSolver(unsigned int triesUntilFail) :
 	formula(nullptr),
-	nodeChooser(WalkNodeChooser::create(mode)),
 	retryCount(triesUntilFail),
 	maxNumSteps(1000) {
+
+}
+
+WalkSolver::WalkSolver(unsigned int triesUntilFail, WalkNodeChoiceMode mode) :
+	WalkSolver(triesUntilFail) {
+
+	nodeChoiceMode = mode;
 
 }
 
@@ -46,6 +52,7 @@ Solution WalkSolver::try_single_solve(const Problem& prob) {
 	}
 
 	formula = std::make_unique<WalkFormula>(prob);
+	nodeChooser = WalkNodeChooser::create(*formula, nodeChoiceMode);
 
 	if (DEBUG) std::cout << "Set random formula assignment\n";
 
@@ -93,7 +100,7 @@ void WalkSolver::find_assignment() {
 
 		if (DEBUG) std::cout << "Choose node\n";
 
-		auto nodeToFlip = nodeChooser->choose(*formula);
+		auto nodeToFlip = nodeChooser->choose();
 
 		if (DEBUG) std::cout << "Flip node\n";
 
