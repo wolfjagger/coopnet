@@ -29,21 +29,17 @@ void DPLLVertVisitor::dpll_node_event(
 	const DPLLSatGraph& g, VertDescriptor node, const DPLLProp::Node& prop) {
 
 	switch (prop.dpll.status) {
-	case DPLLVertStatus::SetToTrue:
+	case DPLLNodeStatus::SetToTrue:
 
 		select_node(g, node, prop, true);
 		break;
 
-	case DPLLVertStatus::SetToFalse:
+	case DPLLNodeStatus::SetToFalse:
 
 		select_node(g, node, prop, false);
 		break;
 
-	case DPLLVertStatus::Remove:
-
-		throw std::exception("Node inappropriately set to 'Remove'.");
-
-	case DPLLVertStatus::Default:
+	case DPLLNodeStatus::Default:
 
 		// If there are no active edges, select node freely
 		if (!any_active_edge(node, g)) {
@@ -88,7 +84,7 @@ void DPLLVertVisitor::dpll_node_event(
 		break;
 
 	default:
-		throw std::exception("Unknown DPLLVertStatus.");
+		throw std::exception("Unknown DPLLNodeStatus.");
 	}
 
 }
@@ -99,23 +95,13 @@ void DPLLVertVisitor::dpll_clause_event(
 	auto& clause_status = prop.dpll.status;
 
 	switch (clause_status) {
-	case DPLLVertStatus::Remove: {
+	case DPLLClauseStatus::Remove: {
 
 		satisfy_clause(g, clause, prop);
 		break;
 
 	}
-	case DPLLVertStatus::SetToTrue:
-	case DPLLVertStatus::SetToFalse: {
-
-		auto stream = std::stringstream();
-		stream << "Clause inappropriately set to '";
-		stream << clause_status << "'.";
-		auto str = stream.str();
-		throw std::exception(str.c_str());
-
-	}
-	case DPLLVertStatus::Default: {
+	case DPLLClauseStatus::Default: {
 
 		auto edges_pair = boost::out_edges(clause, g);
 
@@ -156,7 +142,7 @@ void DPLLVertVisitor::dpll_clause_event(
 
 	}
 	default:
-		throw std::exception("Unknown DPLLVertStatus.");
+		throw std::exception("Unknown DPLLClauseStatus.");
 	}
 
 }
@@ -164,14 +150,14 @@ void DPLLVertVisitor::dpll_clause_event(
 void DPLLVertVisitor::default_node_event(
 	const DPLLSatGraph& g, VertDescriptor vert, const DPLLProp::Node& prop) {
 
-	prop.dpll.status = DPLLVertStatus::Default;
+	prop.dpll.status = DPLLNodeStatus::Default;
 
 }
 
 void DPLLVertVisitor::default_clause_event(
 	const DPLLSatGraph& g, VertDescriptor vert, const DPLLProp::Clause& prop) {
 
-	prop.dpll.status = DPLLVertStatus::Default;
+	prop.dpll.status = DPLLClauseStatus::Default;
 
 }
 
@@ -242,13 +228,13 @@ void DPLLVertVisitor::satisfy_clause(
 
 void DPLLVertVisitor::deactivate_node(
 	VertDescriptor vert, const DPLLProp::Node& prop) {
-	change_node_status(vert, prop, DPLLVertStatus::Default);
+	change_node_status(vert, prop, DPLLNodeStatus::Default);
 	set_prune_status(vert, prop.pruneStatus, PruneStatus::Inactive);
 }
 
 void DPLLVertVisitor::deactivate_clause(
 	VertDescriptor vert, const DPLLProp::Clause& prop) {
-	change_clause_status(vert, prop, DPLLVertStatus::Default);
+	change_clause_status(vert, prop, DPLLClauseStatus::Default);
 	set_prune_status(vert, prop.pruneStatus, PruneStatus::Inactive);
 }
 
@@ -262,7 +248,7 @@ void DPLLVertVisitor::deactivate_edge(
 
 
 void DPLLVertVisitor::change_node_status(
-	VertDescriptor vert, const DPLLProp::Node& prop, DPLLVertStatus newStatus) {
+	VertDescriptor vert, const DPLLProp::Node& prop, DPLLNodeStatus newStatus) {
 
 	auto& status = prop.dpll.status;
 	if (status != newStatus) {
@@ -273,7 +259,7 @@ void DPLLVertVisitor::change_node_status(
 }
 
 void DPLLVertVisitor::change_clause_status(
-	VertDescriptor vert, const DPLLProp::Clause& prop, DPLLVertStatus newStatus) {
+	VertDescriptor vert, const DPLLProp::Clause& prop, DPLLClauseStatus newStatus) {
 
 	auto& status = prop.dpll.status;
 	if (status != newStatus) {

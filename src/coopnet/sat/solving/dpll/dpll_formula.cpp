@@ -40,7 +40,7 @@ void DPLLFormula::set_node(DPLLNodeChoice choice) {
 	auto vertNode = choice.vertNode;
 
 	auto status = choice.sgn ? 
-		DPLLVertStatus::SetToTrue : DPLLVertStatus::SetToFalse;
+		DPLLNodeStatus::SetToTrue : DPLLNodeStatus::SetToFalse;
 	graph()[vertNode].node().dpll.status = status;
 
 	if (DEBUG) {

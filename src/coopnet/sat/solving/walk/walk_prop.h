@@ -1,7 +1,6 @@
 #pragma once
 
 #include "coopnet/graph/mutable/assignable_graph.h"
-#include "walk_status.h"
 
 
 
@@ -10,21 +9,20 @@ namespace coopnet {
 	struct WalkProp {
 
 		struct Node : public AssignSatProp::Node {
-			mutable WalkVertStatus walkStatus;
-			int breakCount;
+			mutable int breakCount;
 
 			Node() :
 				AssignSatProp::Node(),
-				walkStatus(WalkVertStatus::Default) {}
+				breakCount(0) {}
 
 		};
 
 		struct Clause : public AssignSatProp::Clause {
-			mutable WalkVertStatus walkStatus;
+			mutable unsigned int numSat;
 
 			Clause() :
 				AssignSatProp::Clause(),
-				walkStatus(WalkVertStatus::Default) {}
+				numSat(0) {}
 
 		};
 

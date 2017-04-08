@@ -6,26 +6,40 @@
 
 namespace coopnet {
 
-	enum class DPLLVertStatus {
+	enum class DPLLNodeStatus {
 		// Nothing
 		Default,
 		// Node should be set to true when visited
 		SetToTrue,
 		// Node should be set to true when visited
 		SetToFalse,
+	};
+
+	inline std::ostream& operator<<(std::ostream& os, DPLLNodeStatus status) {
+		switch (status) {
+		case DPLLNodeStatus::Default:
+			return os << "Default";
+		case DPLLNodeStatus::SetToTrue:
+			return os << "SetToTrue";
+		case DPLLNodeStatus::SetToFalse:
+			return os << "SetToFalse";
+		default:
+			return os;
+		}
+	}
+
+	enum class DPLLClauseStatus {
+		// Nothing
+		Default,
 		// Clause should be removed when visited
 		Remove
 	};
 
-	inline std::ostream& operator<<(std::ostream& os, DPLLVertStatus status) {
+	inline std::ostream& operator<<(std::ostream& os, DPLLClauseStatus status) {
 		switch (status) {
-		case DPLLVertStatus::Default:
+		case DPLLClauseStatus::Default:
 			return os << "Default";
-		case DPLLVertStatus::SetToTrue:
-			return os << "SetToTrue";
-		case DPLLVertStatus::SetToFalse:
-			return os << "SetToFalse";
-		case DPLLVertStatus::Remove:
+		case DPLLClauseStatus::Remove:
 			return os << "Remove";
 		default:
 			return os;

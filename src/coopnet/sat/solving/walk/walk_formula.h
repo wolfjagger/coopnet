@@ -51,8 +51,8 @@ namespace coopnet {
 
 		void init_clause_satisfaction();
 
-		void satisfy_clause(VertDescriptor vertClause);
-		void check_unsatisfied_clause(VertDescriptor vertClause);
+		void sat_clause(VertDescriptor satNode, VertDescriptor vertClause);
+		void unsat_clause(VertDescriptor unsatNode, VertDescriptor vertClause);
 
 	};
 

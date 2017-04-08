@@ -83,9 +83,9 @@ namespace coopnet {
 		void deactivate_edge(EdgeDescriptor edge, const DPLLProp::Edge& prop);
 
 		void change_node_status(
-			VertDescriptor vert, const DPLLProp::Node& prop, DPLLVertStatus new_status);
+			VertDescriptor vert, const DPLLProp::Node& prop, DPLLNodeStatus new_status);
 		void change_clause_status(
-			VertDescriptor vert, const DPLLProp::Clause& prop, DPLLVertStatus new_status);
+			VertDescriptor vert, const DPLLProp::Clause& prop, DPLLClauseStatus new_status);
 		void change_edge_status(
 			EdgeDescriptor edge, const DPLLProp::Edge& prop, DPLLEdgeStatus new_status);
 

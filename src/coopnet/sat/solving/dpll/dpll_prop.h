@@ -11,23 +11,23 @@ namespace coopnet {
 
 		struct Node : public ReversableSatProp::Node {
 			mutable struct DPLL {
-				DPLLVertStatus status;
+				DPLLNodeStatus status;
 			} dpll;
 
 			Node() :
 				ReversableSatProp::Node(),
-				dpll{ DPLLVertStatus::Default } {}
+				dpll{ DPLLNodeStatus::Default } {}
 
 		};
 
 		struct Clause : public ReversableSatProp::Clause {
 			mutable struct DPLL {
-				DPLLVertStatus status;
+				DPLLClauseStatus status;
 			} dpll;
 
 			Clause() :
 				ReversableSatProp::Clause(),
-				dpll{ DPLLVertStatus::Default } {}
+				dpll{ DPLLClauseStatus::Default } {}
 
 		};
 

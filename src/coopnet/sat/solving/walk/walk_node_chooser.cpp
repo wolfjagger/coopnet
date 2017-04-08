@@ -17,6 +17,8 @@ WalkNodeChooser::create(const WalkFormula& form, WalkNodeChoiceMode mode) {
 	switch (mode) {
 	case WalkNodeChoiceMode::Random:
 		return std::make_unique<RandWalkNodeChooser>(form);
+	case WalkNodeChoiceMode::GSAT:
+		return std::make_unique<GSATNodeChooser>(form);
 	default:
 		throw std::exception("Unknown walk node choice mode.");
 	}

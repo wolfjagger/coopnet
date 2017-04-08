@@ -56,7 +56,7 @@ void DPLLEdgeVisitor::dpll_edge_event(
 
 		auto& vProp = g[clause].clause();
 		if (vProp.pruneStatus != PruneStatus::Inactive)
-			change_clause_status(clause, vProp, DPLLVertStatus::Remove);
+			change_clause_status(clause, vProp, DPLLClauseStatus::Remove);
 		break;
 
 	}
@@ -68,13 +68,13 @@ void DPLLEdgeVisitor::dpll_edge_event(
 		if (vProp.pruneStatus == PruneStatus::Active) {
 
 			switch (vProp.dpll.status) {
-			case DPLLVertStatus::Default:
+			case DPLLNodeStatus::Default:
 
 				change_node_status(node, vProp, prop.sgn ?
-					DPLLVertStatus::SetToTrue : DPLLVertStatus::SetToFalse);
+					DPLLNodeStatus::SetToTrue : DPLLNodeStatus::SetToFalse);
 				break;
 
-			case DPLLVertStatus::SetToTrue:
+			case DPLLNodeStatus::SetToTrue:
 
 				if (!prop.sgn) {
 					if (DEBUG) std::cout << "Contradict: Can't constrain node to false when already true.\n";
@@ -82,7 +82,7 @@ void DPLLEdgeVisitor::dpll_edge_event(
 				}
 				break;
 
-			case DPLLVertStatus::SetToFalse:
+			case DPLLNodeStatus::SetToFalse:
 
 				if (prop.sgn) {
 					if (DEBUG) std::cout << "Contradict: Can't constrain node to true when already false.\n";
@@ -124,7 +124,7 @@ void DPLLEdgeVisitor::deactivate_edge(
 
 //TODO: Undo replication here and redundancy btwn the three unique methods
 void DPLLEdgeVisitor::change_node_status(
-	VertDescriptor vert, const DPLLProp::Node& prop, DPLLVertStatus newStatus) {
+	VertDescriptor vert, const DPLLProp::Node& prop, DPLLNodeStatus newStatus) {
 
 	auto& status = prop.dpll.status;
 	if (status != newStatus) {
@@ -135,7 +135,7 @@ void DPLLEdgeVisitor::change_node_status(
 }
 
 void DPLLEdgeVisitor::change_clause_status(
-	VertDescriptor vert, const DPLLProp::Clause& prop, DPLLVertStatus newStatus) {
+	VertDescriptor vert, const DPLLProp::Clause& prop, DPLLClauseStatus newStatus) {
 
 	auto& status = prop.dpll.status;
 	if (status != newStatus) {
