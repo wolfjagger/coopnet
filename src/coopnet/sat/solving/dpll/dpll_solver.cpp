@@ -37,14 +37,8 @@ namespace {
 
 
 
-DPLLSolver::DPLLSolver() {
-
-}
-
 DPLLSolver::DPLLSolver(DPLLNodeChoiceMode mode) :
-	DPLLSolver() {
-
-	nodeChoiceMode = mode;
+	nodeChoiceMode(mode) {
 
 }
 
