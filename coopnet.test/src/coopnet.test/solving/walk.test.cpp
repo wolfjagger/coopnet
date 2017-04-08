@@ -10,10 +10,13 @@ using namespace coopnet;
 
 namespace {
 
+	constexpr bool DEBUG = false;
+
 	bool check_solution(const Problem& prob, const Solution& solution) {
 
 		switch (solution.status) {
 		case SolutionStatus::Satisfied:
+			if (DEBUG) std::cout << "numSteps: " << solution.numSteps << std::endl;
 			RC_ASSERT(prob.is_satisfied_by(solution.assignment));
 			return true;
 		case SolutionStatus::Partial:
@@ -24,6 +27,8 @@ namespace {
 			return false;
 		case SolutionStatus::Undetermined:
 			return false;
+		default:
+			throw std::exception("Unknown solution status");
 		}
 
 	}
@@ -38,6 +43,10 @@ namespace {
 		auto solver_gsat = WalkSolver(numTries, numSteps, WalkNodeChoiceMode::GSAT);
 		auto pair_gsat = solver_gsat.solve(prob);
 		auto sat_gsat = check_solution(prob, pair_gsat);
+
+		auto solver_mc = WalkSolver(numTries, numSteps, WalkNodeChoiceMode::UnsatClauseMC);
+		auto pair_mc = solver_mc.solve(prob);
+		auto sat_mc = check_solution(prob, pair_mc);
 
 	};
 

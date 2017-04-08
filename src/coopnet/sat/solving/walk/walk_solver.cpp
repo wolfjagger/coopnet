@@ -60,7 +60,7 @@ Solution WalkSolver::try_single_solve(const Problem& prob) {
 
 	if (DEBUG) std::cout << "Find satisfactory assignment\n";
 
-	find_assignment();
+	auto numSteps = find_assignment();
 
 	if (DEBUG) std::cout << "Construct solution\n";
 
@@ -70,13 +70,15 @@ Solution WalkSolver::try_single_solve(const Problem& prob) {
 		solution = Solution{
 			SolutionStatus::Satisfied,
 			std::make_shared<coopnet::Assignment>(std::move(assign)),
-			0
+			0,
+			numSteps
 		};
 	} else {
 		solution = Solution{
 			SolutionStatus::Undetermined,
 			nullptr,
-			0
+			0,
+			numSteps
 		};
 	}
 
@@ -91,21 +93,26 @@ unsigned int WalkSolver::retry_count() const {
 
 
 
-void WalkSolver::find_assignment() {
+size_t WalkSolver::find_assignment() {
 
-	for (unsigned stepNum = 0; stepNum < maxNumSteps; ++stepNum) {
+	size_t stepNum = 0;
+	while(stepNum < maxNumSteps) {
+
+		if (DEBUG) std::cout << "Check satisfied\n";
+		if (formula->is_SAT()) break;
+
+		++stepNum;
 
 		if (DEBUG) std::cout << "Choose node\n";
-
 		auto nodeToFlip = nodeChooser->choose();
 
 		if (DEBUG) std::cout << "Flip node\n";
-
 		formula->flip_node(nodeToFlip);
-		if (formula->is_SAT()) break;
 
 	}
 
 	DEBUG_print_assignment(*formula);
+
+	return stepNum;
 
 }

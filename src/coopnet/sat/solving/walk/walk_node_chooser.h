@@ -13,7 +13,7 @@ namespace coopnet {
 
 
 	enum class WalkNodeChoiceMode {
-		Random, GSAT
+		Random, GSAT, UnsatClauseMC
 	};
 
 	class WalkNodeChooser {

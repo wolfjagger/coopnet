@@ -50,7 +50,7 @@ namespace coopnet {
 
 	private:
 
-		void find_assignment();
+		size_t find_assignment();
 
 	};
 

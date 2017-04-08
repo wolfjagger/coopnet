@@ -19,6 +19,8 @@ WalkNodeChooser::create(const WalkFormula& form, WalkNodeChoiceMode mode) {
 		return std::make_unique<RandWalkNodeChooser>(form);
 	case WalkNodeChoiceMode::GSAT:
 		return std::make_unique<GSATNodeChooser>(form);
+	case WalkNodeChoiceMode::UnsatClauseMC:
+		return std::make_unique<UnsatClauseMCNodeChooser>(form);
 	default:
 		throw std::exception("Unknown walk node choice mode.");
 	}
@@ -130,5 +132,38 @@ UnsatClauseMCNodeChooser::UnsatClauseMCNodeChooser(
 }
 
 VertDescriptor UnsatClauseMCNodeChooser::do_choose() {
-	return 0;
+
+	auto& g = form.graph();
+
+	auto verts = boost::vertices(g);
+	auto unsatClause = alphali::random_find_if(verts.first, verts.second,
+		[&g](VertDescriptor v) {
+
+		return (g[v].kind() == VertKind::Clause && g[v].clause().numSat == 0);
+
+	}, rand_node_engine);
+
+	auto edges = boost::out_edges(*unsatClause, g);
+
+	auto isGreedy = alphali::take_chance(greedyProb);
+	if (isGreedy) {
+
+		auto greedyEdge = std::max_element(edges.first, edges.second,
+			[&g](EdgeDescriptor e1, EdgeDescriptor e2) {
+
+			auto n1 = boost::target(e1, g);
+			auto n2 = boost::target(e2, g);
+			return g[n1].node().breakCount < g[n2].node().breakCount;
+
+		});
+		return boost::target(*greedyEdge, g);
+
+	} else {
+
+		auto randEdge = alphali::random_find_if(edges.first, edges.second,
+			[&g](EdgeDescriptor) { return true; }, rand_node_engine);
+		return boost::target(*randEdge, g);
+
+	}
+
 }

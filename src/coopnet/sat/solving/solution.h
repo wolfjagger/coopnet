@@ -40,7 +40,8 @@ namespace coopnet {
 	struct Solution {
 		SolutionStatus status;
 		std::shared_ptr<Assignment> assignment;
-		unsigned int num_failed;
+		unsigned int numFailed;
+		size_t numSteps;
 	};
 
 	inline std::ostream& operator<<(
@@ -52,11 +53,13 @@ namespace coopnet {
 		case SolutionStatus::Satisfied:
 			os << "Assignment:" << std::endl;
 			os << *solution.assignment << std::endl;
+			os << "Number of steps to solution (without retries):";
+			os << solution.numSteps << std::endl;
 			break;
 		case SolutionStatus::Partial:
 			os << "Assignment:" << std::endl;
 			os << *solution.assignment << std::endl;
-			os << "Num clauses failed: " << solution.num_failed << std::endl;
+			os << "Num clauses failed: " << solution.numFailed << std::endl;
 			break;
 		case SolutionStatus::Unsatisfied:
 		case SolutionStatus::Undetermined:
