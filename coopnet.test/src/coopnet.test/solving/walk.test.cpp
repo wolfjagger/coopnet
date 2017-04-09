@@ -36,14 +36,17 @@ namespace {
 	auto lam_walk_unknown_all = [](
 		const Problem& prob, unsigned int numTries, unsigned int numSteps) {
 
+		if (DEBUG) std::cout << "Random WalkSAT\n";
 		auto solver_rand = WalkSolver(numTries, numSteps, WalkNodeChoiceMode::Random);
 		auto pair_rand = solver_rand.solve(prob);
 		auto sat_rand = check_solution(prob, pair_rand);
 
+		if (DEBUG) std::cout << "GSAT WalkSAT\n";
 		auto solver_gsat = WalkSolver(numTries, numSteps, WalkNodeChoiceMode::GSAT);
 		auto pair_gsat = solver_gsat.solve(prob);
 		auto sat_gsat = check_solution(prob, pair_gsat);
 
+		if (DEBUG) std::cout << "UnsatClauseMC WalkSAT\n";
 		auto solver_mc = WalkSolver(numTries, numSteps, WalkNodeChoiceMode::UnsatClauseMC);
 		auto pair_mc = solver_mc.solve(prob);
 		auto sat_mc = check_solution(prob, pair_mc);
