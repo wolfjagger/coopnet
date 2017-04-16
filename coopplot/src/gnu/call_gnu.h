@@ -11,14 +11,15 @@
 namespace coopplot {
 
 	template<typename XType = double, typename YType = double>
-	void save_and_plot_sat_xy(
+	void save_and_plot_xy(
 		RangeData<XType> x_range, RangeData<YType> y_range,
 		XYData<XType, YType> data,
 		const std::string& foldername,
 		const std::string& datname,
 		const std::string& gnuname,
 		std::string title = std::string(),
-		std::vector<std::string> titles = std::vector<std::string>()) {
+		std::vector<std::string> titles = std::vector<std::string>(),
+		bool withError = false) {
 
 		//TODO: create folder
 
@@ -31,7 +32,7 @@ namespace coopplot {
 
 		auto gnuscript_factory
 			= GNUScriptStringFactory(
-				datfile.full_path(), x_range, y_range, num_y_cols);
+				datfile.full_path(), x_range, y_range, num_y_cols, withError);
 
 		if (!title.empty()) gnuscript_factory.set_title(title);
 		if (!titles.empty()) gnuscript_factory.set_plot_titles(titles);

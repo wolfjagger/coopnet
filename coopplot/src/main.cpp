@@ -6,9 +6,9 @@ int main(int, char*[]) {
 
 	auto foldername = std::string("tmp_folder");
 
-	coopplot::graph_satisfiability(foldername);
+	coopplot::graph_satisfiability(foldername, true);
 
-	coopplot::graph_multi_satisfiability(foldername);
+	coopplot::graph_multi_satisfiability(foldername, true);
 
 	return 0;
 

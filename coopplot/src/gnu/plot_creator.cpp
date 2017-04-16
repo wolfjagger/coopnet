@@ -26,25 +26,6 @@ namespace coopplot {
 	}
 
 
-	/*plotfile::plotfile(const plotfile& other, string new_location, string new_filename) :
-		relative_location(new_location),
-		filename(new_filename),
-		out_file(full_path()) {
-
-		auto line = string();
-
-		if(std::ifstream is(other.full_path())) {
-			
-			out_file << line << std::endl;
-
-		}
-
-	}
-
-	plotfile::plotfile(const plotfile& other, string new_location) :
-		plotfile(other, new_location, other.filename) {
-
-	}*/
 
 
 
@@ -277,18 +258,40 @@ namespace coopplot {
 
 			for (size_t i = 0; i < num_y_cols; ++i) {
 
-				str += gnu_quote + gnudat_path + gnu_quote;
-				str += sep;
-				str += "using 1:" + std::to_string(i + 2);
-				str += sep;
-				if (plot_title_strs.size() >= i + 1) {
-					str += plot_title_strs[i];
+				if(!withError) {
+
+					str += gnu_quote + gnudat_path + gnu_quote;
 					str += sep;
-				}
-				str += options_str;
-				if (i < num_y_cols - 1) {
-					str += ",";
+					str += "using 1:" + std::to_string(i + 2);
 					str += sep;
+					if (plot_title_strs.size() >= i + 1) {
+						str += plot_title_strs[i];
+						str += sep;
+					}
+					str += options_str;
+					if (i < num_y_cols - 1) {
+						str += ",";
+						str += sep;
+					}
+
+				} else {
+
+					if (i % 2 == 0) {
+						str += gnu_quote + gnudat_path + gnu_quote;
+						str += sep;
+						str += "using 1:" + std::to_string(i + 2) + ":" + std::to_string(i+3);
+						str += sep;
+						if (plot_title_strs.size() >= i + 1) {
+							str += plot_title_strs[i];
+							str += sep;
+						}
+						str += options_str;
+						if (i < num_y_cols - 2) {
+							str += ",";
+							str += sep;
+						}
+					}
+
 				}
 				
 			}

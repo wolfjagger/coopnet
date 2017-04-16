@@ -115,10 +115,12 @@ namespace coopplot {
 		string x_range_str = "";
 		string y_range_str = "";
 
-		string options_str = "with lines";
+		string options_str;
 
 		string gnudat_path;
 		size_t num_y_cols;
+
+		bool withError;
 
 	public:
 
@@ -127,12 +129,19 @@ namespace coopplot {
 		template<typename XType, typename YType>
 		GNUScriptStringFactory(string dat_path,
 			RangeData<XType> x_range, RangeData<YType> y_range,
-			size_t init_num_y_cols) :
+			size_t init_num_y_cols, bool initWithError) :
 			gnudat_path(dat_path),
-			num_y_cols(init_num_y_cols) {
+			num_y_cols(init_num_y_cols),
+			withError(initWithError) {
 
 			set_x_range(x_range);
 			set_y_range(y_range);
+
+			if (withError) {
+				options_str = "with errorlines";
+			} else {
+				options_str = "with lines";
+			}
 			
 		}
 
@@ -156,7 +165,8 @@ namespace coopplot {
 		// Set min and max y; default chosen by gnuplot
 		void set_y_range(RangeData<double> y_range);
 
-		// Add options; defaults to "with lines"
+		// Add options; defaults to "with lines" without error
+		//  or "with errorlines" with error
 		void set_options(std::string options);
 
 
