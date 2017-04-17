@@ -4,6 +4,10 @@ using namespace coopnet;
 
 
 
+Solver::~Solver() { }
+
+
+
 auto CompleteSolver::solve(const Problem& prob) -> Solution {
 	
 	auto solution = do_solve(prob);

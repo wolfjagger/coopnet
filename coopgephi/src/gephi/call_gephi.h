@@ -1,6 +1,6 @@
 #pragma once
 
-#include "coopnet/graph/graph.h"
+#include "coopnet/graph/base/graph.h"
 
 
 

@@ -4,13 +4,14 @@
 #include "coopnet/sat/problem/problem.h"
 #include "coopnet/sat/problem/creation/problem_factory.h"
 #include "coopnet/sat/solving/dpll/dpll_solver.h"
+#include "coopnet/sat/solving/walk/walk_solver.h"
 
 using namespace coopnet;
 
 
 
 namespace {
-	constexpr bool PRINT_sub_timing = false;
+	constexpr bool PRINTSubTiming = false;
 }
 
 
@@ -20,56 +21,74 @@ namespace coopplot {
 	namespace {
 
 		std::array<double, 2> create_x_domain(
-			double start_ratio, double end_ratio, int num_ratios) {
+			double startRatio, double endRatio, int numRatios) {
 
 			auto diff_ratio
-				= (end_ratio - start_ratio) / (num_ratios - 1);
+				= (endRatio - startRatio) / (numRatios - 1);
 
 			return std::array<double, 2>{
-				start_ratio, diff_ratio };
+				startRatio, diff_ratio };
 
 		}
 
 		
 		
-		std::array<double, 3> frac_satisfiable(
-			DPLLSolver& solver,
-			int num_nodes, int num_clauses, int num_average) {
+		std::vector<std::array<double, 3>> frac_satisfiable(
+			std::vector<std::unique_ptr<Solver>>& solvers,
+			int numNodes, int numClauses, int numAvg) {
 			
-			auto num_satisfiable = 0;
-			auto times = std::vector<double>();
-			times.reserve(num_average);
+			auto size = solvers.size();
 
-			for (auto j = 0; j < num_average; ++j) {
+			auto numSat = std::vector<int>(size);
+			auto setTimes = std::vector<std::vector<double>>(size);
+			for(auto& times : setTimes) times.reserve(numAvg);
 
-				auto timer = alphali::timer();
+			auto timer = alphali::timer();
+
+			for (auto j = 0; j < numAvg; ++j) {
 
 				auto problem
-					= problem_factory::random_3sat_problem(num_nodes, num_clauses);
-				auto solution_pair = solver.solve(problem);
-				if (solution_pair.status == SolutionStatus::Satisfied)
-					++num_satisfiable;
+					= problem_factory::random_3sat_problem(numNodes, numClauses);
 
-				timer.stop();
-				times.push_back(timer.secs_elapsed());
-				if (PRINT_sub_timing) {
-					timer.output("Generate/solve");
+				for(unsigned solverIdx = 0; solverIdx < size; ++solverIdx) {
+
+					timer.start();
+
+					auto solutionPair = solvers[solverIdx]->solve(problem);
+					if (solutionPair.status == SolutionStatus::Satisfied)
+						++numSat[solverIdx];
+
+					timer.stop();
+					setTimes[solverIdx].push_back(timer.secs_elapsed());
+					if (PRINTSubTiming) {
+						timer.output("Generate/solve");
+					}
+
 				}
 
 			}
 
-			auto fracSat = double(num_satisfiable) / num_average;
+			auto retVec = std::vector<std::array<double, 3>>();
+			retVec.reserve(size);
+			for(unsigned solverIdx = 0; solverIdx < size; ++solverIdx) {
 
-			auto timeAvg = std::accumulate(times.begin(), times.end(), 0.0);
-			timeAvg /= num_average;
+				auto fracSat = double(numSat[solverIdx]) / numAvg;
 
-			auto timeErr = 0.0;
-			for (auto time : times) {
-				timeErr += (time - timeAvg) * (time - timeAvg);
+				auto timeAvg = std::accumulate(
+					setTimes[solverIdx].begin(), setTimes[solverIdx].end(), 0.0);
+				timeAvg /= numAvg;
+
+				auto timeErr = 0.0;
+				for (auto time : setTimes[solverIdx]) {
+					timeErr += (time - timeAvg) * (time - timeAvg);
+				}
+				timeErr = std::sqrt(timeErr / numAvg);
+
+				retVec.push_back({ fracSat, timeAvg, timeErr });
+
 			}
-			timeErr = std::sqrt(timeErr/num_average);
 
-			return { fracSat, timeAvg, timeErr };
+			return retVec;
 
 		}
 
@@ -78,100 +97,233 @@ namespace coopplot {
 
 
 	SatReturn create_sat_data(
-		int num_nodes,
-		double start_ratio_clause_node, double end_ratio_clause_node,
-		int num_ratios, int num_average,
-		DPLLNodeChoiceMode node_choice_mode) {
+		int numNodes,
+		double startRatioClauseNode, double endRatioClauseNode,
+		int numRatios, int numAvg,
+		DPLLNodeChoiceMode nodeChoiceMode) {
 
-		auto x_domain = create_x_domain(
-			start_ratio_clause_node, end_ratio_clause_node, num_ratios);
+		auto xDomain = create_x_domain(
+			startRatioClauseNode, endRatioClauseNode, numRatios);
 
-		auto solver = DPLLSolver(node_choice_mode);
+		auto solver = std::make_unique<DPLLSolver>(nodeChoiceMode);
+		auto solvers = std::vector<std::unique_ptr<Solver>>();
+		solvers.push_back(
+			std::make_unique<DPLLSolver>(nodeChoiceMode));
 
-		auto vec_y = std::vector<double>();
-		vec_y.reserve(num_ratios);
-		auto vec_t = std::vector<std::array<double, 2>>();
-		vec_t.reserve(num_ratios);
-		for (auto i = 0; i < num_ratios; ++i) {
+		auto vecY = std::vector<double>();
+		vecY.reserve(numRatios);
+		auto vecT = std::vector<std::array<double, 2>>();
+		vecT.reserve(numRatios);
+		for (auto i = 0; i < numRatios; ++i) {
 
-			auto ratio = start_ratio_clause_node + i*x_domain[1];
-			auto num_clauses = unsigned int(std::ceil(num_nodes * ratio));
+			auto ratio = startRatioClauseNode + i*xDomain[1];
+			auto numClauses = unsigned int(std::ceil(numNodes * ratio));
 
 			std::cout << "Ratio: " << ratio << std::endl;
 
 			auto satData = frac_satisfiable(
-				solver, num_nodes, num_clauses, num_average);
+				solvers, numNodes, numClauses, numAvg);
+
+			auto& dpllData = satData[0];
 
 			std::cout << "Set of num_node/num_clause ";
-			std::cout << num_average * satData[1] << std::endl;
+			std::cout << dpllData[1] << std::endl;
 
-			vec_y.push_back(satData[0]);
-			vec_t.push_back({ satData[1], satData[2] });
+			vecY.push_back(dpllData[0]);
+			vecT.push_back({ dpllData[1], dpllData[2] });
 
 		}
 
 		return {
-			XYData<double, double>(std::make_pair(x_domain, vec_y)),
-			XYData<double, double>(std::make_pair(x_domain, vec_t))
+			XYData<double, double>(std::make_pair(xDomain, vecY)),
+			XYData<double, double>(std::make_pair(xDomain, vecT))
+		};
+
+	}
+
+
+	SatReturn create_sat_data_comparison(
+		int numNodes,
+		double startRatioClauseNode, double endRatioClauseNode,
+		int numRatios, int numAvg,
+		DPLLNodeChoiceMode dpllNodeChoiceMode, WalkNodeChoiceMode walkNodeChoiceMode) {
+
+		auto xDomain = create_x_domain(
+			startRatioClauseNode, endRatioClauseNode, numRatios);
+
+		auto solvers = std::vector<std::unique_ptr<Solver>>();
+		solvers.push_back(
+			std::make_unique<DPLLSolver>(dpllNodeChoiceMode));
+		solvers.push_back(
+			std::make_unique<WalkSolver>(5, 1000, walkNodeChoiceMode));
+
+		auto vecYs = std::vector<std::vector<double>>();
+		vecYs.reserve(numRatios);
+		auto vecTs = std::vector<std::vector<std::array<double, 2>>>();
+		vecTs.reserve(numRatios);
+		for (auto i = 0; i < numRatios; ++i) {
+
+			auto ratio = startRatioClauseNode + i*xDomain[1];
+			auto numClauses = unsigned int(std::ceil(numNodes * ratio));
+
+			std::cout << "Ratio: " << ratio << std::endl;
+
+			auto satData = frac_satisfiable(
+				solvers, numNodes, numClauses, numAvg);
+
+			auto& dpllData = satData[0];
+			auto& walkData = satData[1];
+
+			std::cout << "Set of num_node/num_clause ";
+			std::cout << dpllData[1] << " dpll avg and ";
+			std::cout << walkData[1] << " walk avg" << std::endl;
+
+			auto vecY = std::vector<double>();
+			vecY.push_back(dpllData[0]);
+			vecY.push_back(walkData[0]);
+			vecYs.push_back(std::move(vecY));
+			auto vecT = std::vector<std::array<double, 2>>();
+			vecT.push_back({ dpllData[1], dpllData[2] });
+			vecT.push_back({ walkData[1], walkData[2] });
+			vecTs.push_back(std::move(vecT));
+
+		}
+
+		return{
+			XYData<double, double>(std::make_pair(xDomain, vecYs)),
+			XYData<double, double>(std::make_pair(xDomain, vecTs))
 		};
 
 	}
 
 
 	SatReturn create_multiple_sat_data(
-		int start_num_nodes, int end_num_nodes, int num_plots,
-		double start_ratio_clause_node, double end_ratio_clause_node,
-		int num_ratios, int num_average,
-		DPLLNodeChoiceMode node_choice_mode) {
+		int startNumNodes, int endNumNodes, int numPlots,
+		double startRatioClauseNode, double endRatioClauseNode,
+		int numRatios, int numAvg,
+		DPLLNodeChoiceMode nodeChoiceMode) {
 
-		auto x_domain = create_x_domain(
-			start_ratio_clause_node, end_ratio_clause_node, num_ratios);
+		auto xDomain = create_x_domain(
+			startRatioClauseNode, endRatioClauseNode, numRatios);
 
-		auto diff_num_nodes = (end_num_nodes - start_num_nodes) / (num_plots-1);
+		auto diff_numNodes = (endNumNodes - startNumNodes) / (numPlots-1);
 
-		auto solver = DPLLSolver(node_choice_mode);
+		auto solvers = std::vector<std::unique_ptr<Solver>>();
+		solvers.push_back(
+			std::make_unique<DPLLSolver>(nodeChoiceMode));
 
-		auto vec_ys = std::vector<std::vector<double>>();
-		vec_ys.reserve(num_ratios);
-		auto vec_ts = std::vector<std::vector<std::array<double, 2>>>();
-		vec_ts.reserve(num_ratios);
-		for (auto i = 0; i < num_ratios; ++i) {
+		auto vecYs = std::vector<std::vector<double>>();
+		vecYs.reserve(numRatios);
+		auto vecTs = std::vector<std::vector<std::array<double, 2>>>();
+		vecTs.reserve(numRatios);
+		for (auto i = 0; i < numRatios; ++i) {
 
-			auto ratio = start_ratio_clause_node + i*x_domain[1];
+			auto ratio = startRatioClauseNode + i*xDomain[1];
 
 			std::cout << "Ratio: " << ratio << std::endl;
 
-			auto vec_y = std::vector<double>();
-			vec_y.reserve(num_plots);
-			auto vec_t = std::vector<std::array<double, 2>>();
-			vec_t.reserve(num_ratios);
-			for(auto j=0; j < num_plots; ++j) {
+			auto vecY = std::vector<double>();
+			vecY.reserve(numPlots);
+			auto vecT = std::vector<std::array<double, 2>>();
+			vecT.reserve(numRatios);
+			for(auto j=0; j < numPlots; ++j) {
 
-				auto num_nodes = start_num_nodes + j*diff_num_nodes;
-				auto num_clauses = unsigned int(std::ceil(num_nodes * ratio));
+				auto numNodes = startNumNodes + j*diff_numNodes;
+				auto numClauses = unsigned int(std::ceil(numNodes * ratio));
 
-				std::cout << "Num nodes: " << num_nodes
-					<< "  Num clauses: " << num_clauses << std::endl;
+				std::cout << "Num nodes: " << numNodes
+					<< "  Num clauses: " << numClauses << std::endl;
 
 				auto satData = frac_satisfiable(
-					solver, num_nodes, num_clauses, num_average);
+					solvers, numNodes, numClauses, numAvg);
+
+				auto& dpllData = satData[0];
 
 				std::cout << "Set of num_node/num_clause ";
-				std::cout << num_average * satData[1] << std::endl;
+				std::cout << dpllData[1] << std::endl;
 
-				vec_y.push_back(satData[0]);
-				vec_t.push_back({ satData[1], satData[2] });
+				vecY.push_back(dpllData[0]);
+				vecT.push_back({ dpllData[1], dpllData[2] });
 
 			}
 
-			vec_ys.push_back(std::move(vec_y));
-			vec_ts.push_back(std::move(vec_t));
+			vecYs.push_back(std::move(vecY));
+			vecTs.push_back(std::move(vecT));
 
 		}
 
 		return {
-			XYData<double, double>(std::make_pair(x_domain, vec_ys)),
-			XYData<double, double>(std::make_pair(x_domain, vec_ts))
+			XYData<double, double>(std::make_pair(xDomain, vecYs)),
+			XYData<double, double>(std::make_pair(xDomain, vecTs))
+		};
+
+	}
+
+
+	SatReturn create_multiple_sat_data_comparison(
+		int startNumNodes, int endNumNodes, int numPlots,
+		double startRatioClauseNode, double endRatioClauseNode,
+		int numRatios, int numAvg,
+		DPLLNodeChoiceMode dpllNodeChoiceMode, WalkNodeChoiceMode walkNodeChoiceMode) {
+
+		auto xDomain = create_x_domain(
+			startRatioClauseNode, endRatioClauseNode, numRatios);
+
+		auto diff_numNodes = (endNumNodes - startNumNodes) / (numPlots - 1);
+
+		auto solvers = std::vector<std::unique_ptr<Solver>>();
+		solvers.push_back(
+			std::make_unique<DPLLSolver>(dpllNodeChoiceMode));
+		solvers.push_back(
+			std::make_unique<WalkSolver>(5, 1000, walkNodeChoiceMode));
+
+		auto vecYs = std::vector<std::vector<double>>();
+		vecYs.reserve(numRatios);
+		auto vecTs = std::vector<std::vector<std::array<double, 2>>>();
+		vecTs.reserve(numRatios);
+		for (auto i = 0; i < numRatios; ++i) {
+
+			auto ratio = startRatioClauseNode + i*xDomain[1];
+
+			std::cout << "Ratio: " << ratio << std::endl;
+
+			auto vecY = std::vector<double>();
+			vecY.reserve(numPlots);
+			auto vecT = std::vector<std::array<double, 2>>();
+			vecT.reserve(numRatios);
+			for (auto j = 0; j < numPlots; ++j) {
+
+				auto numNodes = startNumNodes + j*diff_numNodes;
+				auto numClauses = unsigned int(std::ceil(numNodes * ratio));
+
+				std::cout << "Num nodes: " << numNodes
+					<< "  Num clauses: " << numClauses << std::endl;
+
+				auto satData = frac_satisfiable(
+					solvers, numNodes, numClauses, numAvg);
+
+				auto& dpllData = satData[0];
+				auto& walkData = satData[0];
+
+				std::cout << "Set of num_node/num_clause ";
+				std::cout << dpllData[1] << " dpll avg and ";
+				std::cout << walkData[1] << " walk avg" << std::endl;
+
+				vecY.push_back(dpllData[0]);
+				vecY.push_back(walkData[0]);
+				vecT.push_back({ dpllData[1], dpllData[2] });
+				vecT.push_back({ walkData[1], walkData[2] });
+
+			}
+
+			vecYs.push_back(std::move(vecY));
+			vecTs.push_back(std::move(vecT));
+
+		}
+
+		return{
+			XYData<double, double>(std::make_pair(xDomain, vecYs)),
+			XYData<double, double>(std::make_pair(xDomain, vecTs))
 		};
 
 	}

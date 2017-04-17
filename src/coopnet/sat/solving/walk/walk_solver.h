@@ -32,7 +32,7 @@ namespace coopnet {
 		WalkSolver(
 			unsigned int retriesUntilFail,
 			size_t numStepsToRetry,
-			WalkNodeChoiceMode mode = WalkNodeChoiceMode::Random);
+			WalkNodeChoiceMode mode = WalkNodeChoiceMode::GSAT);
 
 		WalkSolver(const WalkSolver& other) = delete;
 		WalkSolver& operator=(const WalkSolver& other) = delete;
@@ -40,7 +40,7 @@ namespace coopnet {
 		WalkSolver(WalkSolver&& other) = default;
 		WalkSolver& operator=(WalkSolver&& other) = default;
 
-		~WalkSolver();
+		~WalkSolver() override;
 	
 	protected:
 		

@@ -39,7 +39,7 @@ namespace coopnet {
 		DPLLSolver(DPLLSolver&& other) = default;
 		DPLLSolver& operator=(DPLLSolver&& other) = default;
 
-		~DPLLSolver();
+		~DPLLSolver() override;
 	
 	protected:
 		

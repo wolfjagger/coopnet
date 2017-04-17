@@ -21,6 +21,8 @@ namespace coopnet {
 		Solver(Solver&& other) = default;
 		Solver& operator=(Solver&& other) = default;
 
+		virtual ~Solver() = 0;
+
 		virtual Solution solve(const Problem& prob) = 0;
 
 	};

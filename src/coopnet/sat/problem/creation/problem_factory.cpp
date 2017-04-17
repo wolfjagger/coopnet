@@ -252,7 +252,7 @@ namespace coopnet { namespace problem_factory {
 
 			// Generate three unique numbers
 			auto nums = std::vector<int>(3);
-			for (auto i = 0; i < nums.size(); ++i) {
+			for (unsigned i = 0; i < nums.size(); ++i) {
 
 				while (true) {
 					
@@ -262,7 +262,7 @@ namespace coopnet { namespace problem_factory {
 					auto accumulatedDegreeEnd = alphali::rand_leq(totDegree - 1);
 
 					auto newNum = 0;
-					for (auto num = 0; num < nodeDegree.size(); ++num) {
+					for (unsigned num = 0; num < nodeDegree.size(); ++num) {
 						accumulatedDegree += nodeDegree[num] + 1;
 						if (accumulatedDegree > accumulatedDegreeEnd) {
 							newNum = num;
