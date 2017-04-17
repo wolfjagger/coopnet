@@ -303,7 +303,7 @@ namespace coopplot {
 					solvers, numNodes, numClauses, numAvg);
 
 				auto& dpllData = satData[0];
-				auto& walkData = satData[0];
+				auto& walkData = satData[1];
 
 				std::cout << "Set of num_node/num_clause ";
 				std::cout << dpllData[1] << " dpll avg and ";

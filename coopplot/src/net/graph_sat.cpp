@@ -79,18 +79,20 @@ namespace coopplot {
 		auto endRatio = 5.5;
 		auto numRatios = 21;
 		auto numAvg = 100;
-		auto nodeChoiceMode
+		auto dpllNodeChoiceMode
 			= coopnet::DPLLNodeChoiceMode::MostTotClauses;
+		auto walkNodeChoiceMode
+			= coopnet::WalkNodeChoiceMode::UnsatClauseMC;
 
 
 		auto timer = alphali::timer();
 
 
-		auto data = create_multiple_sat_data(
+		auto data = create_multiple_sat_data_comparison(
 			startNumNodes, endNumNodes, numPlots,
 			startRatio, endRatio,
 			numRatios, numAvg,
-			nodeChoiceMode);
+			dpllNodeChoiceMode, walkNodeChoiceMode);
 
 
 		timer.stop();
