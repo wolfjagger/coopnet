@@ -12,7 +12,7 @@ namespace coopplot {
 
 		using namespace coopplot;
 
-		auto numNodes = 100;
+		auto numNodes = 150;
 		auto startRatio = 3.5;
 		auto endRatio = 5.5;
 		auto numRatios = 21;
@@ -72,9 +72,9 @@ namespace coopplot {
 
 		using namespace coopplot;
 
-		auto startNumNodes = 20;
+		auto startNumNodes = 50;
 		auto endNumNodes = 200;
-		auto numPlots = 10;
+		auto numPlots = 4;
 		auto startRatio = 3.5;
 		auto endRatio = 5.5;
 		auto numRatios = 21;

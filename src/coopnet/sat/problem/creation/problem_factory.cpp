@@ -272,7 +272,7 @@ namespace coopnet { namespace problem_factory {
 
 					// Check the new node is unique
 					auto unique = true;
-					for (auto j = 0; j < i; ++j) {
+					for (unsigned j = 0; j < i; ++j) {
 						if (newNum == nums[j]) unique = false;
 					}
 
