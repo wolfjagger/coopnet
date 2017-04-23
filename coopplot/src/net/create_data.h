@@ -39,4 +39,15 @@ namespace coopplot {
 		coopnet::DPLLNodeChoiceMode dpllNodeChoiceMode,
 		coopnet::WalkNodeChoiceMode walkNodeChoiceMode);
 
+	struct WalkProbReturn {
+		XYData<double, double> trueSat;
+		XYData<double, double> sat;
+		XYData<double, double> time;
+	};
+
+	WalkProbReturn create_walk_prob_data(
+		int numNodes, int numClauses,
+		int numAvg, int numProbs,
+		coopnet::WalkNodeChoiceMode nodeChoiceMode);
+
 }

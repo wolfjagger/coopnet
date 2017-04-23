@@ -105,7 +105,6 @@ namespace coopplot {
 		auto xDomain = create_x_domain(
 			startRatioClauseNode, endRatioClauseNode, numRatios);
 
-		auto solver = std::make_unique<DPLLSolver>(nodeChoiceMode);
 		auto solvers = std::vector<std::unique_ptr<Solver>>();
 		solvers.push_back(
 			std::make_unique<DPLLSolver>(nodeChoiceMode));
@@ -325,6 +324,52 @@ namespace coopplot {
 			XYData<double, double>(std::make_pair(xDomain, vecYs)),
 			XYData<double, double>(std::make_pair(xDomain, vecTs))
 		};
+
+	}
+
+
+
+	WalkProbReturn create_walk_prob_data(
+		int numNodes, int numClauses,
+		int numAvg, int numProbs,
+		coopnet::WalkNodeChoiceMode nodeChoiceMode) {
+
+		auto deltaX = 1.f / (numProbs-1);
+
+		auto xDomain = create_x_domain(0, 1, numProbs);
+
+		auto solvers = std::vector<std::unique_ptr<Solver>>();
+		solvers.push_back(
+			std::make_unique<WalkSolver>(5, 1000, nodeChoiceMode));
+
+		auto vecY = std::vector<double>();
+		vecY.reserve(numProbs);
+		auto vecT = std::vector<std::array<double, 2>>();
+		vecT.reserve(numProbs);
+		for (auto i = 0; i < numProbs; ++i) {
+
+			auto prob = i*xDomain[1];
+
+			std::cout << "Ratio: " << ratio << std::endl;
+
+			auto satData = frac_satisfiable(
+				solvers, numNodes, numClauses, numAvg);
+
+			auto& dpllData = satData[0];
+
+			std::cout << "Set of num_node/num_clause ";
+			std::cout << dpllData[1] << std::endl;
+
+			vecY.push_back(dpllData[0]);
+			vecT.push_back({ dpllData[1], dpllData[2] });
+
+		}
+
+		return{
+			XYData<double, double>(std::make_pair(xDomain, vecY)),
+			XYData<double, double>(std::make_pair(xDomain, vecT))
+		};
+
 
 	}
 	

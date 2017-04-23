@@ -40,6 +40,10 @@ namespace coopnet {
 		DPLLSolver& operator=(DPLLSolver&& other) = default;
 
 		~DPLLSolver() override;
+
+
+
+		void set_problem(const Problem& prob);
 	
 	protected:
 		

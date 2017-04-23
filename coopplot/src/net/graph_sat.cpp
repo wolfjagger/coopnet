@@ -132,4 +132,29 @@ namespace coopplot {
 
 	}
 
+
+
+	void graph_walk_wrt_greedy_prob(
+		const std::string& foldername, bool withTime) {
+
+		auto numNodes = 150;
+		auto numClauses = 600,
+		auto numAvg = 40;
+		auto numProbs = 11;
+		auto nodeChoiceMode
+			= coopnet::WalkNodeChoiceMode::UnsatClauseMC;
+
+
+		auto timer = alphali::timer();
+
+
+		auto data = create_walk_prob_data(
+			numNodes, numClauses, numAvg, numProbs, nodeChoiceMode);
+
+
+		timer.stop();
+		timer.output("create_multiple_sat_data");
+
+	}
+
 }

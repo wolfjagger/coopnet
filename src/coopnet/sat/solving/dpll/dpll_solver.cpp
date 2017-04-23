@@ -48,6 +48,22 @@ DPLLSolver::~DPLLSolver() {
 
 
 
+void DPLLSolver::set_problem(const Problem& prob) {
+	formula = std::make_unique<DPLLFormula>(prob);
+	decisions = std::stack<DPLLNodeChoiceBranch>();
+}
+
+template<typename SolverType, typename... Args>
+void DPLLSolver::create_solver(Args&& args) {
+	
+	if (!formula) throw std::exception("Formula not set.");
+
+	nodeChooser = std::make_unique<SolverType>(*formula, args);
+
+}
+
+
+
 /*
 * Recursive DPLL(F,p)
 * Input : A CNF formula F and an initially empty partial assignment p
