@@ -6,12 +6,45 @@ using namespace coopnet;
 
 
 
-WalkNodeChooser::WalkNodeChooser(const WalkFormula& initForm) :
-	form(initForm) {
+WalkNodeChooser::WalkNodeChooser() :
+	form(nullptr) {
 
 }
 
+WalkNodeChooser::WalkNodeChooser(const WalkFormula& initForm) :
+	form(&initForm) {
+
+}
+
+
+
+std::unique_ptr<WalkNodeChooser> WalkNodeChooser::create(WalkNodeChoiceMode mode) {
+
+	switch (mode) {
+	case WalkNodeChoiceMode::Random:
+		return std::make_unique<RandWalkNodeChooser>();
+	case WalkNodeChoiceMode::GSAT:
+		return std::make_unique<GSATNodeChooser>();
+	case WalkNodeChoiceMode::UnsatClauseMC:
+		return std::make_unique<UnsatClauseMCNodeChooser>();
+	default:
+		throw std::exception("Unknown Walk node choice mode.");
+	}
+
+}
+
+
+
+void WalkNodeChooser::set_formula(const WalkFormula& newFormula) {
+	form = &newFormula;
+	do_set_formula();
+}
+
+
+
 VertDescriptor WalkNodeChooser::choose() {
+
+	if (!form) throw std::exception("Formula needs to be set before choosing node.");
 
 	return do_choose();
 
@@ -30,7 +63,7 @@ namespace {
 
 VertDescriptor RandWalkNodeChooser::do_choose() {
 
-	auto& graph = form.graph();
+	auto& graph = form->graph();
 
 	auto vPair = boost::vertices(graph);
 
@@ -86,9 +119,15 @@ GSATNodeChooser::GSATNodeChooser(const WalkFormula& initForm) :
 
 
 
+void GSATNodeChooser::do_set_formula() {
+	sortedNodes = init_sorted_nodes(*form);
+}
+
+
+
 VertDescriptor GSATNodeChooser::do_choose() {
 
-	auto& g = form.graph();
+	auto& g = form->graph();
 
 	sort_nodes(g, sortedNodes);
 
@@ -108,6 +147,12 @@ VertDescriptor GSATNodeChooser::do_choose() {
 
 
 
+UnsatClauseMCNodeChooser::UnsatClauseMCNodeChooser(double initGreedyProb) :
+	WalkNodeChooser(),
+	greedyProb(initGreedyProb) {
+
+}
+
 UnsatClauseMCNodeChooser::UnsatClauseMCNodeChooser(
 	const WalkFormula& initForm, double initGreedyProb) :
 	WalkNodeChooser(initForm),
@@ -117,7 +162,7 @@ UnsatClauseMCNodeChooser::UnsatClauseMCNodeChooser(
 
 VertDescriptor UnsatClauseMCNodeChooser::do_choose() {
 
-	auto& g = form.graph();
+	auto& g = form->graph();
 
 	auto verts = boost::vertices(g);
 	auto unsatClause = alphali::random_find_if(verts.first, verts.second,

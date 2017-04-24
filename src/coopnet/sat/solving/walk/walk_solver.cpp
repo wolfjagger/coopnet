@@ -24,6 +24,24 @@ WalkSolver::WalkSolver(
 
 }
 
+WalkSolver::WalkSolver(WalkSolver&& other) {
+	*this = std::move(other);
+}
+WalkSolver& WalkSolver::operator=(WalkSolver&& other) {
+
+	Solver::operator=(std::move(other));
+
+	formula = std::move(other.formula);
+	nodeChooser = std::move(other.nodeChooser);
+
+	if (formula && nodeChooser) {
+		nodeChooser->set_formula(*formula);
+	}
+
+	return *this;
+
+}
+
 WalkSolver::~WalkSolver() {
 
 }
@@ -39,7 +57,22 @@ void WalkSolver::set_problem(const Problem& prob) {
 	}
 
 	formula = std::make_unique<WalkFormula>(prob);
-	nodeChooser = nullptr;
+
+	if (nodeChooser) nodeChooser->set_formula(*formula);
+
+}
+
+void WalkSolver::set_chooser(std::unique_ptr<WalkNodeChooser> newChooser) {
+
+	if (DEBUG) {
+		std::cout << "Setting node chooser\n";
+	}
+
+	nodeChooser = std::move(newChooser);
+
+	if (formula && nodeChooser) {
+		nodeChooser->set_formula(*formula);
+	}
 
 }
 
@@ -47,8 +80,11 @@ void WalkSolver::set_problem(const Problem& prob) {
 
 Solution WalkSolver::try_single_solve() {
 
-	if (!formula || !nodeChooser)
-		throw std::exception("Cannot WalkSolve before setting formula and node chooser.");
+	if (!formula)
+		throw std::exception("Cannot WalkSolve before setting formula.");
+
+	if (!nodeChooser)
+		throw std::exception("Cannot WalkSolve before setting node chooser.");
 
 	if (DEBUG) std::cout << "Set random formula assignment\n";
 

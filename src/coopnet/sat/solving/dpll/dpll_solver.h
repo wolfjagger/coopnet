@@ -32,8 +32,8 @@ namespace coopnet {
 		DPLLSolver(const DPLLSolver& other) = delete;
 		DPLLSolver& operator=(const DPLLSolver& other) = delete;
 
-		DPLLSolver(DPLLSolver&& other) = default;
-		DPLLSolver& operator=(DPLLSolver&& other) = default;
+		DPLLSolver(DPLLSolver&& other);
+		DPLLSolver& operator=(DPLLSolver&& other);
 
 		~DPLLSolver() override;
 
@@ -41,13 +41,15 @@ namespace coopnet {
 
 		void set_problem(const Problem& prob) override;
 
+		void set_chooser(std::unique_ptr<DPLLNodeChooser> newChooser);
+
 		template<typename ChooserType, typename... Args>
 		void create_chooser(Args&&... args) {
 
-			if (!formula) throw std::exception("Formula not set.");
+			auto chooser = std::make_unique<ChooserType>(
+				std::forward<Args>(args)...);
 
-			nodeChooser = std::make_unique<ChooserType>(
-				*formula, std::forward<Args>(args)...);
+			set_chooser(std::move(chooser));
 
 		}
 

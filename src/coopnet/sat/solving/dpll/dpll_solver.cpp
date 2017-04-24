@@ -9,7 +9,29 @@ using namespace coopnet;
 
 
 
-DPLLSolver::DPLLSolver() {
+DPLLSolver::DPLLSolver() :
+	formula(nullptr),
+	decisions(),
+	nodeChooser(nullptr) {
+
+}
+
+DPLLSolver::DPLLSolver(DPLLSolver&& other) {
+	*this = std::move(other);
+}
+DPLLSolver& DPLLSolver::operator=(DPLLSolver&& other) {
+
+	Solver::operator=(std::move(other));
+
+	formula = std::move(other.formula);
+	decisions = std::move(other.decisions);
+	nodeChooser = std::move(other.nodeChooser);
+
+	if (formula && nodeChooser) {
+		nodeChooser->set_formula(*formula);
+	}
+
+	return *this;
 
 }
 
@@ -29,7 +51,24 @@ void DPLLSolver::set_problem(const Problem& prob) {
 
 	formula = std::make_unique<DPLLFormula>(prob);
 	decisions = std::stack<DPLLNodeChoiceBranch>();
-	nodeChooser = nullptr;
+
+	if (nodeChooser) {
+		nodeChooser->set_formula(*formula);
+	}
+
+}
+
+void DPLLSolver::set_chooser(std::unique_ptr<DPLLNodeChooser> newChooser) {
+
+	if (DEBUG) {
+		std::cout << "Setting node chooser\n";
+	}
+
+	nodeChooser = std::move(newChooser);
+
+	if (formula && nodeChooser) {
+		nodeChooser->set_formula(*formula);
+	}
 
 }
 
@@ -61,8 +100,11 @@ void DPLLSolver::set_problem(const Problem& prob) {
 
 auto DPLLSolver::do_solve() -> Solution {
 	
-	if (!formula || !nodeChooser)
-		throw std::exception("Cannot DPLLSolve before setting formula and node chooser.");
+	if (!formula)
+		throw std::exception("Cannot DPLLSolve before setting formula.");
+		
+	if (!nodeChooser)
+		throw std::exception("Cannot DPLLSolve before setting node chooser.");
 
 	find_assignment();
 
@@ -85,7 +127,6 @@ auto DPLLSolver::do_solve() -> Solution {
 	}
 
 	formula = nullptr;
-	nodeChooser = nullptr;
 
 	return solution;
 

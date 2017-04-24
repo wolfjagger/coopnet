@@ -20,15 +20,25 @@ namespace coopnet {
 	class DPLLNodeChooser {
 
 	protected:
-		const DPLLFormula& form;
+		const DPLLFormula* form;
 
+		DPLLNodeChooser();
 		DPLLNodeChooser(const DPLLFormula& initForm);
 
 	public:
 
+		virtual ~DPLLNodeChooser() = 0;
+
+		static std::unique_ptr<DPLLNodeChooser>
+			create(DPLLNodeChoiceMode mode);
+
+		void set_formula(const DPLLFormula& form);
+
 		boost::optional<DPLLNodeChoice> choose();
 
 	protected:
+
+		virtual void do_set_formula() { }
 
 		virtual DPLLNodeChoice do_choose() = 0;
 
@@ -39,6 +49,7 @@ namespace coopnet {
 	class NextNodeChooser : public DPLLNodeChooser {
 
 	public:
+		NextNodeChooser() = default;
 		NextNodeChooser(const DPLLFormula& form);
 
 	protected:
@@ -50,6 +61,7 @@ namespace coopnet {
 	class RandNodeChooser : public DPLLNodeChooser {
 
 	public:
+		RandNodeChooser() = default;
 		RandNodeChooser(const DPLLFormula& form);
 
 	protected:
@@ -61,6 +73,7 @@ namespace coopnet {
 	class MaxSameClauseNodeChooser : public DPLLNodeChooser {
 
 	public:
+		MaxSameClauseNodeChooser() = default;
 		MaxSameClauseNodeChooser(const DPLLFormula& form);
 
 	protected:
@@ -72,6 +85,7 @@ namespace coopnet {
 	class MaxTotClauseNodeChooser : public DPLLNodeChooser {
 
 	public:
+		MaxTotClauseNodeChooser() = default;
 		MaxTotClauseNodeChooser(const DPLLFormula& form);
 
 	protected:

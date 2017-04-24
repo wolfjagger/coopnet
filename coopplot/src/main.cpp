@@ -10,6 +10,8 @@ int main(int, char*[]) {
 
 	coopplot::graph_multi_satisfiability(foldername, true);
 
+	coopplot::graph_walk_wrt_greedy_prob(foldername, true);
+
 	return 0;
 
 }

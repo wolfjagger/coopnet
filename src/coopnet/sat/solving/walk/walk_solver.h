@@ -33,8 +33,8 @@ namespace coopnet {
 		WalkSolver(const WalkSolver& other) = delete;
 		WalkSolver& operator=(const WalkSolver& other) = delete;
 
-		WalkSolver(WalkSolver&& other) = default;
-		WalkSolver& operator=(WalkSolver&& other) = default;
+		WalkSolver(WalkSolver&& other);
+		WalkSolver& operator=(WalkSolver&& other);
 
 		~WalkSolver() override;
 
@@ -42,15 +42,15 @@ namespace coopnet {
 		
 		void set_problem(const Problem& prob) override;
 
+		void set_chooser(std::unique_ptr<WalkNodeChooser> newChooser);
+
 		template<typename ChooserType, typename... Args>
 		void create_chooser(Args&&... args) {
 
-			if (!formula) throw std::exception("Formula not set.");
+			auto chooser = std::make_unique<ChooserType>(
+				std::forward<Args>(args)...);
 
-			if (DEBUG) std::cout << "Create node chooser\n";
-
-			nodeChooser = std::make_unique<ChooserType>(
-				*formula, std::forward<Args>(args)...);
+			set_chooser(std::move(chooser));
 
 		}
 
