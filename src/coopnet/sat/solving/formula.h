@@ -39,9 +39,16 @@ namespace coopnet {
 		Assignment create_assignment() const;
 		void set_assignment(const Assignment& assignment);
 
+		virtual void reset() = 0;
+
 		virtual bool is_SAT() const = 0;
 
 		virtual const Graph& graph() const = 0;
+
+		auto node_begin() const;
+		auto node_end() const;
+
+
 
 	protected:
 

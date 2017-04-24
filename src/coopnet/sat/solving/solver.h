@@ -23,7 +23,9 @@ namespace coopnet {
 
 		virtual ~Solver() = 0;
 
-		virtual Solution solve(const Problem& prob) = 0;
+		virtual void set_problem(const Problem& prob) = 0;
+
+		virtual Solution solve() = 0;
 
 	};
 
@@ -33,11 +35,11 @@ namespace coopnet {
 
 	public:
 
-		Solution solve(const Problem& prob) override;
+		Solution solve() override;
 
 	protected:
 
-		virtual Solution do_solve(const Problem& prob) = 0;
+		virtual Solution do_solve() = 0;
 
 	};
 
@@ -47,11 +49,11 @@ namespace coopnet {
 
 	public:
 
-		Solution solve(const Problem& prob) override;
+		Solution solve() override;
 
 	protected:
 		
-		virtual Solution try_single_solve(const Problem& prob) = 0;
+		virtual Solution try_single_solve() = 0;
 
 		virtual unsigned int retry_count() const = 0;
 

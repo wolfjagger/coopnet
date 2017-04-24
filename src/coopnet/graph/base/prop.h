@@ -16,8 +16,10 @@ namespace coopnet {
 		switch (kind) {
 		case VertKind::Node:
 			os << "Node";
+			break;
 		case VertKind::Clause:
 			os << "Clause";
+			break;
 		}
 		return os;
 	}

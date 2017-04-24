@@ -174,7 +174,7 @@ std::ostream& coopnet::operator<<(std::ostream& os, const Problem& prob) {
 	auto vertPair = boost::vertices(prob.get_graph());
 	for (auto vert = vertPair.first; vert != vertPair.second; ++vert) {
 		const auto& prop = g[*vert];
-		os << prop.kind() << prop.name << std::endl;
+		os << prop.kind() << " " << prop.name << std::endl;
 	}
 
 	return os << std::endl;

@@ -55,12 +55,12 @@ namespace coopplot {
 
 
 		save_and_plot_xy(xRange, yRangeSat, data.sat,
-			foldername, "satisfiability", "gnu_sat",
+			foldername, "sat", "gnu_sat",
 			titleSat, plotTitles, false);
 
 		if(withTime) {
 			save_and_plot_xy(xRange, yRangeTime, data.time,
-				foldername, "sat_time", "gnu_time",
+				foldername, "sat_time", "gnu_sat_time",
 				titleTime, plotTitles, true);
 		}
 
@@ -121,13 +121,68 @@ namespace coopplot {
 
 
 		save_and_plot_xy(xRange, yRangeSat, data.sat,
-			foldername, "multi_satisfiability", "gnu_multi_sat",
+			foldername, "multi_sat", "gnu_multi_sat",
 			titleSat, plotTitles, false);
 
 		if (withTime) {
 			save_and_plot_xy(xRange, yRangeTime, data.time,
-				foldername, "multi_sat_time", "gnu_multi_time",
+				foldername, "multi_sat_time", "gnu_multi_sat_time",
 				titleSat, plotTitles, true);
+		}
+
+	}
+
+
+
+	void graph_walk_wrt_greedy_prob(
+		const std::string& foldername, bool withTime) {
+
+		auto numNodes = 150;
+		auto ratio = 4.2;
+		auto numClauses = int(ratio*numNodes);
+		auto numAvg = 100;
+		auto numProbs = 51;
+
+
+		auto timer = alphali::timer();
+
+
+		auto data = create_walk_prob_data(
+			numNodes, numClauses, numAvg, numProbs);
+
+
+		timer.stop();
+		timer.output("create_walk_prob_data");
+
+
+		std::string titleSat = "Satisfiability with ";
+		titleSat += std::to_string(numNodes);
+		titleSat += " nodes and ";
+		titleSat += std::to_string(numClauses);
+		titleSat += " clauses";
+		std::string titleTime = "Time with ";
+		titleTime += std::to_string(numNodes);
+		titleTime += " nodes";
+		titleTime += std::to_string(numClauses);
+		titleTime += " clauses";
+
+		auto plotTitles = std::vector<std::string>();
+		plotTitles.push_back("True");
+		plotTitles.push_back("Walk");
+
+		RangeData<double> xRange = { 0.0, 1.0 };
+		RangeData<double> yRangeSat = { 0.0, 1.0 };
+		RangeData<double> yRangeTime = { 0.0, 1.0 };
+
+
+		save_and_plot_xy(xRange, yRangeSat, data.sat,
+			foldername, "greedy_prob", "gnu_greedy_prob",
+			titleSat, plotTitles, false);
+
+		if (withTime) {
+			save_and_plot_xy(xRange, yRangeTime, data.time,
+				foldername, "greedy_prob_time", "gnu_greedy_prob_time",
+				titleTime, plotTitles, true);
 		}
 
 	}

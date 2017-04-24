@@ -19,18 +19,23 @@ namespace coopnet {
 	class WalkNodeChooser {
 
 	protected:
-		const WalkFormula& form;
+		const WalkFormula* form;
 
+		WalkNodeChooser();
 		WalkNodeChooser(const WalkFormula& initForm);
 
 	public:
 
-		static std::unique_ptr<WalkNodeChooser> create(
-			const WalkFormula& form, WalkNodeChoiceMode mode);
+		static std::unique_ptr<WalkNodeChooser>
+			create(WalkNodeChoiceMode mode);
+
+		void set_formula(const WalkFormula& form);
 
 		VertDescriptor choose();
 
 	protected:
+
+		virtual void do_set_formula() { }
 
 		virtual VertDescriptor do_choose() = 0;
 
@@ -43,6 +48,7 @@ namespace coopnet {
 	class RandWalkNodeChooser : public WalkNodeChooser {
 
 	public:
+		RandWalkNodeChooser() = default;
 		RandWalkNodeChooser(const WalkFormula& initForm);
 
 	protected:
@@ -59,9 +65,11 @@ namespace coopnet {
 		std::vector<VertDescriptor> sortedNodes;
 
 	public:
+		GSATNodeChooser() = default;
 		GSATNodeChooser(const WalkFormula& initForm);
 
 	protected:
+		void do_set_formula() override;
 		VertDescriptor do_choose() override;
 
 	};
@@ -73,6 +81,7 @@ namespace coopnet {
 		double greedyProb;
 
 	public:
+		UnsatClauseMCNodeChooser(double initGreedyProb = 0.5);
 		UnsatClauseMCNodeChooser(
 			const WalkFormula& initForm, double initGreedyProb = 0.5);
 

@@ -37,18 +37,24 @@ namespace {
 		const Problem& prob, unsigned int numTries, unsigned int numSteps) {
 
 		if (DEBUG) std::cout << "Random WalkSAT\n";
-		auto solver_rand = WalkSolver(numTries, numSteps, WalkNodeChoiceMode::Random);
-		auto pair_rand = solver_rand.solve(prob);
+		auto solver_rand = WalkSolver(numTries, numSteps);
+		solver_rand.set_problem(prob);
+		solver_rand.create_chooser<RandWalkNodeChooser>();
+		auto pair_rand = solver_rand.solve();
 		auto sat_rand = check_solution(prob, pair_rand);
 
 		if (DEBUG) std::cout << "GSAT WalkSAT\n";
-		auto solver_gsat = WalkSolver(numTries, numSteps, WalkNodeChoiceMode::GSAT);
-		auto pair_gsat = solver_gsat.solve(prob);
+		auto solver_gsat = WalkSolver(numTries, numSteps);
+		solver_gsat.set_problem(prob);
+		solver_gsat.create_chooser<GSATNodeChooser>();
+		auto pair_gsat = solver_gsat.solve();
 		auto sat_gsat = check_solution(prob, pair_gsat);
 
 		if (DEBUG) std::cout << "UnsatClauseMC WalkSAT\n";
-		auto solver_mc = WalkSolver(numTries, numSteps, WalkNodeChoiceMode::UnsatClauseMC);
-		auto pair_mc = solver_mc.solve(prob);
+		auto solver_mc = WalkSolver(numTries, numSteps);
+		solver_mc.set_problem(prob);
+		solver_mc.create_chooser<UnsatClauseMCNodeChooser>();
+		auto pair_mc = solver_mc.solve();
 		auto sat_mc = check_solution(prob, pair_mc);
 
 	};

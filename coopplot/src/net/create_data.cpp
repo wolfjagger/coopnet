@@ -54,7 +54,10 @@ namespace coopplot {
 
 					timer.start();
 
-					auto solutionPair = solvers[solverIdx]->solve(problem);
+					auto& solver = *solvers[solverIdx];
+
+					solver.set_problem(problem);
+					auto solutionPair = solver.solve();
 					if (solutionPair.status == SolutionStatus::Satisfied)
 						++numSat[solverIdx];
 
@@ -92,6 +95,19 @@ namespace coopplot {
 
 		}
 
+		std::vector<std::array<double, 3>> frac_satisfiable(
+			std::unique_ptr<Solver>& solver,
+			int numNodes, int numClauses, int numAvg) {
+
+			auto solvers = std::vector<std::unique_ptr<Solver>>();
+			solvers.push_back(std::move(solver));
+			auto retVec = frac_satisfiable(solvers, numNodes, numClauses, numAvg);
+			solver = std::move(solvers[0]);
+			solvers.pop_back();
+			return retVec;
+
+		}
+
 	}
 
 
@@ -105,10 +121,10 @@ namespace coopplot {
 		auto xDomain = create_x_domain(
 			startRatioClauseNode, endRatioClauseNode, numRatios);
 
-		auto solver = std::make_unique<DPLLSolver>(nodeChoiceMode);
-		auto solvers = std::vector<std::unique_ptr<Solver>>();
-		solvers.push_back(
-			std::make_unique<DPLLSolver>(nodeChoiceMode));
+		auto solver = std::make_unique<DPLLSolver>();
+		solver->set_chooser(
+			DPLLNodeChooser::create(nodeChoiceMode));
+		std::unique_ptr<Solver> castSolver = std::move(solver);
 
 		auto vecY = std::vector<double>();
 		vecY.reserve(numRatios);
@@ -117,12 +133,12 @@ namespace coopplot {
 		for (auto i = 0; i < numRatios; ++i) {
 
 			auto ratio = startRatioClauseNode + i*xDomain[1];
-			auto numClauses = unsigned int(std::ceil(numNodes * ratio));
+			auto numClauses = int(std::ceil(numNodes * ratio));
 
 			std::cout << "Ratio: " << ratio << std::endl;
 
 			auto satData = frac_satisfiable(
-				solvers, numNodes, numClauses, numAvg);
+				castSolver, numNodes, numClauses, numAvg);
 
 			auto& dpllData = satData[0];
 
@@ -152,10 +168,16 @@ namespace coopplot {
 			startRatioClauseNode, endRatioClauseNode, numRatios);
 
 		auto solvers = std::vector<std::unique_ptr<Solver>>();
-		solvers.push_back(
-			std::make_unique<DPLLSolver>(dpllNodeChoiceMode));
-		solvers.push_back(
-			std::make_unique<WalkSolver>(5, 1000, walkNodeChoiceMode));
+
+		auto dpllSolver = std::make_unique<DPLLSolver>();
+		dpllSolver->set_chooser(
+			DPLLNodeChooser::create(dpllNodeChoiceMode));
+		solvers.push_back(std::move(dpllSolver));
+
+		auto walkSolver = std::make_unique<WalkSolver>(5, 1000);
+		walkSolver->set_chooser(
+			WalkNodeChooser::create(walkNodeChoiceMode));
+		solvers.push_back(std::move(walkSolver));
 
 		auto vecYs = std::vector<std::vector<double>>();
 		vecYs.reserve(numRatios);
@@ -208,9 +230,10 @@ namespace coopplot {
 
 		auto diff_numNodes = (endNumNodes - startNumNodes) / (numPlots-1);
 
-		auto solvers = std::vector<std::unique_ptr<Solver>>();
-		solvers.push_back(
-			std::make_unique<DPLLSolver>(nodeChoiceMode));
+		auto solver = std::make_unique<DPLLSolver>();
+		solver->set_chooser(
+			DPLLNodeChooser::create(nodeChoiceMode));
+		std::unique_ptr<Solver> castSolver = std::move(solver);
 
 		auto vecYs = std::vector<std::vector<double>>();
 		vecYs.reserve(numRatios);
@@ -229,13 +252,13 @@ namespace coopplot {
 			for(auto j=0; j < numPlots; ++j) {
 
 				auto numNodes = startNumNodes + j*diff_numNodes;
-				auto numClauses = unsigned int(std::ceil(numNodes * ratio));
+				auto numClauses = int(std::ceil(numNodes * ratio));
 
 				std::cout << "Num nodes: " << numNodes
 					<< "  Num clauses: " << numClauses << std::endl;
 
 				auto satData = frac_satisfiable(
-					solvers, numNodes, numClauses, numAvg);
+					castSolver, numNodes, numClauses, numAvg);
 
 				auto& dpllData = satData[0];
 
@@ -272,10 +295,14 @@ namespace coopplot {
 		auto diff_numNodes = (endNumNodes - startNumNodes) / (numPlots - 1);
 
 		auto solvers = std::vector<std::unique_ptr<Solver>>();
-		solvers.push_back(
-			std::make_unique<DPLLSolver>(dpllNodeChoiceMode));
-		solvers.push_back(
-			std::make_unique<WalkSolver>(5, 1000, walkNodeChoiceMode));
+		auto dpllSolver = std::make_unique<DPLLSolver>();
+		dpllSolver->set_chooser(
+			DPLLNodeChooser::create(dpllNodeChoiceMode));
+		solvers.push_back(std::move(dpllSolver));
+		auto walkSolver = std::make_unique<WalkSolver>(5, 1000);
+		walkSolver->set_chooser(
+			WalkNodeChooser::create(walkNodeChoiceMode));
+		solvers.push_back(std::move(walkSolver));
 
 		auto vecYs = std::vector<std::vector<double>>();
 		vecYs.reserve(numRatios);
@@ -325,6 +352,65 @@ namespace coopplot {
 			XYData<double, double>(std::make_pair(xDomain, vecYs)),
 			XYData<double, double>(std::make_pair(xDomain, vecTs))
 		};
+
+	}
+
+
+
+	SatReturn create_walk_prob_data(
+		int numNodes, int numClauses,
+		int numAvg, int numProbs) {
+
+		auto deltaX = 1.f / (numProbs-1);
+
+		auto xDomain = create_x_domain(0, 1, numProbs);
+
+
+		std::cout << "Get frac satisfiable using DPLL\n";
+
+		auto dpllSolver = std::make_unique<DPLLSolver>();
+		std::unique_ptr<DPLLNodeChooser> dpllChooser
+			= std::make_unique<MaxTotClauseNodeChooser>();
+		dpllSolver->set_chooser(std::move(dpllChooser));
+		std::unique_ptr<Solver> castDPLLSolver = std::move(dpllSolver);
+
+		auto dpllData = frac_satisfiable(
+			castDPLLSolver, numNodes, numClauses, numAvg);
+
+
+		std::unique_ptr<Solver> solver = std::make_unique<WalkSolver>(5, 10000);
+
+
+		auto vecY = std::vector<std::vector<double>>();
+		vecY.reserve(numProbs);
+		auto vecT = std::vector<std::array<double, 2>>();
+		vecT.reserve(numProbs);
+		for (auto i = 0; i < numProbs; ++i) {
+
+			auto prob = i*xDomain[1];
+
+			std::cout << "Greedy probability: " << prob << std::endl;
+
+			auto& walkSolver = static_cast<WalkSolver&>(*solver);
+			walkSolver.create_chooser<UnsatClauseMCNodeChooser>(prob);
+
+			auto satData = frac_satisfiable(
+				solver, numNodes, numClauses, numAvg);
+
+			auto& walkData = satData[0];
+
+			std::cout << "Average of " << walkData[1] << " secs." << std::endl;
+
+			vecY.push_back({ dpllData[0][0], walkData[0] });
+			vecT.push_back({ walkData[1], walkData[2] });
+
+		}
+
+		return{
+			XYData<double, double>(std::make_pair(xDomain, vecY)),
+			XYData<double, double>(std::make_pair(xDomain, vecT))
+		};
+
 
 	}
 	

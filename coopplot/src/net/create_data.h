@@ -39,4 +39,10 @@ namespace coopplot {
 		coopnet::DPLLNodeChoiceMode dpllNodeChoiceMode,
 		coopnet::WalkNodeChoiceMode walkNodeChoiceMode);
 
+
+
+	SatReturn create_walk_prob_data(
+		int numNodes, int numClauses,
+		int numAvg, int numProbs);
+
 }

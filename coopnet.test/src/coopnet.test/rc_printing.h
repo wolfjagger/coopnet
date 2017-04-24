@@ -5,9 +5,6 @@
 #include "boost/logic/tribool.hpp"
 #include "coopnet/sat/component/node.h"
 #include "coopnet/sat/component/clause.h"
-#include "coopnet/sat/problem/assignment.h"
-#include "coopnet/sat/problem/problem.h"
-#include "coopnet/sat/solving/solver.h"
 
 
 

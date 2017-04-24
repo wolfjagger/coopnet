@@ -43,8 +43,10 @@ namespace {
 	//  Choose at high level!
 	auto lam_dpll_solve_satisfiable = [](const Problem& prob) {
 
-		auto solver = DPLLSolver(DPLLNodeChoiceMode::Next);
-		auto pair = solver.solve(prob);
+		auto solver = DPLLSolver();
+		solver.set_problem(prob);
+		solver.create_chooser<NextNodeChooser>();
+		auto pair = solver.solve();
 
 		RC_ASSERT(pair.status == SolutionStatus::Satisfied);
 
@@ -166,13 +168,16 @@ TEST_CASE("Literal shuffle", "[sat]") {
 
 			auto shuffler = LiteralShuffler(prob);
 
-			auto solver = DPLLSolver(DPLLNodeChoiceMode::Next);
+			auto solver = DPLLSolver();
 
-			using namespace rc::detail;
+			solver.set_problem(prob);
+			solver.create_chooser<NextNodeChooser>();
+			auto solution_pair1 = solver.solve();
 
-			auto solution_pair1 = solver.solve(prob);
 			shuffler.apply_to_problem(prob);
-			auto solution_pair2 = solver.solve(prob);
+			solver.set_problem(prob);
+			solver.create_chooser<NextNodeChooser>();
+			auto solution_pair2 = solver.solve();
 
 			RC_ASSERT(
 				solution_pair1.status == solution_pair2.status);

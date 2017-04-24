@@ -8,24 +8,33 @@ using namespace coopnet;
 
 
 
+DPLLNodeChooser::DPLLNodeChooser() :
+	form(nullptr) {
+	
+}
+
 DPLLNodeChooser::DPLLNodeChooser(const DPLLFormula& initForm) :
-	form(initForm) {
+	form(&initForm) {
 
 }
 
 
-std::unique_ptr<DPLLNodeChooser>
-DPLLNodeChooser::create(const DPLLFormula& form, DPLLNodeChoiceMode mode) {
+
+DPLLNodeChooser::~DPLLNodeChooser() { }
+
+
+
+std::unique_ptr<DPLLNodeChooser> DPLLNodeChooser::create(DPLLNodeChoiceMode mode) {
 
 	switch (mode) {
 	case DPLLNodeChoiceMode::Next:
-		return std::make_unique<NextNodeChooser>(form);
+		return std::make_unique<NextNodeChooser>();
 	case DPLLNodeChoiceMode::Random:
-		return std::make_unique<RandNodeChooser>(form);
+		return std::make_unique<RandNodeChooser>();
 	case DPLLNodeChoiceMode::MostSameClauses:
-		return std::make_unique<MaxSameClauseNodeChooser>(form);
+		return std::make_unique<MaxSameClauseNodeChooser>();
 	case DPLLNodeChoiceMode::MostTotClauses:
-		return std::make_unique<MaxTotClauseNodeChooser>(form);
+		return std::make_unique<MaxTotClauseNodeChooser>();
 	default:
 		throw std::exception("Unknown DPLL node choice mode.");
 	}
@@ -34,9 +43,18 @@ DPLLNodeChooser::create(const DPLLFormula& form, DPLLNodeChoiceMode mode) {
 
 
 
+void DPLLNodeChooser::set_formula(const DPLLFormula& newFormula) {
+	form = &newFormula;
+	do_set_formula();
+}
+
+
+
 boost::optional<DPLLNodeChoice> DPLLNodeChooser::choose() {
 
-	auto& reversableGraph = form.reversable_graph();
+	if (!form) throw std::exception("Formula needs to be set before choosing node.");
+
+	auto& reversableGraph = form->reversable_graph();
 
 	// If none, return no node
 	if (!reversableGraph.is_indeterminate()) {
@@ -60,7 +78,7 @@ NextNodeChooser::NextNodeChooser(const DPLLFormula& initForm) :
 
 DPLLNodeChoice NextNodeChooser::do_choose() {
 
-	auto& reversableGraph = form.reversable_graph();
+	auto& reversableGraph = form->reversable_graph();
 
 	auto vPair = boost::vertices(reversableGraph.get_graph());
 
@@ -88,7 +106,7 @@ namespace detail {
 
 DPLLNodeChoice RandNodeChooser::do_choose() {
 
-	auto& reversableGraph = form.reversable_graph();
+	auto& reversableGraph = form->reversable_graph();
 
 	auto vPair = boost::vertices(reversableGraph.get_graph());
 
@@ -114,7 +132,7 @@ DPLLNodeChoice MaxSameClauseNodeChooser::do_choose() {
 
 	auto visitor = ChooseMaxSameClausesVisitor();
 
-	form.reversable_graph().visit(visitor);
+	form->reversable_graph().visit(visitor);
 
 	return visitor.retreive_choice();
 
@@ -131,7 +149,7 @@ DPLLNodeChoice MaxTotClauseNodeChooser::do_choose() {
 
 	auto visitor = ChooseMaxTotClausesVisitor();
 
-	form.reversable_graph().visit(visitor);
+	form->reversable_graph().visit(visitor);
 
 	return visitor.retreive_choice();
 
