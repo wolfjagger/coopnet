@@ -44,6 +44,10 @@ namespace coopnet {
 
 
 
+		void reset() override;
+
+
+
 		void set_node(DPLLNodeChoice choice);
 
 		void reverse_prune_to_assignment(VertDescriptor vertNode);

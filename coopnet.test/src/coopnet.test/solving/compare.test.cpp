@@ -13,10 +13,14 @@ namespace {
 
 	auto lam_compare_dpll_with_walk = [](const Problem& prob) {
 
-		auto dpll_solver = DPLLSolver(DPLLNodeChoiceMode::MostTotClauses);
-		auto dpll_pair = dpll_solver.solve(prob);
-		auto walk_solver = WalkSolver(5, 100, WalkNodeChoiceMode::UnsatClauseMC);
-		auto walk_pair = walk_solver.solve(prob);
+		auto dpll_solver = DPLLSolver();
+		dpll_solver.set_problem(prob);
+		dpll_solver.create_chooser<MaxTotClauseNodeChooser>();
+		auto dpll_pair = dpll_solver.solve();
+		auto walk_solver = WalkSolver(5, 100);
+		walk_solver.set_problem(prob);
+		walk_solver.create_chooser<UnsatClauseMCNodeChooser>();
+		auto walk_pair = walk_solver.solve();
 
 		switch (walk_pair.status) {
 		case SolutionStatus::Satisfied:

@@ -16,6 +16,8 @@ namespace coopnet {
 
 	private:
 
+		static constexpr bool DEBUG = false;
+
 		std::unique_ptr<DPLLFormula> formula;
 
 		std::unique_ptr<DPLLNodeChooser> nodeChooser;
@@ -25,13 +27,7 @@ namespace coopnet {
 
 	public:
 
-		// Set this to change how node is chosen
-		DPLLNodeChoiceMode nodeChoiceMode;
-
-	public:
-
-		DPLLSolver(
-			DPLLNodeChoiceMode mode = DPLLNodeChoiceMode::MostTotClauses);
+		DPLLSolver();
 
 		DPLLSolver(const DPLLSolver& other) = delete;
 		DPLLSolver& operator=(const DPLLSolver& other) = delete;
@@ -43,11 +39,23 @@ namespace coopnet {
 
 
 
-		void set_problem(const Problem& prob);
+		void set_problem(const Problem& prob) override;
+
+		template<typename ChooserType, typename... Args>
+		void create_chooser(Args&&... args) {
+
+			if (!formula) throw std::exception("Formula not set.");
+
+			nodeChooser = std::make_unique<ChooserType>(
+				*formula, std::forward<Args>(args)...);
+
+		}
+
+
 	
 	protected:
 		
-		virtual Solution do_solve(const Problem& prob) override;
+		virtual Solution do_solve() override;
 
 	private:
 
@@ -55,6 +63,8 @@ namespace coopnet {
 
 		bool change_last_free_choice();
 		void reduce_with_selection(DPLLNodeChoiceBranch decision);
+
+		void DEBUG_print_assignment(const DPLLFormula& formula);
 
 	};
 

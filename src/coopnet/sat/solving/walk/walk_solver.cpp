@@ -11,26 +11,16 @@ using namespace coopnet;
 
 namespace {
 
-	constexpr bool DEBUG = false;
-
-	void DEBUG_print_assignment(const WalkFormula& form) {
-		if(DEBUG) {
-			std::cout << form.create_assignment();
-		}
-	}
-
 }
 
 
 
 WalkSolver::WalkSolver(
 	unsigned int retriesUntilFail,
-	size_t numStepsToRetry,
-	WalkNodeChoiceMode mode) :
+	size_t numStepsToRetry) :
 	formula(nullptr),
 	retryCount(retriesUntilFail),
-	maxNumSteps(numStepsToRetry),
-	nodeChoiceMode(mode) {
+	maxNumSteps(numStepsToRetry) {
 
 }
 
@@ -40,7 +30,7 @@ WalkSolver::~WalkSolver() {
 
 
 
-Solution WalkSolver::try_single_solve(const Problem& prob) {
+void WalkSolver::set_problem(const Problem& prob) {
 
 	if (DEBUG) {
 		std::cout << "Solving problem:\n";
@@ -49,13 +39,21 @@ Solution WalkSolver::try_single_solve(const Problem& prob) {
 	}
 
 	formula = std::make_unique<WalkFormula>(prob);
-	nodeChooser = WalkNodeChooser::create(*formula, nodeChoiceMode);
+	nodeChooser = nullptr;
+
+}
+
+
+
+Solution WalkSolver::try_single_solve() {
+
+	if (!formula || !nodeChooser)
+		throw std::exception("Cannot WalkSolve before setting formula and node chooser.");
 
 	if (DEBUG) std::cout << "Set random formula assignment\n";
 
-	auto& translator = *prob.get_node_vert_translator();
 	auto randAssignment = rand_assignment(
-		translator.node_begin(), translator.node_end());
+		formula->node_begin(), formula->node_end());
 	formula->set_assignment(randAssignment);
 
 	if (DEBUG) std::cout << "Find satisfactory assignment\n";
@@ -73,6 +71,7 @@ Solution WalkSolver::try_single_solve(const Problem& prob) {
 			0,
 			numSteps
 		};
+		formula = nullptr;
 	} else {
 		solution = Solution{
 			SolutionStatus::Undetermined,
@@ -80,9 +79,9 @@ Solution WalkSolver::try_single_solve(const Problem& prob) {
 			0,
 			numSteps
 		};
+		formula->reset();
 	}
 
-	formula = nullptr;
 	return solution;
 
 }
@@ -111,7 +110,7 @@ size_t WalkSolver::find_assignment() {
 
 	}
 
-	DEBUG_print_assignment(*formula);
+	if (DEBUG) std::cout << formula->create_assignment();
 
 	return stepNum;
 

@@ -14,25 +14,6 @@ DPLLNodeChooser::DPLLNodeChooser(const DPLLFormula& initForm) :
 }
 
 
-std::unique_ptr<DPLLNodeChooser>
-DPLLNodeChooser::create(const DPLLFormula& form, DPLLNodeChoiceMode mode) {
-
-	switch (mode) {
-	case DPLLNodeChoiceMode::Next:
-		return std::make_unique<NextNodeChooser>(form);
-	case DPLLNodeChoiceMode::Random:
-		return std::make_unique<RandNodeChooser>(form);
-	case DPLLNodeChoiceMode::MostSameClauses:
-		return std::make_unique<MaxSameClauseNodeChooser>(form);
-	case DPLLNodeChoiceMode::MostTotClauses:
-		return std::make_unique<MaxTotClauseNodeChooser>(form);
-	default:
-		throw std::exception("Unknown DPLL node choice mode.");
-	}
-
-}
-
-
 
 boost::optional<DPLLNodeChoice> DPLLNodeChooser::choose() {
 

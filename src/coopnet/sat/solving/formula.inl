@@ -48,3 +48,14 @@ void Formula<SatProp>::set_assignment(const Assignment& assignment) {
 	set_vert_assignment(assign);
 
 }
+
+
+
+template<typename SatProp>
+auto Formula<SatProp>::node_begin() const {
+	return get_sat_graph_translator().node_begin();
+}
+template<typename SatProp>
+auto Formula<SatProp>::node_end() const {
+	return get_sat_graph_translator().node_end();
+}

@@ -12,14 +12,25 @@ namespace {
 
 	auto lam_dpll_unknown_all = [](const Problem& prob) {
 
-		auto solver_next = DPLLSolver(DPLLNodeChoiceMode::Next);
-		auto pair_next = solver_next.solve(prob);
-		auto solver_rand = DPLLSolver(DPLLNodeChoiceMode::Random);
-		auto pair_rand = solver_rand.solve(prob);
-		auto solver_most_same_sat = DPLLSolver(DPLLNodeChoiceMode::MostSameClauses);
-		auto pair_most_same_sat = solver_most_same_sat.solve(prob);
-		auto solver_most_tot_sat = DPLLSolver(DPLLNodeChoiceMode::MostTotClauses);
-		auto pair_most_tot_sat = solver_most_tot_sat.solve(prob);
+		auto solver_next = DPLLSolver();
+		solver_next.set_problem(prob);
+		solver_next.create_chooser<NextNodeChooser>();
+		auto pair_next = solver_next.solve();
+
+		auto solver_rand = DPLLSolver();
+		solver_rand.set_problem(prob);
+		solver_rand.create_chooser<RandNodeChooser>();
+		auto pair_rand = solver_rand.solve();
+
+		auto solver_most_same_sat = DPLLSolver();
+		solver_most_same_sat.set_problem(prob);
+		solver_most_same_sat.create_chooser<MaxSameClauseNodeChooser>();
+		auto pair_most_same_sat = solver_most_same_sat.solve();
+
+		auto solver_most_tot_sat = DPLLSolver();
+		solver_most_tot_sat.set_problem(prob);
+		solver_most_tot_sat.create_chooser<MaxTotClauseNodeChooser>();
+		auto pair_most_tot_sat = solver_most_tot_sat.solve();
 
 		RC_ASSERT(pair_next.status == pair_rand.status);
 		RC_ASSERT(pair_next.status == pair_most_same_sat.status);

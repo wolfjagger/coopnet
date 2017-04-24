@@ -15,6 +15,8 @@ namespace coopnet {
 
 	private:
 
+		static constexpr bool DEBUG = false;
+
 		std::unique_ptr<WalkFormula> formula;
 
 		std::unique_ptr<WalkNodeChooser> nodeChooser;
@@ -24,15 +26,9 @@ namespace coopnet {
 
 	public:
 
-		// Set this to change how node is chosen
-		WalkNodeChoiceMode nodeChoiceMode;
-
-	public:
-
 		WalkSolver(
 			unsigned int retriesUntilFail,
-			size_t numStepsToRetry,
-			WalkNodeChoiceMode mode = WalkNodeChoiceMode::GSAT);
+			size_t numStepsToRetry);
 
 		WalkSolver(const WalkSolver& other) = delete;
 		WalkSolver& operator=(const WalkSolver& other) = delete;
@@ -41,10 +37,28 @@ namespace coopnet {
 		WalkSolver& operator=(WalkSolver&& other) = default;
 
 		~WalkSolver() override;
+
+		
+		
+		void set_problem(const Problem& prob) override;
+
+		template<typename ChooserType, typename... Args>
+		void create_chooser(Args&&... args) {
+
+			if (!formula) throw std::exception("Formula not set.");
+
+			if (DEBUG) std::cout << "Create node chooser\n";
+
+			nodeChooser = std::make_unique<ChooserType>(
+				*formula, std::forward<Args>(args)...);
+
+		}
+
+
 	
 	protected:
 		
-		Solution try_single_solve(const Problem& prob) override;
+		Solution try_single_solve() override;
 
 		unsigned int retry_count() const override;
 

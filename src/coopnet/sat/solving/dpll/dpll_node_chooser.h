@@ -26,9 +26,6 @@ namespace coopnet {
 
 	public:
 
-		static std::unique_ptr<DPLLNodeChooser>
-			create(const DPLLFormula& form, DPLLNodeChoiceMode mode);
-
 		boost::optional<DPLLNodeChoice> choose();
 
 	protected:

@@ -28,6 +28,17 @@ WalkFormula::~WalkFormula() {
 
 
 
+void WalkFormula::reset() {
+
+	g = graph_util::create_default_concrete_graph<WalkProp>(
+		prob.get().get_graph(), *prob.get().get_node_vert_translator());
+
+	numClauses = prob.get().get_num_clauses();
+
+}
+
+
+
 void WalkFormula::flip_node(VertDescriptor vertNode) {
 
 	if (DEBUG) {

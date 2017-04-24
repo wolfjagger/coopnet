@@ -31,6 +31,23 @@ DPLLFormula::~DPLLFormula() { }
 
 
 
+void DPLLFormula::reset() {
+
+	reversableGraph = ReversableGraph(
+		prob.get().get_graph(), *prob.get().get_node_vert_translator());
+	greyBuffer = boost::queue<VertDescriptor>();
+	isContradicting = std::make_shared<bool>(false);
+
+	colorPropMap = boost::get(&VProp<DPLLProp>::color, graph());
+
+	pruneVisitor = std::make_unique<BfsDPLLVisitor>(
+		reversableGraph.reverse_stack(),
+		isContradicting);
+
+}
+
+
+
 void DPLLFormula::set_node(DPLLNodeChoice choice) {
 
 	// partial_assign set @ node_to_set=value

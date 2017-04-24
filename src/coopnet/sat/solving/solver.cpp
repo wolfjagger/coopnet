@@ -8,9 +8,9 @@ Solver::~Solver() { }
 
 
 
-auto CompleteSolver::solve(const Problem& prob) -> Solution {
+auto CompleteSolver::solve() -> Solution {
 	
-	auto solution = do_solve(prob);
+	auto solution = do_solve();
 
 	if (solution.status == SolutionStatus::Undetermined)
 		throw std::exception("Complete solver has undetermined solution.");
@@ -21,10 +21,10 @@ auto CompleteSolver::solve(const Problem& prob) -> Solution {
 
 
 
-auto IncompleteSolver::solve(const Problem& prob) -> Solution {
+auto IncompleteSolver::solve() -> Solution {
 			
 	for (unsigned int i = 0; i < retry_count(); ++i) {
-		auto possible_solution = try_single_solve(prob);
+		auto possible_solution = try_single_solve();
 		if (possible_solution.status != SolutionStatus::Undetermined) {
 			return possible_solution;
 		}

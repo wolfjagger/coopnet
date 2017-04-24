@@ -9,36 +9,7 @@ using namespace coopnet;
 
 
 
-namespace {
-
-	constexpr bool DEBUG = false;
-
-	void DEBUG_print_assignment(const DPLLFormula& formula) {
-		if (DEBUG) {
-			auto print_pred =
-				[](IncompleteAssignment::value_type pair) {
-				if (pair.second) {
-					std::cout << "T";
-				} else if (!pair.second) {
-					std::cout << "F";
-				} else if (boost::logic::indeterminate(pair.second)) {
-					std::cout << "I";
-				} else {
-					std::cout << "O";
-				}
-			};
-			auto& assign = formula.create_incomplete_assignment();
-			std::for_each(assign.cbegin(), assign.cend(), print_pred);
-			std::cout << "\n";
-		}
-	}
-
-}
-
-
-
-DPLLSolver::DPLLSolver(DPLLNodeChoiceMode mode) :
-	nodeChoiceMode(mode) {
+DPLLSolver::DPLLSolver() {
 
 }
 
@@ -49,16 +20,16 @@ DPLLSolver::~DPLLSolver() {
 
 
 void DPLLSolver::set_problem(const Problem& prob) {
+
+	if (DEBUG) {
+		std::cout << "Solving problem:\n";
+		std::cout << prob;
+		std::cout << "Construct formula\n";
+	}
+
 	formula = std::make_unique<DPLLFormula>(prob);
 	decisions = std::stack<DPLLNodeChoiceBranch>();
-}
-
-template<typename SolverType, typename... Args>
-void DPLLSolver::create_solver(Args&& args) {
-	
-	if (!formula) throw std::exception("Formula not set.");
-
-	nodeChooser = std::make_unique<SolverType>(*formula, args);
+	nodeChooser = nullptr;
 
 }
 
@@ -88,19 +59,14 @@ void DPLLSolver::create_solver(Args&& args) {
 *  end
 */
 
-auto DPLLSolver::do_solve(const Problem& prob) -> Solution {
+auto DPLLSolver::do_solve() -> Solution {
 	
-	if (DEBUG) {
-		std::cout << "Solving problem:\n";
-		std::cout << prob;
-		std::cout << "Construct formula\n";
-	}
-	
-	formula = std::make_unique<DPLLFormula>(prob);
-	nodeChooser = DPLLNodeChooser::create(*formula, nodeChoiceMode);
-	decisions = std::stack<DPLLNodeChoiceBranch>();
+	if (!formula || !nodeChooser)
+		throw std::exception("Cannot DPLLSolve before setting formula and node chooser.");
 
 	find_assignment();
+
+
 
 	Solution solution;
 	if (formula->is_SAT()) {
@@ -119,6 +85,8 @@ auto DPLLSolver::do_solve(const Problem& prob) -> Solution {
 	}
 
 	formula = nullptr;
+	nodeChooser = nullptr;
+
 	return solution;
 
 }
@@ -204,4 +172,26 @@ void DPLLSolver::reduce_with_selection(DPLLNodeChoiceBranch decision) {
 	formula->set_node(decision.choice);
 	DEBUG_print_assignment(*formula);
 
+}
+
+
+
+void DPLLSolver::DEBUG_print_assignment(const DPLLFormula& formula) {
+	if (DEBUG) {
+		auto print_pred =
+			[](IncompleteAssignment::value_type pair) {
+			if (pair.second) {
+				std::cout << "T";
+			} else if (!pair.second) {
+				std::cout << "F";
+			} else if (boost::logic::indeterminate(pair.second)) {
+				std::cout << "I";
+			} else {
+				std::cout << "O";
+			}
+		};
+		auto& assign = formula.create_incomplete_assignment();
+		std::for_each(assign.cbegin(), assign.cend(), print_pred);
+		std::cout << "\n";
+	}
 }

@@ -11,22 +11,6 @@ WalkNodeChooser::WalkNodeChooser(const WalkFormula& initForm) :
 
 }
 
-std::unique_ptr<WalkNodeChooser>
-WalkNodeChooser::create(const WalkFormula& form, WalkNodeChoiceMode mode) {
-
-	switch (mode) {
-	case WalkNodeChoiceMode::Random:
-		return std::make_unique<RandWalkNodeChooser>(form);
-	case WalkNodeChoiceMode::GSAT:
-		return std::make_unique<GSATNodeChooser>(form);
-	case WalkNodeChoiceMode::UnsatClauseMC:
-		return std::make_unique<UnsatClauseMCNodeChooser>(form);
-	default:
-		throw std::exception("Unknown walk node choice mode.");
-	}
-
-}
-
 VertDescriptor WalkNodeChooser::choose() {
 
 	return do_choose();

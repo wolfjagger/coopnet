@@ -32,11 +32,15 @@ namespace coopnet {
 
 
 
+		void reset() override;
+
 		void flip_node(VertDescriptor vertNode);
 
 		bool is_SAT() const override;
 
 		const Graph& graph() const override;
+
+
 
 	protected:
 
